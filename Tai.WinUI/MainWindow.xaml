@@ -9,11 +9,11 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid x:Name="AppTitleBar" Height="32" Padding="16,0" Background="Transparent">
+        <Grid x:Name="AppTitleBar" Height="32" Padding="16,0,148,0" Background="{StaticResource TaiCardBackgroundBrush}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="#12966F" />
-                <TextBlock Text="Tai" FontSize="13" FontWeight="SemiBold" Foreground="#18212F" />
-                <TextBlock Text="时间统计" FontSize="12" Foreground="#667085" />
+                <Image x:Name="TitleBarLogo" Source="ms-appx:///Resources/Icons/tai.png" Width="18" Height="18" />
+                <TextBlock Text="Tai" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                <TextBlock Text="时间统计" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
             </StackPanel>
         </Grid>
 

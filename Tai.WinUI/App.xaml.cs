@@ -10,6 +10,7 @@ namespace Tai.WinUI;
 public partial class App : Application
 {
     private MainWindow? _window;
+    internal static MainWindow? MainWindowInstance { get; private set; }
     public static IServiceProvider Services { get; private set; } = null!;
     private static readonly TaskCompletionSource<object?> CoreReadySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public static Task CoreReady => CoreReadySource.Task;
@@ -45,11 +46,13 @@ public partial class App : Application
         try
         {
             _window = new MainWindow();
+            MainWindowInstance = _window;
             _window.Activate();
             Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Data"));
             System.Data.Entity.DbConfiguration.SetConfiguration(new SQLiteConfiguration());
             var main = Services.GetRequiredService<IMain>();
             await main.RunAsync();
+            _window.ApplyStartupSettings();
             CoreReadySource.TrySetResult(null);
             if (smokeTest)
             {

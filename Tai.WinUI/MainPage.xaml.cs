@@ -1,12 +1,15 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Extensions.DependencyInjection;
+using Core.Servicers.Interfaces;
 using Tai.WinUI.Views;
 
 namespace Tai.WinUI;
 
 public sealed partial class MainPage : Page
 {
+    private bool _initializationStarted;
     private readonly Dictionary<string, (Type Page, string Title)> _routes = new()
     {
         ["Dashboard"] = (typeof(DashboardPage), "概览"),
@@ -22,8 +25,11 @@ public sealed partial class MainPage : Page
         Loaded += MainPage_Loaded;
     }
 
-    private void MainPage_Loaded(object sender, RoutedEventArgs e)
+    private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
+        if (_initializationStarted) return;
+        _initializationStarted = true;
+
         try
         {
             RootNavigation.SelectedItem = RootNavigation.MenuItems[0];
@@ -31,6 +37,13 @@ public sealed partial class MainPage : Page
             {
                 ContentFrame.Navigate(typeof(DashboardPage));
             }
+
+            await App.CoreReady;
+            var configuredIndex = Math.Clamp(
+                App.Services.GetRequiredService<IAppConfig>().GetConfig()?.General?.StartPage ?? 0,
+                0,
+                3);
+            RootNavigation.SelectedItem = RootNavigation.MenuItems[configuredIndex];
         }
         catch (Exception exception)
         {
