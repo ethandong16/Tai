@@ -2,9 +2,10 @@
     x:Class="Tai.WinUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Background="#F6F7FB">
+    <Grid Background="{StaticResource TaiPageBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -16,6 +17,8 @@
             </StackPanel>
         </Grid>
 
-        <Frame x:Name="RootFrame" Grid.Row="1" />
+        <InfoBar x:Name="StartupError" Grid.Row="1" IsOpen="False" Severity="Error"
+                 Title="统计服务启动失败" Message="暂时无法记录使用时间。请查看 Log/startup.log 中的错误详情。" />
+        <Frame x:Name="RootFrame" Grid.Row="2" />
     </Grid>
 </Window>

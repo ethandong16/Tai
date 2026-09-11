@@ -138,6 +138,11 @@ namespace Core.Servicers.Instances
 
         public async void Run()
         {
+            await RunAsync();
+        }
+
+        public async Task RunAsync()
+        {
             await Task.Run(() =>
              {
                  CreateDirectory();

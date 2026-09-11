@@ -9,15 +9,15 @@ namespace Tai.WinUI;
 
 public partial class App : Application
 {
-    private Window? _window;
+    private MainWindow? _window;
     public static IServiceProvider Services { get; private set; } = null!;
     private static readonly TaskCompletionSource<object?> CoreReadySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public static Task CoreReady => CoreReadySource.Task;
 
     public App()
     {
-        InitializeComponent();
         UnhandledException += App_UnhandledException;
+        InitializeComponent();
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IDatabase, Database>();
@@ -39,24 +39,49 @@ public partial class App : Application
         Services = serviceCollection.BuildServiceProvider();
     }
 
-    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        // Show the shell before starting the legacy tracker. A database or native
-        // dependency failure should not make the new UI appear to do nothing.
-        _window = new MainWindow();
-        _window.Activate();
-
-        Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Data"));
-        var main = Services.GetRequiredService<IMain>();
-        main.OnStarted += (_, _) => CoreReadySource.TrySetResult(null);
-        _ = Task.Run(() => main.Run());
+        var smokeTest = Environment.GetCommandLineArgs().Contains("--smoke-test");
+        try
+        {
+            _window = new MainWindow();
+            _window.Activate();
+            Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Data"));
+            System.Data.Entity.DbConfiguration.SetConfiguration(new SQLiteConfiguration());
+            var main = Services.GetRequiredService<IMain>();
+            await main.RunAsync();
+            CoreReadySource.TrySetResult(null);
+            if (smokeTest)
+            {
+                await Services.GetRequiredService<Tai.WinUI.Services.IUsageDataProvider>().GetTodayAsync();
+                await _window.VerifyPagesAsync();
+                main.Stop();
+                File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "startup-smoke.ok"),
+                    "Window, seven pages, tracker initialization and database query passed.");
+                Exit();
+            }
+        }
+        catch (Exception exception)
+        {
+            CoreReadySource.TrySetException(exception);
+            LogStartupException(exception);
+            if (smokeTest || _window == null)
+            {
+                Environment.ExitCode = 1;
+                Exit();
+            }
+            else
+            {
+                _window.ShowStartupError();
+            }
+        }
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         LogStartupException(e.Exception);
 
-        e.Handled = true;
+        // Unexpected UI failures are logged, but must not be silently swallowed.
     }
 
     public static void LogStartupException(Exception exception)

@@ -42,7 +42,7 @@ jobs:
           /p:Platform=x64
           /p:RuntimeIdentifier=win-x64
           /p:WindowsAppSDKSelfContained=true
-          /p:EnableMsixTooling=false
+          /p:EnableMsixTooling=true
           /p:Restore=false
 
       - name: Publish unpackaged WinUI app
@@ -54,8 +54,12 @@ jobs:
           /p:RuntimeIdentifier=win-x64
           /p:SelfContained=true
           /p:WindowsAppSDKSelfContained=true
-          /p:EnableMsixTooling=false
+          /p:EnableMsixTooling=true
           /p:Restore=false
+
+      - name: Verify published resources and startup
+        shell: pwsh
+        run: ./scripts/Test-WinUIStartup.ps1 -PublishDirectory Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
 
       - name: Upload WinUI artifact
         uses: actions/upload-artifact@v4

@@ -35,11 +35,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
     {
         return Task.Run(() =>
         {
-            var ready = Task.WhenAny(App.CoreReady, Task.Delay(TimeSpan.FromSeconds(5), cancellationToken)).GetAwaiter().GetResult();
-            if (ready != App.CoreReady)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-            }
+            App.CoreReady.WaitAsync(cancellationToken).GetAwaiter().GetResult();
             cancellationToken.ThrowIfCancellationRequested();
             var start = DateTime.Today;
             var end = start.AddDays(1).AddSeconds(-1);

@@ -13,17 +13,14 @@
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsSdkPackageVersion>10.0.19041.57</WindowsSdkPackageVersion>
-    <EnableMsixTooling>false</EnableMsixTooling>
+    <!-- Required to generate and publish resources.pri, even for unpackaged apps. -->
+    <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core.Modern\Core.Modern.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="MainWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>

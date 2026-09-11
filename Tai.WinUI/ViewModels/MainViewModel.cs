@@ -93,9 +93,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
             LongestAppDuration = snapshot.LongestAppDuration;
             LastUpdated = $"{DateTime.Now:HH:mm} 更新";
         }
-        catch
+        catch (Exception exception)
         {
-            // The demo rows remain visible if an existing database is unavailable.
+            App.LogStartupException(exception);
+            LastUpdated = "数据读取失败";
         }
     }
 
@@ -124,7 +125,6 @@ public sealed class UsageItem
         Percent = percent;
         Glyph = glyph;
         AccentHex = accent;
-        Accent = new SolidColorBrush(ParseColor(accent));
         Category = category;
     }
 
@@ -133,7 +133,9 @@ public sealed class UsageItem
     public int Percent { get; }
     public string Glyph { get; }
     public string AccentHex { get; }
-    public SolidColorBrush Accent { get; }
+    // Snapshots are built on a worker thread; create WinUI objects when the UI binds them.
+    private SolidColorBrush? _accent;
+    public SolidColorBrush Accent => _accent ??= new SolidColorBrush(ParseColor(AccentHex));
     public string Category { get; }
 
     private static Windows.UI.Color ParseColor(string value)
