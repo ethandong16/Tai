@@ -48,7 +48,7 @@
                         <TextBlock x:Name="PageTitle" Text="概览" Margin="0,4,0,0" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </StackPanel>
                 </Border>
-                <Frame x:Name="ContentFrame" Grid.Row="1" NavigationCacheMode="Enabled" Navigated="ContentFrame_Navigated" />
+                <Frame x:Name="ContentFrame" Grid.Row="1" Navigated="ContentFrame_Navigated" />
             </Grid>
         </controls:NavigationView>
     </Grid>
