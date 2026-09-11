@@ -20,6 +20,22 @@ public sealed partial class MainWindow : Window
         var appWindow = AppWindow.GetFromWindowId(windowId);
         appWindow.Title = "Tai";
         appWindow.Resize(new Windows.Graphics.SizeInt32(1240, 820));
+
+        try
+        {
+            RootFrame.Navigate(typeof(MainPage));
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+            RootFrame.Content = new Microsoft.UI.Xaml.Controls.TextBlock
+            {
+                Text = "Tai 界面加载失败，请查看 Log/startup.log。",
+                Margin = new Microsoft.UI.Xaml.Thickness(32),
+                FontSize = 16
+            };
+        }
+
         Closed += (_, _) => App.Services.GetService<IMain>()?.Exit();
     }
 }

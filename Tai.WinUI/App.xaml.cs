@@ -54,19 +54,24 @@ public partial class App : Application
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
+        LogStartupException(e.Exception);
+
+        e.Handled = true;
+    }
+
+    public static void LogStartupException(Exception exception)
+    {
         try
         {
             var logDirectory = Path.Combine(AppContext.BaseDirectory, "Log");
             Directory.CreateDirectory(logDirectory);
             File.AppendAllText(
                 Path.Combine(logDirectory, "startup.log"),
-                $"[{DateTime.Now:O}] {e.Exception}\r\n");
+                $"[{DateTime.Now:O}] HResult=0x{exception.HResult:X8}\r\n{exception}\r\n");
         }
         catch
         {
             // Preserve the original exception path if logging is unavailable.
         }
-
-        e.Handled = true;
     }
 }

@@ -19,8 +19,29 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
-        RootNavigation.SelectedItem = RootNavigation.MenuItems[0];
-        ContentFrame.Navigate(typeof(DashboardPage));
+        Loaded += MainPage_Loaded;
+    }
+
+    private void MainPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            RootNavigation.SelectedItem = RootNavigation.MenuItems[0];
+            if (ContentFrame.CurrentSourcePageType == null)
+            {
+                ContentFrame.Navigate(typeof(DashboardPage));
+            }
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+            ContentFrame.Content = new TextBlock
+            {
+                Text = "概览页面加载失败，请查看 Log/startup.log。",
+                Margin = new Thickness(32),
+                FontSize = 16
+            };
+        }
     }
 
     private void RootNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
