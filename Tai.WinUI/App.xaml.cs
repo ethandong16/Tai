@@ -17,6 +17,7 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+        UnhandledException += App_UnhandledException;
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IDatabase, Database>();
@@ -40,11 +41,32 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        // Show the shell before starting the legacy tracker. A database or native
+        // dependency failure should not make the new UI appear to do nothing.
+        _window = new MainWindow();
+        _window.Activate();
+
         Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Data"));
         var main = Services.GetRequiredService<IMain>();
         main.OnStarted += (_, _) => CoreReadySource.TrySetResult(null);
-        main.Run();
-        _window = new MainWindow();
-        _window.Activate();
+        _ = Task.Run(() => main.Run());
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        try
+        {
+            var logDirectory = Path.Combine(AppContext.BaseDirectory, "Log");
+            Directory.CreateDirectory(logDirectory);
+            File.AppendAllText(
+                Path.Combine(logDirectory, "startup.log"),
+                $"[{DateTime.Now:O}] {e.Exception}\r\n");
+        }
+        catch
+        {
+            // Preserve the original exception path if logging is unavailable.
+        }
+
+        e.Handled = true;
     }
 }
