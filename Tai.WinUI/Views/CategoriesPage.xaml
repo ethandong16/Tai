@@ -1,0 +1,78 @@
+<Page
+    x:Class="Tai.WinUI.Views.CategoriesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24,8,28,32" Spacing="20">
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="分类" Style="{StaticResource TaiPageTitleStyle}" />
+                    <TextBlock Text="把应用和网站整理成更容易理解的工作类别。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiPrimaryButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;" FontSize="14" />
+                        <TextBlock Text="新建分类" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="0.9*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource TaiCardStyle}">
+                    <StackPanel Spacing="16">
+                        <Grid>
+                            <TextBlock Text="分类概览" Style="{StaticResource TaiSectionTitleStyle}" />
+                            <TextBlock Text="4 个分类" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
+                        </Grid>
+                        <StackPanel Spacing="16">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiInfoSoftBrush}"><FontIcon Glyph="&#xE943;" Foreground="{StaticResource TaiInfoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+                                    <StackPanel><TextBlock Text="开发" /><TextBlock Text="12小时40分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="68%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiInfoBrush}" />
+                            </Grid>
+                            <ProgressBar Value="68" Maximum="100" Height="7" Foreground="{StaticResource TaiInfoBrush}" />
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiAccentSoftBrush}"><FontIcon Glyph="&#xE774;" Foreground="{StaticResource TaiAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+                                    <StackPanel><TextBlock Text="浏览" /><TextBlock Text="8小时21分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="45%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiAccentBrush}" />
+                            </Grid>
+                            <ProgressBar Value="45" Maximum="100" Height="7" Foreground="{StaticResource TaiAccentBrush}" />
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiWarningSoftBrush}"><FontIcon Glyph="&#xE714;" Foreground="{StaticResource TaiWarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+                                    <StackPanel><TextBlock Text="娱乐" /><TextBlock Text="3小时48分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="21%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiWarningBrush}" />
+                            </Grid>
+                            <ProgressBar Value="21" Maximum="100" Height="7" Foreground="{StaticResource TaiWarningBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource TaiCardStyle}">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
+                        <TextBlock Text="根据应用路径和网站域名自动归类，减少手动维护。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                        <ToggleSwitch Header="启用自动分类" IsOn="True" />
+                        <Border Background="{StaticResource TaiCardMutedBrush}" CornerRadius="8" Padding="12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="匹配规则" FontWeight="SemiBold" />
+                                <TextBlock Text="C:\\Program Files\\*" Style="{StaticResource TaiCaptionStyle}" />
+                                <TextBlock Text="github.com / stackoverflow.com" Style="{StaticResource TaiCaptionStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Button Content="管理匹配规则" HorizontalAlignment="Left" Style="{StaticResource TaiSubtleButtonStyle}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

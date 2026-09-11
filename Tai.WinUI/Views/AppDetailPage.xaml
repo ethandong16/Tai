@@ -1,0 +1,68 @@
+<Page
+    x:Class="Tai.WinUI.Views.AppDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24,8,28,32" Spacing="20">
+            <Button Content="返回详细" HorizontalAlignment="Left" Click="Back_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="应用详情" Style="{StaticResource TaiPageTitleStyle}" />
+                    <TextBlock Text="查看单个应用的使用趋势和关联信息。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                </StackPanel>
+            </Grid>
+            <Border Style="{StaticResource TaiCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border Width="54" Height="54" CornerRadius="14" Background="{Binding AccentBrush}">
+                        <FontIcon Glyph="{Binding Glyph}" Foreground="White" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="应用 ·" Style="{StaticResource TaiCaptionStyle}" />
+                            <TextBlock Text="{Binding Category}" Style="{StaticResource TaiCaptionStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding Duration}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiAccentBrush}" />
+                        <TextBlock Text="今日使用" Style="{StaticResource TaiCaptionStyle}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource TaiCardStyle}">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="使用趋势" Style="{StaticResource TaiSectionTitleStyle}" />
+                        <Grid Height="170" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Spacing="18">
+                                <Rectangle Width="34" Height="55" Fill="{StaticResource TaiInfoBrush}" RadiusX="5" RadiusY="5" />
+                                <Rectangle Width="34" Height="90" Fill="{StaticResource TaiInfoBrush}" RadiusX="5" RadiusY="5" />
+                                <Rectangle Width="34" Height="72" Fill="{StaticResource TaiInfoBrush}" RadiusX="5" RadiusY="5" />
+                                <Rectangle Width="34" Height="138" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                <Rectangle Width="34" Height="105" Fill="{StaticResource TaiInfoBrush}" RadiusX="5" RadiusY="5" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource TaiCardStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="应用信息" Style="{StaticResource TaiSectionTitleStyle}" />
+                        <Grid><TextBlock Text="所属分类" Style="{StaticResource TaiCaptionStyle}" /><TextBlock Text="{Binding Category}" HorizontalAlignment="Right" /></Grid>
+                        <Grid><TextBlock Text="今日占比" Style="{StaticResource TaiCaptionStyle}" /><TextBlock Text="{Binding PercentText}" HorizontalAlignment="Right" /></Grid>
+                        <Grid><TextBlock Text="统计状态" Style="{StaticResource TaiCaptionStyle}" /><TextBlock Text="正在统计" HorizontalAlignment="Right" Foreground="{StaticResource TaiAccentBrush}" /></Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,65 @@
+name: Build Tai WinUI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-winui:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Locate Visual Studio MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore WinUI project
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Restore
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:RestoreIgnoreFailedSources=false
+
+      - name: Build WinUI project
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Build
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:WindowsAppSDKSelfContained=true
+          /p:EnableMsixTooling=false
+          /p:Restore=false
+
+      - name: Publish unpackaged WinUI app
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Publish
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:SelfContained=true
+          /p:WindowsAppSDKSelfContained=true
+          /p:EnableMsixTooling=false
+          /p:Restore=false
+
+      - name: Upload WinUI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tai-winui-win-x64
+          path: Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
+          if-no-files-found: error

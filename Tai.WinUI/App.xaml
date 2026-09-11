@@ -1,0 +1,75 @@
+<Application
+    x:Class="Tai.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <controls:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <SolidColorBrush x:Key="TaiPageBackgroundBrush" Color="#F6F7FB" />
+            <SolidColorBrush x:Key="TaiCardBackgroundBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TaiCardMutedBrush" Color="#F1F4F8" />
+            <SolidColorBrush x:Key="TaiAccentBrush" Color="#12966F" />
+            <SolidColorBrush x:Key="TaiAccentSoftBrush" Color="#E3F4EE" />
+            <SolidColorBrush x:Key="TaiInfoBrush" Color="#4969D8" />
+            <SolidColorBrush x:Key="TaiInfoSoftBrush" Color="#E9EDFF" />
+            <SolidColorBrush x:Key="TaiWarningBrush" Color="#C77912" />
+            <SolidColorBrush x:Key="TaiWarningSoftBrush" Color="#FFF3DD" />
+            <SolidColorBrush x:Key="TaiDangerBrush" Color="#D14C62" />
+            <SolidColorBrush x:Key="TaiDangerSoftBrush" Color="#FBE7EB" />
+            <SolidColorBrush x:Key="TaiPrimaryTextBrush" Color="#18212F" />
+            <SolidColorBrush x:Key="TaiSecondaryTextBrush" Color="#667085" />
+            <SolidColorBrush x:Key="TaiDividerBrush" Color="#E5E8EE" />
+
+            <Style x:Key="TaiCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="Padding" Value="20" />
+            </Style>
+            <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource TaiAccentBrush}" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="14,8" />
+            </Style>
+            <Style x:Key="TaiDangerButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource TaiDangerSoftBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource TaiDangerBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="14,8" />
+            </Style>
+            <Style x:Key="TaiSubtleButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="{StaticResource TaiAccentBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="8,4" />
+            </Style>
+            <Style x:Key="TaiPageTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+            </Style>
+            <Style x:Key="TaiSectionTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="17" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+            </Style>
+            <Style x:Key="TaiCaptionStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="Foreground" Value="{StaticResource TaiSecondaryTextBrush}" />
+            </Style>
+            <Style x:Key="TaiStatValueStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="26" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

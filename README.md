@@ -3,6 +3,10 @@
 
 <img src="index.jpg" width=600 />
 
+## WinUI 3 重构版
+
+新的 Fluent UI 位于 `Tai.WinUI`，并通过 `Core.Modern` 复用现有 .NET 8 Windows 统计服务。旧的 `UI` WPF 项目仍保留，方便在迁移期间对照和回退。构建 WinUI 项目需要 Visual Studio 2022 17.10+、Windows App SDK 1.6 和 .NET 8 SDK，详细说明见 `Tai.WinUI/README.md`。
+
 广告位出售，联系方式：bmFjYXQ0YjEx （ base64 添加请备注来意
 
 ## 开始使用

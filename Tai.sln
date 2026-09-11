@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaiBug", "TaiBug\TaiBug.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{7A2F2592-3079-441C-8704-E71CE75BC593}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tai.WinUI", "Tai.WinUI\Tai.WinUI.csproj", "{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Modern", "Core.Modern\Core.Modern.csproj", "{F20E6EA7-EA97-46E1-80E3-43207CCA912D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,22 @@ Global
 		{7A2F2592-3079-441C-8704-E71CE75BC593}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A2F2592-3079-441C-8704-E71CE75BC593}.Release|x64.ActiveCfg = Release|Any CPU
 		{7A2F2592-3079-441C-8704-E71CE75BC593}.Release|x64.Build.0 = Release|Any CPU
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Debug|Any CPU.Build.0 = Debug|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Debug|x64.ActiveCfg = Debug|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Debug|x64.Build.0 = Debug|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Release|Any CPU.ActiveCfg = Release|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Release|Any CPU.Build.0 = Release|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Release|x64.ActiveCfg = Release|x64
+		{A328CD0C-CA75-44FE-AA04-2CE8DC05BD10}.Release|x64.Build.0 = Release|x64
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Debug|x64.Build.0 = Debug|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Release|x64.ActiveCfg = Release|Any CPU
+		{F20E6EA7-EA97-46E1-80E3-43207CCA912D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
