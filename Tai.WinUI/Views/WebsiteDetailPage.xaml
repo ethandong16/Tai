@@ -3,8 +3,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="Transparent">
+    <Grid>
+    <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="WideLayout">
+                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PageStack.Margin" Value="24,8,28,32" />
+                            <Setter Target="SummaryColumn3.Width" Value="Auto" /><Setter Target="SummaryRow2.Height" Value="0" />
+                            <Setter Target="DurationPanel.(Grid.Row)" Value="0" /><Setter Target="DurationPanel.(Grid.Column)" Value="2" />
+                            <Setter Target="DurationPanel.HorizontalAlignment" Value="Right" /><Setter Target="DurationPanel.Margin" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="NarrowLayout">
+                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PageStack.Margin" Value="12,8,12,24" />
+                            <Setter Target="SummaryColumn3.Width" Value="0" /><Setter Target="SummaryRow2.Height" Value="Auto" />
+                            <Setter Target="DurationPanel.(Grid.Row)" Value="1" /><Setter Target="DurationPanel.(Grid.Column)" Value="1" />
+                            <Setter Target="DurationPanel.HorizontalAlignment" Value="Left" /><Setter Target="DurationPanel.Margin" Value="16,12,0,0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Margin="24,8,28,32" Spacing="20">
+        <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
             <Button Content="返回详细" HorizontalAlignment="Left" Click="Back_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
             <StackPanel>
                 <TextBlock Text="网站详情" Style="{StaticResource TaiPageTitleStyle}" />
@@ -15,16 +38,17 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition x:Name="SummaryColumn3" Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="SummaryRow2" Height="0" /></Grid.RowDefinitions>
                     <Border Width="54" Height="54" CornerRadius="14" Background="{Binding AccentBrush}">
                         <FontIcon Glyph="{Binding Glyph}" Foreground="White" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Spacing="4">
-                        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="网站 · 浏览记录" Style="{StaticResource TaiCaptionStyle}" />
                     </StackPanel>
-                    <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
+                    <StackPanel x:Name="DurationPanel" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
                         <TextBlock Text="{Binding Duration}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiAccentBrush}" />
                         <TextBlock Text="今日浏览" Style="{StaticResource TaiCaptionStyle}" />
                     </StackPanel>
@@ -33,18 +57,23 @@
             <Border Style="{StaticResource TaiCardStyle}">
                 <StackPanel Spacing="14">
                     <TextBlock Text="浏览趋势" Style="{StaticResource TaiSectionTitleStyle}" />
-                    <Grid Height="180" VerticalAlignment="Bottom">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Spacing="20">
-                            <Rectangle Width="44" Height="62" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
-                            <Rectangle Width="44" Height="110" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
-                            <Rectangle Width="44" Height="84" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
-                            <Rectangle Width="44" Height="145" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
-                            <Rectangle Width="44" Height="96" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel MinWidth="390">
+                            <Grid Height="180" VerticalAlignment="Bottom">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Spacing="20">
+                                    <Rectangle Width="44" Height="62" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                    <Rectangle Width="44" Height="110" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                    <Rectangle Width="44" Height="84" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                    <Rectangle Width="44" Height="145" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                    <Rectangle Width="44" Height="96" Fill="{StaticResource TaiAccentBrush}" RadiusX="5" RadiusY="5" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Text="周一        周二        周三        周四        周五" HorizontalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                         </StackPanel>
-                    </Grid>
-                    <TextBlock Text="周一        周二        周三        周四        周五" HorizontalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
+                    </ScrollViewer>
                 </StackPanel>
             </Border>
         </StackPanel>
     </ScrollViewer>
+    </Grid>
 </Page>

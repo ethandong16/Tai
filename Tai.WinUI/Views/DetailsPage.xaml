@@ -4,20 +4,43 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Tai.WinUI.Views"
     Background="Transparent">
-    <Grid Margin="24,8,28,32">
+    <Grid x:Name="LayoutRoot" Margin="24,8,28,32">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="WideLayout">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="LayoutRoot.Margin" Value="24,8,28,32" />
+                        <Setter Target="FilterPanel.(Grid.Row)" Value="0" />
+                        <Setter Target="FilterPanel.HorizontalAlignment" Value="Right" />
+                        <Setter Target="FilterPanel.Margin" Value="0" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowLayout">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="LayoutRoot.Margin" Value="12,8,12,24" />
+                        <Setter Target="FilterPanel.(Grid.Row)" Value="1" />
+                        <Setter Target="FilterPanel.HorizontalAlignment" Value="Left" />
+                        <Setter Target="FilterPanel.Margin" Value="0,12,0,0" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <StackPanel>
                 <TextBlock Text="详细" Style="{StaticResource TaiPageTitleStyle}" />
                 <TextBlock Text="查看每一天、每一个应用和网站的具体时间记录。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                <CalendarDatePicker Date="{x:Bind Today, Mode=TwoWay}" Width="150" PlaceholderText="选择日期" />
-                <ComboBox x:Name="TypeFilter" SelectedIndex="0" Width="120" PlaceholderText="类型" SelectionChanged="TypeFilter_SelectionChanged">
+            <StackPanel x:Name="FilterPanel" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <CalendarDatePicker Date="{x:Bind Today, Mode=TwoWay}" MinWidth="145" PlaceholderText="选择日期" />
+                <ComboBox x:Name="TypeFilter" SelectedIndex="0" MinWidth="110" PlaceholderText="类型" SelectionChanged="TypeFilter_SelectionChanged">
                     <ComboBoxItem Content="全部" />
                     <ComboBoxItem Content="应用" />
                     <ComboBoxItem Content="网站" />
@@ -25,14 +48,17 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,24,0,16" Spacing="4">
-            <ToggleButton Content="按天" IsChecked="True" MinWidth="80" />
-            <ToggleButton Content="按月" MinWidth="80" />
-            <ToggleButton Content="按年" MinWidth="80" />
-        </StackPanel>
+        <ScrollViewer Grid.Row="1" Margin="0,24,0,16" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <ToggleButton Content="按天" IsChecked="True" MinWidth="80" />
+                <ToggleButton Content="按月" MinWidth="80" />
+                <ToggleButton Content="按年" MinWidth="80" />
+            </StackPanel>
+        </ScrollViewer>
 
-        <Border Grid.Row="2" Style="{StaticResource TaiCardStyle}">
-            <Grid>
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" VerticalContentAlignment="Stretch">
+            <Border MinWidth="620" Style="{StaticResource TaiCardStyle}">
+                <Grid MinHeight="240">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -63,7 +89,7 @@
                                     <Border Width="32" Height="32" CornerRadius="8" Background="{Binding AccentBrush}">
                                         <FontIcon Glyph="{Binding Glyph}" Foreground="White" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <TextBlock Grid.Column="1" Text="{Binding Category}" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                                 <TextBlock Grid.Column="2" Text="{Binding Duration}" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
@@ -72,7 +98,8 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -16,9 +16,10 @@
                     <FontIcon Glyph="{Binding Glyph}" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
                 <StackPanel Grid.Column="1" Margin="12,0,16,0" VerticalAlignment="Center" Spacing="5">
-                    <Grid>
-                        <TextBlock Text="{Binding Name}" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                        <TextBlock Text="{Binding Category}" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name}" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
                     </Grid>
                     <ProgressBar Value="{Binding Percent}" Maximum="100" Height="5" Foreground="{Binding Accent}" Background="{StaticResource TaiCardMutedBrush}" />
                 </StackPanel>
@@ -27,14 +28,64 @@
         </DataTemplate>
     </Page.Resources>
 
+    <Grid>
+    <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="WideLayout">
+                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PageStack.Margin" Value="24,8,28,32" />
+                            <Setter Target="RefreshButton.(Grid.Row)" Value="0" />
+                            <Setter Target="RefreshButton.HorizontalAlignment" Value="Right" />
+                            <Setter Target="RefreshButton.Margin" Value="0" />
+                            <Setter Target="StatsColumn1.Width" Value="*" /><Setter Target="StatsColumn2.Width" Value="*" />
+                            <Setter Target="StatsColumn3.Width" Value="*" /><Setter Target="StatsColumn4.Width" Value="*" />
+                            <Setter Target="StatsRow2.Height" Value="0" /><Setter Target="StatsRow3.Height" Value="0" /><Setter Target="StatsRow4.Height" Value="0" />
+                            <Setter Target="StatsGrid.RowSpacing" Value="0" />
+                            <Setter Target="StatsCard2.(Grid.Row)" Value="0" /><Setter Target="StatsCard2.(Grid.Column)" Value="1" />
+                            <Setter Target="StatsCard3.(Grid.Row)" Value="0" /><Setter Target="StatsCard3.(Grid.Column)" Value="2" />
+                            <Setter Target="StatsCard4.(Grid.Row)" Value="0" /><Setter Target="StatsCard4.(Grid.Column)" Value="3" />
+                            <Setter Target="UsageColumn1.Width" Value="1.06*" /><Setter Target="UsageColumn2.Width" Value="0.94*" />
+                            <Setter Target="UsageRow2.Height" Value="0" /><Setter Target="UsageGrid.ColumnSpacing" Value="16" /><Setter Target="UsageGrid.RowSpacing" Value="0" />
+                            <Setter Target="WebsiteCard.(Grid.Row)" Value="0" /><Setter Target="WebsiteCard.(Grid.Column)" Value="1" />
+                            <Setter Target="AppViewButton.(Grid.Row)" Value="0" /><Setter Target="AppViewButton.HorizontalAlignment" Value="Right" /><Setter Target="AppViewButton.Margin" Value="0" />
+                            <Setter Target="WebsiteViewButton.(Grid.Row)" Value="0" /><Setter Target="WebsiteViewButton.HorizontalAlignment" Value="Right" /><Setter Target="WebsiteViewButton.Margin" Value="0" />
+                            <Setter Target="LastUpdatedText.(Grid.Row)" Value="0" /><Setter Target="LastUpdatedText.HorizontalAlignment" Value="Right" /><Setter Target="LastUpdatedText.Margin" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="NarrowLayout">
+                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PageStack.Margin" Value="12,8,12,24" />
+                            <Setter Target="RefreshButton.(Grid.Row)" Value="1" />
+                            <Setter Target="RefreshButton.HorizontalAlignment" Value="Left" />
+                            <Setter Target="RefreshButton.Margin" Value="0,12,0,0" />
+                            <Setter Target="StatsColumn1.Width" Value="*" /><Setter Target="StatsColumn2.Width" Value="0" />
+                            <Setter Target="StatsColumn3.Width" Value="0" /><Setter Target="StatsColumn4.Width" Value="0" />
+                            <Setter Target="StatsRow2.Height" Value="Auto" /><Setter Target="StatsRow3.Height" Value="Auto" /><Setter Target="StatsRow4.Height" Value="Auto" />
+                            <Setter Target="StatsGrid.RowSpacing" Value="12" />
+                            <Setter Target="StatsCard2.(Grid.Row)" Value="1" /><Setter Target="StatsCard2.(Grid.Column)" Value="0" />
+                            <Setter Target="StatsCard3.(Grid.Row)" Value="2" /><Setter Target="StatsCard3.(Grid.Column)" Value="0" />
+                            <Setter Target="StatsCard4.(Grid.Row)" Value="3" /><Setter Target="StatsCard4.(Grid.Column)" Value="0" />
+                            <Setter Target="UsageColumn1.Width" Value="*" /><Setter Target="UsageColumn2.Width" Value="0" />
+                            <Setter Target="UsageRow2.Height" Value="Auto" /><Setter Target="UsageGrid.ColumnSpacing" Value="0" /><Setter Target="UsageGrid.RowSpacing" Value="12" />
+                            <Setter Target="WebsiteCard.(Grid.Row)" Value="1" /><Setter Target="WebsiteCard.(Grid.Column)" Value="0" />
+                            <Setter Target="AppViewButton.(Grid.Row)" Value="1" /><Setter Target="AppViewButton.HorizontalAlignment" Value="Left" /><Setter Target="AppViewButton.Margin" Value="0,10,0,0" />
+                            <Setter Target="WebsiteViewButton.(Grid.Row)" Value="1" /><Setter Target="WebsiteViewButton.HorizontalAlignment" Value="Left" /><Setter Target="WebsiteViewButton.Margin" Value="0,10,0,0" />
+                            <Setter Target="LastUpdatedText.(Grid.Row)" Value="1" /><Setter Target="LastUpdatedText.HorizontalAlignment" Value="Left" /><Setter Target="LastUpdatedText.Margin" Value="0,8,0,0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24,8,28,32" Spacing="20">
-            <Grid>
+        <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
+            <Grid x:Name="HeaderGrid">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                 <StackPanel>
                     <TextBlock Text="今天的专注情况" Style="{StaticResource TaiPageTitleStyle}" />
                     <TextBlock Text="看看时间都花在哪里，保持有意识的工作节奏。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
                 </StackPanel>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding RefreshCommand}" Style="{StaticResource TaiPrimaryButtonStyle}">
+                <Button x:Name="RefreshButton" HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding RefreshCommand}" Style="{StaticResource TaiPrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE72C;" FontSize="14" />
                         <TextBlock Text="刷新" />
@@ -42,35 +93,39 @@
                 </Button>
             </Grid>
 
-            <Grid ColumnSpacing="12">
+            <Grid x:Name="StatsGrid" ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition x:Name="StatsColumn1" Width="*" />
+                    <ColumnDefinition x:Name="StatsColumn2" Width="*" />
+                    <ColumnDefinition x:Name="StatsColumn3" Width="*" />
+                    <ColumnDefinition x:Name="StatsColumn4" Width="*" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Style="{StaticResource TaiCardStyle}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /><RowDefinition x:Name="StatsRow2" Height="0" />
+                    <RowDefinition x:Name="StatsRow3" Height="0" /><RowDefinition x:Name="StatsRow4" Height="0" />
+                </Grid.RowDefinitions>
+                <Border x:Name="StatsCard1" Grid.Column="0" Style="{StaticResource TaiCardStyle}">
                     <StackPanel Spacing="8">
                         <TextBlock Text="今日使用" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding TodayUsage}" Style="{StaticResource TaiStatValueStyle}" />
                         <TextBlock Text="↑ 比昨天多 18%" Foreground="{StaticResource TaiAccentBrush}" FontSize="12" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Style="{StaticResource TaiCardStyle}">
+                <Border x:Name="StatsCard2" Grid.Column="1" Style="{StaticResource TaiCardStyle}">
                     <StackPanel Spacing="8">
                         <TextBlock Text="应用数量" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding AppCountText}" Style="{StaticResource TaiStatValueStyle}" />
                         <TextBlock Text="↑ 比昨天多 3 个" Foreground="{StaticResource TaiInfoBrush}" FontSize="12" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="2" Style="{StaticResource TaiCardStyle}">
+                <Border x:Name="StatsCard3" Grid.Column="2" Style="{StaticResource TaiCardStyle}">
                     <StackPanel Spacing="8">
                         <TextBlock Text="网站数量" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding WebsiteCountText}" Style="{StaticResource TaiStatValueStyle}" />
                         <TextBlock Text="↓ 比昨天少 6 个" Foreground="{StaticResource TaiWarningBrush}" FontSize="12" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="3" Style="{StaticResource TaiCardStyle}">
+                <Border x:Name="StatsCard4" Grid.Column="3" Style="{StaticResource TaiCardStyle}">
                     <StackPanel Spacing="8">
                         <TextBlock Text="最长使用" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding LongestAppName}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
@@ -79,31 +134,34 @@
                 </Border>
             </Grid>
 
-            <Grid ColumnSpacing="16">
+            <Grid x:Name="UsageGrid" ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.06*" />
-                    <ColumnDefinition Width="0.94*" />
+                    <ColumnDefinition x:Name="UsageColumn1" Width="1.06*" />
+                    <ColumnDefinition x:Name="UsageColumn2" Width="0.94*" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="UsageRow2" Height="0" /></Grid.RowDefinitions>
                 <Border Grid.Column="0" Style="{StaticResource TaiCardStyle}">
                     <StackPanel Spacing="16">
                         <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                             <StackPanel>
                                 <TextBlock Text="最常使用的应用" Style="{StaticResource TaiSectionTitleStyle}" />
                                 <TextBlock Text="今天累计使用时长" Margin="0,3,0,0" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
-                            <Button Content="查看全部" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+                            <Button x:Name="AppViewButton" Content="查看全部" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
                         </Grid>
                         <ItemsControl ItemsSource="{Binding Apps}" ItemTemplate="{StaticResource UsageItemTemplate}" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Background="{StaticResource TaiAccentSoftBrush}" BorderBrush="#C8E8DD" BorderThickness="1" CornerRadius="12" Padding="20">
+                <Border x:Name="WebsiteCard" Grid.Column="1" Background="{StaticResource TaiAccentSoftBrush}" BorderBrush="#C8E8DD" BorderThickness="1" CornerRadius="12" Padding="20">
                     <StackPanel Spacing="16">
                         <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                             <StackPanel>
                                 <TextBlock Text="常用网站" Style="{StaticResource TaiSectionTitleStyle}" />
                                 <TextBlock Text="浏览器活动概览" Margin="0,3,0,0" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
-                            <Button Content="查看全部" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+                            <Button x:Name="WebsiteViewButton" Content="查看全部" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
                         </Grid>
                         <ItemsControl ItemsSource="{Binding Websites}" ItemTemplate="{StaticResource UsageItemTemplate}" />
                     </StackPanel>
@@ -113,13 +171,15 @@
             <Border Style="{StaticResource TaiCardStyle}">
                 <StackPanel Spacing="18">
                     <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                         <StackPanel>
                             <TextBlock Text="本周活动" Style="{StaticResource TaiSectionTitleStyle}" />
                             <TextBlock Text="过去 7 天的每日使用时长" Margin="0,3,0,0" Style="{StaticResource TaiCaptionStyle}" />
                         </StackPanel>
-                        <TextBlock Text="{Binding LastUpdated}" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock x:Name="LastUpdatedText" Text="{Binding LastUpdated}" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                     </Grid>
-                    <ItemsControl ItemsSource="{Binding WeeklyUsage}" HorizontalAlignment="Stretch">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding WeeklyUsage}" HorizontalAlignment="Left">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Spacing="20" />
@@ -137,8 +197,10 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                    </ScrollViewer>
                 </StackPanel>
             </Border>
         </StackPanel>
     </ScrollViewer>
+    </Grid>
 </Page>
