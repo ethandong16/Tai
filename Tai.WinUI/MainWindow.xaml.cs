@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Core.Servicers.Interfaces;
 using WinRT.Interop;
+using System.Runtime.InteropServices;
 
 namespace Tai.WinUI;
 
@@ -32,6 +33,12 @@ public sealed partial class MainWindow : Window
         StartupError.IsOpen = true;
     }
 
+    internal bool IsPerMonitorDpiAware()
+    {
+        var hwnd = WindowNative.GetWindowHandle(this);
+        return GetAwarenessFromDpiAwarenessContext(GetWindowDpiAwarenessContext(hwnd)) == 2;
+    }
+
     internal async Task VerifyPagesAsync()
     {
         Type[] pages = [typeof(Views.DashboardPage), typeof(Views.StatisticsPage),
@@ -44,4 +51,10 @@ public sealed partial class MainWindow : Window
             await Task.Delay(150);
         }
     }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetWindowDpiAwarenessContext(IntPtr hwnd);
+
+    [DllImport("user32.dll")]
+    private static extern int GetAwarenessFromDpiAwarenessContext(IntPtr value);
 }

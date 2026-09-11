@@ -53,11 +53,15 @@ public partial class App : Application
             CoreReadySource.TrySetResult(null);
             if (smokeTest)
             {
+                if (!_window.IsPerMonitorDpiAware())
+                {
+                    throw new InvalidOperationException("The WinUI window is not per-monitor DPI aware.");
+                }
                 await Services.GetRequiredService<Tai.WinUI.Services.IUsageDataProvider>().GetTodayAsync();
                 await _window.VerifyPagesAsync();
                 main.Stop();
                 File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "startup-smoke.ok"),
-                    "Window, seven pages, tracker initialization and database query passed.");
+                    "Per-monitor DPI, window, seven pages, tracker initialization and database query passed.");
                 Exit();
             }
         }
