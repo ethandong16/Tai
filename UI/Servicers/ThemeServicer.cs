@@ -40,13 +40,13 @@ namespace UI.Servicers
         {
             if (oldConfig.General.Theme != newConfig.General.Theme)
             {
-                LoadTheme(themeOptions[newConfig.General.Theme]);
+                LoadTheme(GetConfiguredTheme(newConfig.General.Theme));
                 OnThemeChanged?.Invoke(this, EventArgs.Empty);
             }
 
             if (oldConfig.General.ThemeColor != newConfig.General.ThemeColor)
             {
-                LoadTheme(themeOptions[newConfig.General.Theme], true);
+                LoadTheme(GetConfiguredTheme(newConfig.General.Theme), true);
                 OnThemeChanged?.Invoke(this, EventArgs.Empty);
             }
 
@@ -58,7 +58,23 @@ namespace UI.Servicers
         }
         public void Init()
         {
-            LoadTheme(themeOptions[appConfig.GetConfig().General.Theme]);
+            LoadTheme(GetConfiguredTheme(appConfig.GetConfig().General.Theme));
+        }
+
+        private string GetConfiguredTheme(int theme)
+        {
+            if (theme == 0 || theme == 1) return themeOptions[theme];
+            try
+            {
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    return Convert.ToInt32(key?.GetValue("AppsUseLightTheme", 1)) == 0 ? "Dark" : "Light";
+                }
+            }
+            catch
+            {
+                return "Light";
+            }
         }
         public void LoadTheme(string themeName, bool isRefresh = false)
         {

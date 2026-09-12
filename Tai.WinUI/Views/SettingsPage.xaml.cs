@@ -64,7 +64,7 @@ public sealed partial class SettingsPage : Page
             SaveWindowSizeToggle.IsOn = general.IsSaveWindowSize;
             WebEnabledToggle.IsOn = general.IsWebEnabled;
             StartPagePicker.SelectedIndex = Math.Clamp(general.StartPage, 0, 3);
-            ThemePicker.SelectedIndex = Math.Clamp(general.Theme, 0, 1);
+            ThemePicker.SelectedIndex = Math.Clamp(general.Theme, 0, 2);
             var themeColor = ParseColor(general.ThemeColor);
             ThemeColorPicker.Color = themeColor;
             ThemeColorSwatch.Background = new SolidColorBrush(themeColor);

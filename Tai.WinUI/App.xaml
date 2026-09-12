@@ -28,21 +28,28 @@
                 <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="12" />
-                <Setter Property="Padding" Value="20" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="18" />
+            </Style>
+            <Style x:Key="TaiSummaryCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="18" />
             </Style>
             <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource TaiAccentBrush}" />
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="CornerRadius" Value="6" />
                 <Setter Property="Padding" Value="14,8" />
             </Style>
             <Style x:Key="TaiDangerButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource TaiDangerSoftBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource TaiDangerBrush}" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="CornerRadius" Value="6" />
                 <Setter Property="Padding" Value="14,8" />
             </Style>
             <Style x:Key="TaiSubtleButtonStyle" TargetType="Button">

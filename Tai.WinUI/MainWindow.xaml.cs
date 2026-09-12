@@ -8,6 +8,10 @@ using Core.Models.Config;
 using WinRT.Interop;
 using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Tai.WinUI;
 
@@ -21,6 +25,8 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (Content is FrameworkElement root)
+            root.ActualThemeChanged += Root_ActualThemeChanged;
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
 
@@ -58,6 +64,10 @@ public sealed partial class MainWindow : Window
     internal async Task VerifyPagesAsync()
     {
         ValidateTitleBar();
+        ValidateUsageRanges();
+        await ValidateUsageDataAsync();
+        ValidateIconFallbacks();
+        await ValidateThemesAsync();
         Type[] pages = [typeof(Views.DashboardPage), typeof(Views.StatisticsPage),
             typeof(Views.DetailsPage), typeof(Views.CategoriesPage), typeof(Views.SettingsPage),
             typeof(Views.AppDetailPage), typeof(Views.WebsiteDetailPage)];
@@ -78,6 +88,7 @@ public sealed partial class MainWindow : Window
             RootFrame.UpdateLayout();
             if (RootFrame.Content is not MainPage shell) throw new InvalidOperationException("MainPage did not load");
             ValidateShellLayout(shell);
+            await CaptureSmokeScreenshotAsync(shell, windowSize.Width);
 
             foreach (var page in pages)
             {
@@ -87,6 +98,10 @@ public sealed partial class MainWindow : Window
                 RootFrame.UpdateLayout();
                 if (RootFrame.Content is not FrameworkElement content) throw new InvalidOperationException($"{page.Name} did not load");
                 ValidatePageLayout(content);
+                if (content is Views.StatisticsPage statisticsPage)
+                    ValidateStatisticsPage(statisticsPage);
+                if (content is Views.DetailsPage detailsPage)
+                    ValidateDetailsPage(detailsPage);
                 if (content is Views.SettingsPage settingsPage)
                     ValidateSettingsPage(settingsPage);
             }
@@ -130,9 +145,25 @@ public sealed partial class MainWindow : Window
         var general = App.Services.GetService<IAppConfig>()?.GetConfig()?.General;
         if (general == null) return;
 
-        var dark = general.Theme == 1;
-        if (Content is FrameworkElement root)
-            root.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
+        if (Content is not FrameworkElement root) return;
+        root.RequestedTheme = general.Theme switch
+        {
+            0 => ElementTheme.Light,
+            1 => ElementTheme.Dark,
+            _ => ElementTheme.Default
+        };
+        ApplyResolvedAppearance(general, root.ActualTheme == ElementTheme.Dark);
+    }
+
+    private void Root_ActualThemeChanged(FrameworkElement sender, object args)
+    {
+        var general = App.Services.GetService<IAppConfig>()?.GetConfig()?.General;
+        if (general?.Theme == 2)
+            ApplyResolvedAppearance(general, sender.ActualTheme == ElementTheme.Dark);
+    }
+
+    private void ApplyResolvedAppearance(GeneralModel general, bool dark)
+    {
 
         var pageBackground = ParseColor(dark ? "#17191D" : "#F6F7FB", Colors.Transparent);
         var cardBackground = ParseColor(dark ? "#22252A" : "#FFFFFF", Colors.Transparent);
@@ -216,6 +247,7 @@ public sealed partial class MainWindow : Window
 
         titleBar.BackgroundColor = background;
         titleBar.InactiveBackgroundColor = inactiveBackground;
+        titleBar.ButtonBackgroundColor = background;
         titleBar.ButtonForegroundColor = foreground;
         titleBar.ButtonHoverForegroundColor = foreground;
         titleBar.ButtonHoverBackgroundColor = hoverBackground;
@@ -284,6 +316,152 @@ public sealed partial class MainWindow : Window
         var expectedColumn = narrow ? 0 : 1;
         if (Grid.GetRow(startPagePicker) != expectedRow || Grid.GetColumn(startPagePicker) != expectedColumn)
             throw new InvalidOperationException($"Settings controls did not reflow at {page.ActualWidth:F0} effective pixels.");
+    }
+
+    private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth)
+    {
+        RenderTargetBitmap? bitmap = null;
+        byte[]? pixels = null;
+        for (var attempt = 0; attempt < 4; attempt++)
+        {
+            element.UpdateLayout();
+            bitmap = new RenderTargetBitmap();
+            await bitmap.RenderAsync(element);
+            if (bitmap.PixelWidth > 0 && bitmap.PixelHeight > 0)
+            {
+                pixels = (await bitmap.GetPixelsAsync()).ToArray();
+                if (pixels.Where((_, index) => index % 4 == 3).Any(alpha => alpha > 0)) break;
+            }
+            await Task.Delay(250);
+        }
+        if (bitmap == null || pixels == null || bitmap.PixelWidth <= 0 || bitmap.PixelHeight <= 0
+            || !pixels.Where((_, index) => index % 4 == 3).Any(alpha => alpha > 0))
+            throw new InvalidOperationException($"The {effectiveWidth}px responsive layout rendered as a blank image.");
+
+        var folder = await StorageFolder.GetFolderFromPathAsync(AppContext.BaseDirectory);
+        var file = await folder.CreateFileAsync($"layout-{effectiveWidth}.png", CreationCollisionOption.ReplaceExisting);
+        using var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+        encoder.SetPixelData(
+            BitmapPixelFormat.Bgra8,
+            BitmapAlphaMode.Premultiplied,
+            (uint)bitmap.PixelWidth,
+            (uint)bitmap.PixelHeight,
+            96,
+            96,
+            pixels);
+        await encoder.FlushAsync();
+    }
+
+    private static void ValidateStatisticsPage(Views.StatisticsPage page)
+    {
+        foreach (var period in Enum.GetValues<Services.UsagePeriod>())
+        {
+            page.SelectPeriodForSmokeTest(period);
+            if (page.CheckedPeriodCount != 1)
+                throw new InvalidOperationException("Statistics period selector must keep exactly one option selected.");
+        }
+    }
+
+    private static void ValidateDetailsPage(Views.DetailsPage page)
+    {
+        foreach (var period in new[] { Services.UsagePeriod.Day, Services.UsagePeriod.Month, Services.UsagePeriod.Year })
+        {
+            page.SelectPeriodForSmokeTest(period);
+            if (page.CheckedPeriodCount != 1)
+                throw new InvalidOperationException("Details period selector must keep exactly one option selected.");
+        }
+    }
+
+    private static void ValidateUsageRanges()
+    {
+        var day = Services.CoreUsageDataProvider.GetDateRange(Services.UsagePeriod.Day, new DateTime(2026, 1, 1));
+        var week = Services.CoreUsageDataProvider.GetDateRange(Services.UsagePeriod.Week, new DateTime(2026, 1, 1));
+        var month = Services.CoreUsageDataProvider.GetDateRange(Services.UsagePeriod.Month, new DateTime(2024, 2, 20));
+        var year = Services.CoreUsageDataProvider.GetDateRange(Services.UsagePeriod.Year, new DateTime(2026, 9, 12));
+        if (day.Start != day.End || day.Start != new DateTime(2026, 1, 1))
+            throw new InvalidOperationException("Day range calculation failed.");
+        if (week.Start != new DateTime(2025, 12, 29) || week.End != new DateTime(2026, 1, 4))
+            throw new InvalidOperationException("Cross-year week range calculation failed.");
+        if (month.Start != new DateTime(2024, 2, 1) || month.End != new DateTime(2024, 2, 29))
+            throw new InvalidOperationException("Month range calculation failed.");
+        if (year.Start != new DateTime(2026, 1, 1) || year.End != new DateTime(2026, 12, 31))
+            throw new InvalidOperationException("Year range calculation failed.");
+    }
+
+    private static async Task ValidateUsageDataAsync()
+    {
+        var provider = App.Services.GetRequiredService<Services.IUsageDataProvider>();
+        var date = DateTime.Today;
+        var expected = new Dictionary<Services.UsagePeriod, int>
+        {
+            [Services.UsagePeriod.Day] = 24,
+            [Services.UsagePeriod.Week] = 7,
+            [Services.UsagePeriod.Month] = DateTime.DaysInMonth(date.Year, date.Month),
+            [Services.UsagePeriod.Year] = 12
+        };
+        foreach (var pair in expected)
+        {
+            var snapshot = await provider.GetAsync(pair.Key, date, 2);
+            if (snapshot.Trend.Count != pair.Value)
+                throw new InvalidOperationException($"{pair.Key} trend expected {pair.Value} points, actual {snapshot.Trend.Count}.");
+            if (snapshot.Apps.Concat(snapshot.Websites).Any(item => !File.Exists(item.IconPath)))
+                throw new InvalidOperationException($"{pair.Key} contains an unresolved icon path.");
+        }
+    }
+
+    private static void ValidateIconFallbacks()
+    {
+        if (!File.Exists(Services.AppIconResolver.DefaultIconPath))
+            throw new InvalidOperationException("The original fallback icon was not published.");
+
+        var corruptPath = Path.Combine(Path.GetTempPath(), $"tai-corrupt-icon-{Guid.NewGuid():N}.png");
+        try
+        {
+            File.WriteAllText(corruptPath, "not an image");
+            var fallback = Services.AppIconResolver.Resolve(corruptPath, @"Z:\missing\app.exe", "Missing", "Missing");
+            if (!string.Equals(fallback, Services.AppIconResolver.DefaultIconPath, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Corrupt icon fallback failed.");
+
+            var executable = Environment.ProcessPath;
+            if (!string.IsNullOrWhiteSpace(executable) && File.Exists(executable))
+            {
+                var extracted = Services.AppIconResolver.Resolve(null, executable, "TaiSmoke", "Tai");
+                if (!File.Exists(extracted))
+                    throw new InvalidOperationException("Executable icon extraction failed.");
+            }
+        }
+        finally
+        {
+            if (File.Exists(corruptPath)) File.Delete(corruptPath);
+        }
+    }
+
+    private async Task ValidateThemesAsync()
+    {
+        var general = App.Services.GetRequiredService<IAppConfig>().GetConfig().General;
+        var originalTheme = general.Theme;
+        var originalColor = general.ThemeColor;
+        try
+        {
+            general.ThemeColor = "#3578D4";
+            foreach (var theme in new[] { 0, 1, 2 })
+            {
+                general.Theme = theme;
+                ApplyAppearance();
+                await Task.Delay(40);
+                ValidateTitleBar();
+            }
+            if (Application.Current.Resources["TaiAccentBrush"] is not SolidColorBrush { Color: var color }
+                || color.R != 0x35 || color.G != 0x78 || color.B != 0xD4)
+                throw new InvalidOperationException("Custom accent color was not applied.");
+        }
+        finally
+        {
+            general.Theme = originalTheme;
+            general.ThemeColor = originalColor;
+            ApplyAppearance();
+        }
     }
 
     [DllImport("user32.dll")]

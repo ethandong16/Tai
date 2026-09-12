@@ -95,8 +95,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
                 <StackPanel>
-                    <TextBlock Text="设置" Style="{StaticResource TaiPageTitleStyle}" />
-                    <TextBlock Text="调整 Tai 的运行方式、数据管理和外观。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                    <TextBlock Text="调整 Tai 的运行方式、数据管理和外观。" Style="{StaticResource TaiCaptionStyle}" />
                 </StackPanel>
 
                 <controls:TabView x:Name="SettingsTabs" SelectionChanged="SettingsTabs_SelectionChanged" IsAddTabButtonVisible="False">
@@ -128,10 +127,10 @@
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="主题模式" />
-                                            <TextBlock Text="设置以浅色或深色模式显示" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                            <TextBlock Text="跟随 Windows 或手动选择显示模式" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
                                         </StackPanel>
                                         <ComboBox x:Name="ThemePicker" Grid.Column="1" MinWidth="150" SelectedIndex="0" SelectionChanged="GeneralSetting_SelectionChanged">
-                                            <ComboBoxItem Content="浅色" /><ComboBoxItem Content="深色" />
+                                            <ComboBoxItem Content="浅色" /><ComboBoxItem Content="深色" /><ComboBoxItem Content="跟随 Windows" />
                                         </ComboBox>
                                     </Grid>
                                     <Grid>

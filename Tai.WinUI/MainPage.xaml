@@ -15,6 +15,7 @@
                         <Setter Target="RootNavigation.IsPaneOpen" Value="True" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="False" />
                         <Setter Target="PageHeader.Margin" Value="24,20,24,12" />
+                        <Setter Target="PageHeader.Padding" Value="0,0,0,16" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="MediumLayout">
@@ -24,6 +25,7 @@
                         <Setter Target="RootNavigation.IsPaneOpen" Value="False" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="True" />
                         <Setter Target="PageHeader.Margin" Value="20,16,20,10" />
+                        <Setter Target="PageHeader.Padding" Value="0,0,0,16" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="NarrowLayout">
@@ -33,6 +35,7 @@
                         <Setter Target="RootNavigation.IsPaneOpen" Value="False" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="True" />
                         <Setter Target="PageHeader.Margin" Value="12,12,12,8" />
+                        <Setter Target="PageHeader.Padding" Value="44,0,0,16" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

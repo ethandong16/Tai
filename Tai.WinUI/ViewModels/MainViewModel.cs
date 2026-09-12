@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.UI;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Tai.WinUI.Infrastructure;
 using Tai.WinUI.Services;
 
@@ -11,144 +12,240 @@ namespace Tai.WinUI.ViewModels;
 public sealed class MainViewModel : INotifyPropertyChanged
 {
     private readonly IUsageDataProvider? _dataProvider;
+    private readonly bool _dashboardMode;
+    private CancellationTokenSource? _loadCancellation;
+    private UsagePeriod _period = UsagePeriod.Day;
+    private DateTime _anchorDate = DateTime.Today;
 
-    public MainViewModel(IUsageDataProvider? dataProvider = null)
+    public MainViewModel(IUsageDataProvider? dataProvider = null, bool dashboardMode = true)
     {
         _dataProvider = dataProvider;
-        Apps = new ObservableCollection<UsageItem>
-        {
-            new("Visual Studio", "8小时13分", 82, "&#xE943;", "#7B61FF", "开发"),
-            new("Google Chrome", "6小时31分", 65, "&#xE774;", "#3B82F6", "浏览"),
-            new("Microsoft Edge", "4小时30分", 46, "&#xE774;", "#0EA5A4", "浏览"),
-            new("Windows Terminal", "2小时08分", 23, "&#xE756;", "#334155", "工具")
-        };
-
-        Websites = new ObservableCollection<UsageItem>
-        {
-            new("GitHub", "4小时23分", 72, "&#xE77B;", "#24292F", "开发"),
-            new("YouTube", "2小时15分", 41, "&#xE714;", "#E5484D", "娱乐"),
-            new("V2EX", "1小时25分", 28, "&#xE8FD;", "#12966F", "社区")
-        };
-
-        WeeklyUsage = new ObservableCollection<WeeklyUsageItem>
-        {
-            new("周一", 38, "3小时48分"),
-            new("周二", 62, "6小时12分"),
-            new("周三", 46, "4小时36分"),
-            new("周四", 78, "7小时48分"),
-            new("周五", 66, "6小时36分"),
-            new("周六", 31, "3小时06分"),
-            new("周日", 54, "5小时24分")
-        };
-
-        Categories = new ObservableCollection<CategoryUsage>
-        {
-            new("开发", "12小时40分", 68, "#4969D8"),
-            new("浏览", "8小时21分", 45, "#12966F"),
-            new("娱乐", "3小时48分", 21, "#C77912"),
-            new("工具", "2小时17分", 12, "#8B5CF6")
-        };
-
-        RefreshCommand = new RelayCommand(_ => _ = LoadFromProviderAsync());
-
-        if (_dataProvider != null)
-        {
-            _ = LoadFromProviderAsync();
-        }
+        _dashboardMode = dashboardMode;
+        RefreshCommand = new RelayCommand(_ => _ = RefreshAsync());
     }
 
-    public ObservableCollection<UsageItem> Apps { get; }
-    public ObservableCollection<UsageItem> Websites { get; }
-    public ObservableCollection<WeeklyUsageItem> WeeklyUsage { get; }
-    public ObservableCollection<CategoryUsage> Categories { get; }
+    public ObservableCollection<UsageItem> Apps { get; } = new();
+    public ObservableCollection<UsageItem> Websites { get; } = new();
+    public ObservableCollection<TrendPoint> Trend { get; } = new();
+    public ObservableCollection<CategoryUsage> Categories { get; } = new();
     public RelayCommand RefreshCommand { get; }
 
-    private string _todayUsage = "8小时42分";
-    public string TodayUsage { get => _todayUsage; private set { _todayUsage = value; OnPropertyChanged(); } }
-    private string _websiteUsage = "5小时16分";
-    public string WebsiteUsage { get => _websiteUsage; private set { _websiteUsage = value; OnPropertyChanged(); } }
-    private string _appCountText = "23 个";
-    public string AppCountText { get => _appCountText; private set { _appCountText = value; OnPropertyChanged(); } }
-    private string _websiteCountText = "38 个";
-    public string WebsiteCountText { get => _websiteCountText; private set { _websiteCountText = value; OnPropertyChanged(); } }
-    private string _longestAppName = "Visual Studio";
-    public string LongestAppName { get => _longestAppName; private set { _longestAppName = value; OnPropertyChanged(); } }
-    private string _longestAppDuration = "8小时13分";
-    public string LongestAppDuration { get => _longestAppDuration; private set { _longestAppDuration = value; OnPropertyChanged(); } }
+    private string _appUsage = "0分钟";
+    public string AppUsage { get => _appUsage; private set => SetField(ref _appUsage, value); }
+    public string TodayUsage => AppUsage;
 
-    private async Task LoadFromProviderAsync()
+    private string _websiteUsage = "0分钟";
+    public string WebsiteUsage { get => _websiteUsage; private set => SetField(ref _websiteUsage, value); }
+
+    private string _appCountText = "0 个";
+    public string AppCountText { get => _appCountText; private set => SetField(ref _appCountText, value); }
+
+    private string _websiteCountText = "0 个";
+    public string WebsiteCountText { get => _websiteCountText; private set => SetField(ref _websiteCountText, value); }
+
+    private string _longestAppName = "暂无数据";
+    public string LongestAppName { get => _longestAppName; private set => SetField(ref _longestAppName, value); }
+
+    private string _longestAppDuration = "0分钟";
+    public string LongestAppDuration { get => _longestAppDuration; private set => SetField(ref _longestAppDuration, value); }
+
+    private string _rangeText = string.Empty;
+    public string RangeText { get => _rangeText; private set => SetField(ref _rangeText, value); }
+
+    private string _peakLabel = "暂无数据";
+    public string PeakLabel { get => _peakLabel; private set => SetField(ref _peakLabel, value); }
+
+    private string _peakDuration = "0分钟";
+    public string PeakDuration { get => _peakDuration; private set => SetField(ref _peakDuration, value); }
+
+    private string _lastUpdated = "等待更新";
+    public string LastUpdated { get => _lastUpdated; private set => SetField(ref _lastUpdated, value); }
+
+    private bool _isLoading;
+    public bool IsLoading { get => _isLoading; private set => SetField(ref _isLoading, value); }
+
+    private bool _hasData;
+    public bool HasData { get => _hasData; private set => SetField(ref _hasData, value); }
+
+    public async Task LoadDashboardAsync()
     {
+        if (_dataProvider == null) return;
+        var cancellation = BeginLoad();
         try
         {
-            var snapshot = await _dataProvider!.GetTodayAsync();
-            Apps.Clear();
-            foreach (var item in snapshot.Apps) Apps.Add(item);
-            Websites.Clear();
-            foreach (var item in snapshot.Websites) Websites.Add(item);
-            TodayUsage = snapshot.TotalAppSeconds > 0 ? Core.Librarys.Time.ToString(snapshot.TotalAppSeconds) : "0分钟";
-            WebsiteUsage = snapshot.TotalWebSeconds > 0 ? Core.Librarys.Time.ToString(snapshot.TotalWebSeconds) : "0分钟";
-            AppCountText = $"{snapshot.AppCount} 个";
-            WebsiteCountText = $"{snapshot.WebsiteCount} 个";
-            LongestAppName = snapshot.LongestAppName;
-            LongestAppDuration = snapshot.LongestAppDuration;
+            var today = await _dataProvider.GetTodayAsync(cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            var week = await _dataProvider.GetAsync(UsagePeriod.Week, DateTime.Today, 8, cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            ApplySnapshot(today, includeTrend: false);
+            Replace(Trend, week.Trend);
+            RangeText = week.RangeText;
             LastUpdated = $"{DateTime.Now:HH:mm} 更新";
+        }
+        catch (OperationCanceledException)
+        {
         }
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            LastUpdated = "数据读取失败";
+            LastUpdated = "数据读取失败，已保留上次结果";
+        }
+        finally
+        {
+            CompleteLoad(cancellation);
         }
     }
 
-    private string _lastUpdated = "今天 18:42 更新";
-    public string LastUpdated
+    public async Task LoadPeriodAsync(UsagePeriod period, DateTime anchorDate)
     {
-        get => _lastUpdated;
-        set
+        _period = period;
+        _anchorDate = anchorDate.Date;
+        if (_dataProvider == null) return;
+        var cancellation = BeginLoad();
+        try
         {
-            if (_lastUpdated == value) return;
-            _lastUpdated = value;
-            OnPropertyChanged();
+            var snapshot = await _dataProvider.GetAsync(period, anchorDate, 8, cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            ApplySnapshot(snapshot, includeTrend: true);
+            LastUpdated = $"{DateTime.Now:HH:mm} 更新";
         }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+            LastUpdated = "数据读取失败，已保留上次结果";
+        }
+        finally
+        {
+            CompleteLoad(cancellation);
+        }
+    }
+
+    private Task RefreshAsync() => _dashboardMode
+        ? LoadDashboardAsync()
+        : LoadPeriodAsync(_period, _anchorDate);
+
+    private CancellationTokenSource BeginLoad()
+    {
+        _loadCancellation?.Cancel();
+        _loadCancellation?.Dispose();
+        _loadCancellation = new CancellationTokenSource();
+        IsLoading = true;
+        return _loadCancellation;
+    }
+
+    private void CompleteLoad(CancellationTokenSource cancellation)
+    {
+        if (!ReferenceEquals(_loadCancellation, cancellation)) return;
+        IsLoading = false;
+    }
+
+    private void ApplySnapshot(UsageSnapshot snapshot, bool includeTrend)
+    {
+        Replace(Apps, snapshot.Apps);
+        Replace(Websites, snapshot.Websites);
+        Replace(Categories, snapshot.Categories);
+        if (includeTrend) Replace(Trend, snapshot.Trend);
+        AppUsage = Format(snapshot.TotalAppSeconds);
+        OnPropertyChanged(nameof(TodayUsage));
+        WebsiteUsage = Format(snapshot.TotalWebSeconds);
+        AppCountText = $"{snapshot.AppCount} 个";
+        WebsiteCountText = $"{snapshot.WebsiteCount} 个";
+        LongestAppName = snapshot.LongestAppName;
+        LongestAppDuration = snapshot.LongestAppDuration;
+        RangeText = snapshot.RangeText;
+        PeakLabel = snapshot.PeakLabel;
+        PeakDuration = snapshot.PeakDuration;
+        HasData = snapshot.TotalAppSeconds + snapshot.TotalWebSeconds > 0;
+    }
+
+    private static string Format(int seconds) => seconds > 0 ? Core.Librarys.Time.ToString(seconds) : "0分钟";
+
+    private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
+    {
+        target.Clear();
+        foreach (var value in values) target.Add(value);
+    }
+
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? name = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(name);
+        return true;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
 
 public sealed class UsageItem
 {
-    public UsageItem(string name, string duration, int percent, string glyph, string accent, string category)
+    public UsageItem(
+        int id,
+        string name,
+        string duration,
+        int seconds,
+        int percent,
+        string iconPath,
+        string accent,
+        string category,
+        string kind)
     {
+        Id = id;
         Name = name;
         Duration = duration;
+        Seconds = seconds;
         Percent = percent;
-        Glyph = glyph;
+        IconPath = iconPath;
         AccentHex = accent;
         Category = category;
+        Kind = kind;
     }
 
+    public int Id { get; }
     public string Name { get; }
     public string Duration { get; }
+    public int Seconds { get; }
     public int Percent { get; }
-    public string Glyph { get; }
+    public string PercentText => $"{Percent}%";
+    public string IconPath { get; }
     public string AccentHex { get; }
-    // Snapshots are built on a worker thread; create WinUI objects when the UI binds them.
+    public string Category { get; }
+    public string Kind { get; }
+
     private SolidColorBrush? _accent;
     public SolidColorBrush Accent => _accent ??= new SolidColorBrush(ParseColor(AccentHex));
-    public string Category { get; }
+
+    private ImageSource? _icon;
+    public ImageSource Icon => _icon ??= CreateImage(IconPath);
+
+    private static ImageSource CreateImage(string path)
+    {
+        try
+        {
+            return new BitmapImage(new Uri(path, UriKind.Absolute));
+        }
+        catch
+        {
+            return new BitmapImage(new Uri(AppIconResolver.DefaultIconPath, UriKind.Absolute));
+        }
+    }
 
     private static Windows.UI.Color ParseColor(string value)
     {
         var hex = value.TrimStart('#');
-        var r = Convert.ToByte(hex.Substring(0, 2), 16);
-        var g = Convert.ToByte(hex.Substring(2, 2), 16);
-        var b = Convert.ToByte(hex.Substring(4, 2), 16);
-        return ColorHelper.FromArgb(255, r, g, b);
+        if (hex.Length != 6) return ColorHelper.FromArgb(255, 73, 105, 216);
+        return ColorHelper.FromArgb(255,
+            Convert.ToByte(hex[..2], 16),
+            Convert.ToByte(hex.Substring(2, 2), 16),
+            Convert.ToByte(hex.Substring(4, 2), 16));
     }
 }
 
-public sealed record WeeklyUsageItem(string Day, double Height, string Duration);
 public sealed class CategoryUsage
 {
     public CategoryUsage(string name, string duration, int percent, string accent)
@@ -157,7 +254,6 @@ public sealed class CategoryUsage
         Duration = duration;
         Percent = percent;
         AccentHex = accent;
-        Accent = new SolidColorBrush(ParseColor(accent));
     }
 
     public string Name { get; }
@@ -165,13 +261,15 @@ public sealed class CategoryUsage
     public int Percent { get; }
     public string PercentText => $"{Percent}%";
     public string AccentHex { get; }
-    public SolidColorBrush Accent { get; }
+    private SolidColorBrush? _accent;
+    public SolidColorBrush Accent => _accent ??= new SolidColorBrush(ParseColor(AccentHex));
 
     private static Windows.UI.Color ParseColor(string value)
     {
         var hex = value.TrimStart('#');
+        if (hex.Length != 6) return ColorHelper.FromArgb(255, 73, 105, 216);
         return ColorHelper.FromArgb(255,
-            Convert.ToByte(hex.Substring(0, 2), 16),
+            Convert.ToByte(hex[..2], 16),
             Convert.ToByte(hex.Substring(2, 2), 16),
             Convert.ToByte(hex.Substring(4, 2), 16));
     }

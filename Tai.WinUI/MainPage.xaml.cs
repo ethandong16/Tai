@@ -23,10 +23,12 @@ public sealed partial class MainPage : Page
     {
         InitializeComponent();
         Loaded += MainPage_Loaded;
+        SizeChanged += (_, _) => ApplyResponsiveNavigation();
     }
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
+        ApplyResponsiveNavigation();
         if (_initializationStarted) return;
         _initializationStarted = true;
 
@@ -54,6 +56,35 @@ public sealed partial class MainPage : Page
                 Margin = new Thickness(32),
                 FontSize = 16
             };
+        }
+    }
+
+    private void ApplyResponsiveNavigation()
+    {
+        if (RootNavigation == null || PageHeader == null || ActualWidth <= 0) return;
+        if (ActualWidth >= 900)
+        {
+            RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+            RootNavigation.IsPaneOpen = true;
+            RootNavigation.IsPaneToggleButtonVisible = false;
+            PageHeader.Margin = new Thickness(24, 20, 24, 12);
+            PageHeader.Padding = new Thickness(0, 0, 0, 16);
+        }
+        else if (ActualWidth >= 640)
+        {
+            RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+            RootNavigation.IsPaneOpen = false;
+            RootNavigation.IsPaneToggleButtonVisible = true;
+            PageHeader.Margin = new Thickness(20, 16, 20, 10);
+            PageHeader.Padding = new Thickness(0, 0, 0, 16);
+        }
+        else
+        {
+            RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+            RootNavigation.IsPaneOpen = false;
+            RootNavigation.IsPaneToggleButtonVisible = true;
+            PageHeader.Margin = new Thickness(12, 12, 12, 8);
+            PageHeader.Padding = new Thickness(44, 0, 0, 16);
         }
     }
 

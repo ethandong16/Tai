@@ -20,8 +20,8 @@ namespace Core.Models.Config
         /// <summary>
         /// 主题模式
         /// </summary>
-        [Config(Options = "浅色|深色", Name = "主题模式", Description = "设置以浅色或深色模式显示", Group = "外观")]
-        public int Theme { get; set; } = 0;
+        [Config(Options = "浅色|深色|跟随 Windows", Name = "主题模式", Description = "跟随系统或手动选择浅色、深色模式", Group = "外观")]
+        public int Theme { get; set; } = 2;
         /// <summary>
         /// 主题颜色
         /// </summary>

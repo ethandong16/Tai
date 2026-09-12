@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Content Include="..\UI\Resources\Icons\tai.ico" Link="Resources\Icons\tai.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\UI\Resources\Icons\defaultIcon.png" Link="Resources\Icons\defaultIcon.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\tai.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

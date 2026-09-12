@@ -4,103 +4,109 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="Transparent">
     <Grid>
-    <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup>
-                    <VisualState x:Name="WideLayout">
-                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <Setter Target="PageStack.Margin" Value="24,8,28,32" />
-                            <Setter Target="CreateButton.(Grid.Row)" Value="0" /><Setter Target="CreateButton.HorizontalAlignment" Value="Right" /><Setter Target="CreateButton.Margin" Value="0" />
-                            <Setter Target="CategoryColumn1.Width" Value="1.1*" /><Setter Target="CategoryColumn2.Width" Value="0.9*" />
-                            <Setter Target="CategoryRow2.Height" Value="0" /><Setter Target="CategoryGrid.ColumnSpacing" Value="16" /><Setter Target="CategoryGrid.RowSpacing" Value="0" />
-                            <Setter Target="AutomationCard.(Grid.Row)" Value="0" /><Setter Target="AutomationCard.(Grid.Column)" Value="1" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="NarrowLayout">
-                        <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <Setter Target="PageStack.Margin" Value="12,8,12,24" />
-                            <Setter Target="CreateButton.(Grid.Row)" Value="1" /><Setter Target="CreateButton.HorizontalAlignment" Value="Left" /><Setter Target="CreateButton.Margin" Value="0,12,0,0" />
-                            <Setter Target="CategoryColumn1.Width" Value="*" /><Setter Target="CategoryColumn2.Width" Value="0" />
-                            <Setter Target="CategoryRow2.Height" Value="Auto" /><Setter Target="CategoryGrid.ColumnSpacing" Value="0" /><Setter Target="CategoryGrid.RowSpacing" Value="12" />
-                            <Setter Target="AutomationCard.(Grid.Row)" Value="1" /><Setter Target="AutomationCard.(Grid.Column)" Value="0" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
-            <Grid>
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                <StackPanel>
-                    <TextBlock Text="分类" Style="{StaticResource TaiPageTitleStyle}" />
-                    <TextBlock Text="把应用和网站整理成更容易理解的工作类别。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
-                </StackPanel>
-                <Button x:Name="CreateButton" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiPrimaryButtonStyle}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE710;" FontSize="14" />
-                        <TextBlock Text="新建分类" />
-                    </StackPanel>
-                </Button>
-            </Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="WideLayout">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageStack.Margin" Value="24,8,28,32" />
+                        <Setter Target="CreateButton.(Grid.Row)" Value="0" />
+                        <Setter Target="CreateButton.HorizontalAlignment" Value="Right" />
+                        <Setter Target="CreateButton.Margin" Value="0" />
+                        <Setter Target="CategoryColumn1.Width" Value="1.2*" />
+                        <Setter Target="CategoryColumn2.Width" Value="0.8*" />
+                        <Setter Target="CategoryRow2.Height" Value="0" />
+                        <Setter Target="CategoryGrid.ColumnSpacing" Value="28" />
+                        <Setter Target="RuleSection.(Grid.Row)" Value="0" />
+                        <Setter Target="RuleSection.(Grid.Column)" Value="1" />
+                        <Setter Target="RuleSection.Margin" Value="0" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowLayout">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageStack.Margin" Value="12,8,12,24" />
+                        <Setter Target="CreateButton.(Grid.Row)" Value="1" />
+                        <Setter Target="CreateButton.HorizontalAlignment" Value="Left" />
+                        <Setter Target="CreateButton.Margin" Value="0,12,0,0" />
+                        <Setter Target="CategoryColumn1.Width" Value="*" />
+                        <Setter Target="CategoryColumn2.Width" Value="0" />
+                        <Setter Target="CategoryRow2.Height" Value="Auto" />
+                        <Setter Target="CategoryGrid.ColumnSpacing" Value="0" />
+                        <Setter Target="RuleSection.(Grid.Row)" Value="1" />
+                        <Setter Target="RuleSection.(Grid.Column)" Value="0" />
+                        <Setter Target="RuleSection.Margin" Value="0,24,0,0" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
-            <Grid x:Name="CategoryGrid" ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="CategoryColumn1" Width="1.1*" />
-                    <ColumnDefinition x:Name="CategoryColumn2" Width="0.9*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="CategoryRow2" Height="0" /></Grid.RowDefinitions>
-                <Border Grid.Column="0" Style="{StaticResource TaiCardStyle}">
-                    <StackPanel Spacing="16">
-                        <Grid>
-                            <TextBlock Text="分类概览" Style="{StaticResource TaiSectionTitleStyle}" />
-                            <TextBlock Text="4 个分类" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
-                        </Grid>
-                        <StackPanel Spacing="16">
-                            <Grid>
-                                <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiInfoSoftBrush}"><FontIcon Glyph="&#xE943;" Foreground="{StaticResource TaiInfoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                    <StackPanel><TextBlock Text="开发" /><TextBlock Text="12小时40分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
-                                </StackPanel>
-                                <TextBlock Text="68%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiInfoBrush}" />
-                            </Grid>
-                            <ProgressBar Value="68" Maximum="100" Height="7" Foreground="{StaticResource TaiInfoBrush}" />
-                            <Grid>
-                                <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiAccentSoftBrush}"><FontIcon Glyph="&#xE774;" Foreground="{StaticResource TaiAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                    <StackPanel><TextBlock Text="浏览" /><TextBlock Text="8小时21分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
-                                </StackPanel>
-                                <TextBlock Text="45%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiAccentBrush}" />
-                            </Grid>
-                            <ProgressBar Value="45" Maximum="100" Height="7" Foreground="{StaticResource TaiAccentBrush}" />
-                            <Grid>
-                                <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource TaiWarningSoftBrush}"><FontIcon Glyph="&#xE714;" Foreground="{StaticResource TaiWarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                    <StackPanel><TextBlock Text="娱乐" /><TextBlock Text="3小时48分" Style="{StaticResource TaiCaptionStyle}" /></StackPanel>
-                                </StackPanel>
-                                <TextBlock Text="21%" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TaiWarningBrush}" />
-                            </Grid>
-                            <ProgressBar Value="21" Maximum="100" Height="7" Foreground="{StaticResource TaiWarningBrush}" />
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="24">
+                <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="把应用整理成更容易理解的工作类别。" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock x:Name="CategoryCountText" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                    </StackPanel>
+                    <Button x:Name="CreateButton" HorizontalAlignment="Right" Click="CreateButton_Click" Style="{StaticResource TaiPrimaryButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE710;" FontSize="14" />
+                            <TextBlock Text="新建分类" />
                         </StackPanel>
+                    </Button>
+                </Grid>
+
+                <Grid x:Name="CategoryGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="CategoryColumn1" Width="1.2*" />
+                        <ColumnDefinition x:Name="CategoryColumn2" Width="0.8*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="CategoryRow2" Height="0" /></Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                            <TextBlock Text="应用分类" Style="{StaticResource TaiSectionTitleStyle}" />
+                            <TextBlock Text="选择一项以管理规则" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
+                        </Grid>
+                        <ListView x:Name="CategoryList" ItemsSource="{x:Bind Categories}" SelectionMode="Single" BorderThickness="0">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid MinHeight="62" Padding="0,8" ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="36" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <Border Width="32" Height="32" CornerRadius="6" Background="{Binding SoftBrush}">
+                                            <FontIcon Glyph="&#xE8B7;" Foreground="{Binding AccentBrush}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                                            <TextBlock Text="{Binding ItemCountText}" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                                            <Button Click="RenameCategory_Click" DataContext="{Binding}" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="重命名分类">
+                                                <FontIcon Glyph="&#xE70F;" FontSize="14" />
+                                            </Button>
+                                            <Button Click="DeleteCategory_Click" DataContext="{Binding}" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="删除分类">
+                                                <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock x:Name="EmptyCategoryText" Text="还没有分类。新建一个分类后即可整理应用。" Margin="0,18,0,0" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                     </StackPanel>
-                </Border>
-                <Border x:Name="AutomationCard" Grid.Column="1" Style="{StaticResource TaiCardStyle}">
-                    <StackPanel Spacing="16">
-                        <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
-                        <TextBlock Text="根据应用路径和网站域名自动归类，减少手动维护。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
-                        <ToggleSwitch Header="启用自动分类" IsOn="True" />
-                        <Border Background="{StaticResource TaiCardMutedBrush}" CornerRadius="8" Padding="12">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="匹配规则" FontWeight="SemiBold" />
-                                <TextBlock Text="C:\\Program Files\\*" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
-                                <TextBlock Text="github.com / stackoverflow.com" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
-                            </StackPanel>
-                        </Border>
-                        <Button Content="管理匹配规则" HorizontalAlignment="Left" Style="{StaticResource TaiSubtleButtonStyle}" />
+
+                    <StackPanel x:Name="RuleSection" Grid.Column="1" Spacing="14">
+                        <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                            <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
+                        </Grid>
+                        <TextBlock Text="为选中的分类配置应用目录。Tai 会按照目录匹配新发现的应用。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                        <Button HorizontalAlignment="Left" Click="ManageRules_Click" Style="{StaticResource TaiSubtleButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Spacing="7"><FontIcon Glyph="&#xE713;" FontSize="14" /><TextBlock Text="管理匹配规则" /></StackPanel>
+                        </Button>
                     </StackPanel>
-                </Border>
-            </Grid>
-        </StackPanel>
-    </ScrollViewer>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -7,10 +7,14 @@ namespace Tai.WinUI.Views;
 
 public sealed partial class DashboardPage : Page
 {
+    private readonly MainViewModel _viewModel;
+
     public DashboardPage()
     {
         InitializeComponent();
-        DataContext = new MainViewModel(App.Services.GetService<Tai.WinUI.Services.IUsageDataProvider>());
+        _viewModel = new MainViewModel(App.Services.GetService<Tai.WinUI.Services.IUsageDataProvider>());
+        DataContext = _viewModel;
+        Loaded += (_, _) => _ = _viewModel.LoadDashboardAsync();
     }
 
     private void ViewAll_Click(object sender, RoutedEventArgs e)

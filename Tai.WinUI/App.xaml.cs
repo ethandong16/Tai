@@ -64,7 +64,7 @@ public partial class App : Application
                 await _window.VerifyPagesAsync();
                 main.Stop();
                 File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "startup-smoke.ok"),
-                    "Per-monitor DPI, responsive shell and seven pages at three window sizes, tracker initialization and database query passed.");
+                    "Per-monitor DPI, responsive shell and seven pages at 920/700/480 widths, period ranges, themes, title bar contrast, icons, tracker initialization and database queries passed.");
                 Exit();
             }
         }

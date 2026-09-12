@@ -2,7 +2,6 @@
     x:Class="Tai.WinUI.Views.DetailsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Tai.WinUI.Views"
     Background="Transparent">
     <Grid x:Name="LayoutRoot" Margin="24,8,28,32">
         <VisualStateManager.VisualStateGroups>
@@ -14,6 +13,8 @@
                         <Setter Target="FilterPanel.(Grid.Row)" Value="0" />
                         <Setter Target="FilterPanel.HorizontalAlignment" Value="Right" />
                         <Setter Target="FilterPanel.Margin" Value="0" />
+                        <Setter Target="WideList.Visibility" Value="Visible" />
+                        <Setter Target="CompactList.Visibility" Value="Collapsed" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="NarrowLayout">
@@ -23,6 +24,8 @@
                         <Setter Target="FilterPanel.(Grid.Row)" Value="1" />
                         <Setter Target="FilterPanel.HorizontalAlignment" Value="Left" />
                         <Setter Target="FilterPanel.Margin" Value="0,12,0,0" />
+                        <Setter Target="WideList.Visibility" Value="Collapsed" />
+                        <Setter Target="CompactList.Visibility" Value="Visible" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -30,16 +33,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
         <Grid>
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <StackPanel>
-                <TextBlock Text="详细" Style="{StaticResource TaiPageTitleStyle}" />
-                <TextBlock Text="查看每一天、每一个应用和网站的具体时间记录。" Margin="0,5,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                <TextBlock Text="查看每一个应用和网站的具体使用记录。" Style="{StaticResource TaiCaptionStyle}" />
+                <TextBlock x:Name="RangeText" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
             </StackPanel>
             <StackPanel x:Name="FilterPanel" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                <CalendarDatePicker Date="{x:Bind Today, Mode=TwoWay}" MinWidth="145" PlaceholderText="选择日期" />
+                <CalendarDatePicker x:Name="DatePicker" MinWidth="145" PlaceholderText="选择日期" DateChanged="DatePicker_DateChanged" />
                 <ComboBox x:Name="TypeFilter" SelectedIndex="0" MinWidth="110" PlaceholderText="类型" SelectionChanged="TypeFilter_SelectionChanged">
                     <ComboBoxItem Content="全部" />
                     <ComboBoxItem Content="应用" />
@@ -48,58 +53,78 @@
             </StackPanel>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" Margin="0,24,0,16" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-                <ToggleButton Content="按天" IsChecked="True" MinWidth="80" />
-                <ToggleButton Content="按月" MinWidth="80" />
-                <ToggleButton Content="按年" MinWidth="80" />
+        <ScrollViewer Grid.Row="1" Margin="0,20,0,12" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="PeriodSelector" Orientation="Horizontal" Spacing="4">
+                <ToggleButton x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="80" Click="PeriodButton_Click" />
+                <ToggleButton x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="80" Click="PeriodButton_Click" />
+                <ToggleButton x:Name="YearButton" Content="按年" Tag="Year" MinWidth="80" Click="PeriodButton_Click" />
             </StackPanel>
         </ScrollViewer>
 
-        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" VerticalContentAlignment="Stretch">
-            <Border MinWidth="620" Style="{StaticResource TaiCardStyle}">
-                <Grid MinHeight="240">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid Padding="0,0,0,14" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="名称" Style="{StaticResource TaiCaptionStyle}" />
-                    <TextBlock Grid.Column="1" Text="类型" Style="{StaticResource TaiCaptionStyle}" />
-                    <TextBlock Grid.Column="2" Text="使用时长" Style="{StaticResource TaiCaptionStyle}" />
-                    <TextBlock Grid.Column="3" Text="占比" Style="{StaticResource TaiCaptionStyle}" />
-                </Grid>
-                <ListView x:Name="RowsList" Grid.Row="1" BorderThickness="0" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RowsList_ItemClick" ItemsSource="{x:Bind Rows}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid MinHeight="58" Padding="0,8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Border Width="32" Height="32" CornerRadius="8" Background="{Binding AccentBrush}">
-                                        <FontIcon Glyph="{Binding Glyph}" Foreground="White" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+        <Grid Grid.Row="2" Margin="0,0,0,8">
+            <TextBlock x:Name="ResultCountText" Style="{StaticResource TaiCaptionStyle}" />
+            <TextBlock x:Name="LoadStatusText" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <ListView x:Name="WideList" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RowsList_ItemClick" ItemsSource="{x:Bind Rows}" BorderThickness="0">
+                <ListView.Header>
+                    <Grid Padding="8,0,8,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="名称" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Grid.Column="1" Text="类型" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Grid.Column="2" Text="使用时长" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Grid.Column="3" Text="占比" Style="{StaticResource TaiCaptionStyle}" />
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid MinHeight="58" Padding="0,7">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Width="32" Height="32" CornerRadius="6" Background="{StaticResource TaiCardMutedBrush}">
+                                    <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
+                                </Border>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Kind}" Style="{StaticResource TaiCaptionStyle}" />
+                                <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding Duration}" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <ProgressBar Value="{Binding Percent}" Maximum="100" Height="4" Width="72" Foreground="{Binding AccentBrush}" Background="{StaticResource TaiCardMutedBrush}" />
+                                <TextBlock Text="{Binding PercentText}" Style="{StaticResource TaiCaptionStyle}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView x:Name="CompactList" Visibility="Collapsed" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RowsList_ItemClick" ItemsSource="{x:Bind Rows}" BorderThickness="0">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid MinHeight="68" Padding="0,8" ColumnSpacing="10">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="38" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <Border Width="34" Height="34" CornerRadius="6" Background="{StaticResource TaiCardMutedBrush}">
+                                <Image Source="{Binding Icon}" Width="26" Height="26" Stretch="Uniform" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="{Binding Kind}" Style="{StaticResource TaiCaptionStyle}" />
+                                    <TextBlock Text="·" Style="{StaticResource TaiCaptionStyle}" />
+                                    <TextBlock Text="{Binding Category}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                                <TextBlock Grid.Column="1" Text="{Binding Category}" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
-                                <TextBlock Grid.Column="2" Text="{Binding Duration}" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
-                                <ProgressBar Grid.Column="3" Value="{Binding Percent}" Maximum="100" Height="6" VerticalAlignment="Center" Foreground="{Binding AccentBrush}" Background="{StaticResource TaiCardMutedBrush}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                </Grid>
-            </Border>
-        </ScrollViewer>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="4">
+                                <TextBlock Text="{Binding Duration}" HorizontalAlignment="Right" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                                <TextBlock Text="{Binding PercentText}" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Page>
