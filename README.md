@@ -1,76 +1,104 @@
 # Tai
-👻 在 Windows 上统计 `软件` 使用时长和 `网站` 浏览时长
 
-<img src="index.jpg" width=600 />
+Tai 是一款运行在 Windows 上的本地时间统计工具，用来记录应用使用时长和网站浏览时长，帮助你了解时间实际花在了哪里。
 
-## WinUI 3 重构版
+![Tai](index.jpg)
 
-新的 Fluent UI 位于 `Tai.WinUI`，并通过 `Core.Modern` 复用现有 .NET 8 Windows 统计服务。旧的 `UI` WPF 项目仍保留，方便在迁移期间对照和回退。构建 WinUI 项目需要 Visual Studio 2022 17.10+、Windows App SDK 1.6 和 .NET 8 SDK，详细说明见 `Tai.WinUI/README.md`。
+## 功能
 
-广告位出售，联系方式：bmFjYXQ0YjEx （ base64 添加请备注来意
+- 统计前台应用的使用时长，并按日期、周、月和年查看趋势。
+- 通过 Chrome/Edge 浏览器扩展统计当前标签页的网站浏览时长。
+- 提供概览、统计、详细记录、分类和设置页面。
+- 支持应用白名单、应用和网址过滤、正则匹配、关联进程和睡眠监测。
+- 支持按运行目录自动分类。
+- 支持导入/导出统计数据和配置；统计数据可导出为 `.xlsx` 和 `.csv`。
+- 使用本地 SQLite 数据库存储数据，不需要登录账号或云端服务。
 
-## 开始使用
+## 下载使用
 
-#### 环境
+已发布的 Windows 版本可以在 [Releases](https://github.com/ethandong16/Tai/releases) 页面下载。下载压缩包后解压到合适的位置，再运行对应版本的 Tai 可执行文件。
 
-使用之前，你的电脑可能需要安装 [.NET Framework](https://dotnet.microsoft.com/en-us/download/dotnet-framework) `4.8` 或更高的版本（一般Win10以上的系统不需要安装）。如果在启动 Tai 时没反应，请点击左侧链接下载安装。
+首次使用时建议：
 
-#### 使用
+1. 以管理员身份运行 Tai，以便统计部分需要更高权限的应用。
+2. 在 Tai 的“设置”中按需启用网站统计、睡眠监测、白名单或过滤规则。
+3. 如果需要网站统计，请按下面的说明安装 Chrome 扩展。
 
-1. 在 [releases](https://github.com/Planshit/Tai/releases) 中可以下载已经编译好的 exe 可执行文件压缩包。建议优选选择标记有 `Latest` 的版本，划到下方的 `Assets` 找到 `Taix.x.x.x.zip` 点击下载；
-2. 下载压缩包后解压到合适的位置（建议不要解压到桌面、系统盘），进入解压后的文件夹内，找到 `👻Tai.exe` ，启动程序，成功启动后你将在状态栏看到 👻 图标；
-3. 使用 `网站浏览统计` 功能需要安装相应的浏览器拓展并且在 设置 > 常规 > 功能中启用。[下载安装浏览器插件说明](https://github.com/Planshit/Tai/discussions/279);
-4. 请以管理员身份运行 Tai ，否则无法统计部分软件。
+### 安装浏览器扩展
 
-#### 卸载
+仓库内的扩展位于 [`WebExtensions/Chrome`](WebExtensions/Chrome)。它适用于 Chrome、Microsoft Edge 以及支持 Chrome 扩展的 Chromium 浏览器。
 
-1. 在设置中停用开机自启动（如果启用了）；
-2. 删除所有文件即可完成卸载。
+1. 启动 Tai，并在“设置”中启用网站统计。
+2. 打开浏览器的扩展管理页面，例如 Chrome 的 `chrome://extensions` 或 Edge 的 `edge://extensions`。
+3. 开启“开发者模式”。
+4. 选择“加载已解压的扩展”，选中仓库中的 `WebExtensions/Chrome` 文件夹。
+5. 当扩展图标显示为已连接状态时，网站浏览数据会发送给本机运行的 Tai。
 
-#### 基本操作
+扩展需要浏览器允许 `tabs` 权限，并通过本机 WebSocket 服务 `ws://127.0.0.1:8908/TaiWebSentry` 与 Tai 通信。若扩展无法连接，请确认 Tai 正在运行且网站统计功能已启用。
 
-鼠标双击图标进入程序主界面，右击显示菜单。
+## 从源码构建
 
-## 了解更多
+### 环境要求
 
-#### 为什么使用 Tai？
+- Windows 10 版本 1809（内部版本 17763）或更高版本。
+- Visual Studio 2022 17.10 或更高版本，并安装 Windows App SDK 相关工作负载；或者安装匹配的 .NET 8 SDK 和 MSBuild。
+- Windows App SDK `1.6.240829007`。
+- WinUI 3 项目当前以 `x64` 为目标平台。
 
-帮助你了解自己把时间花在了什么地方，从而更好地做一些计划。或者，为了每周回顾自己的摸鱼成果。~~工作只是换取薪酬，摸鱼才是赚钱。~~
+### 构建 WinUI 3 版本
 
-#### 应用白名单
+```powershell
+msbuild Tai.WinUI/Tai.WinUI.csproj /t:Restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64
+msbuild Tai.WinUI/Tai.WinUI.csproj /t:Build /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:WindowsAppSDKSelfContained=true /p:EnableMsixTooling=true
+```
 
-支持仅统计白名单内的软件，在设置 > 行为中可以启用此功能。
+### 发布独立运行版本
 
-#### 关联进程
+```powershell
+msbuild Tai.WinUI/Tai.WinUI.csproj /t:Publish /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:SelfContained=true /p:WindowsAppSDKSelfContained=true /p:EnableMsixTooling=true
+```
 
-如果你希望在多屏工作时将其他屏幕所使用的软件同时记录使用时长，可以在设置中将相应的软件进程添加到一个关联列表中。添加完成后，只要使用了关联列表的其中一个软件，就会同步更新使用时长到列表里的其他软件上，但前提是其他软件需要正处于运行中（即使在后台或者没有焦点都行）。一个软件只能关联一次，不能重复与其他软件关联。
+发布文件默认位于：
 
-#### 过滤应用和网站
+```text
+Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
+```
 
-可以在设置 > 行为中通过进程名称/URL或者正则表达式对不需要统计的软件/网站进行过滤。
+也可以直接在 Visual Studio 中打开 [`Tai.sln`](Tai.sln)，选择 `Tai.WinUI` 项目和 `Release | x64` 配置后进行构建。
 
-#### 数据储存和导出
+### 自动构建
 
-Tai 使用不加密 `SQLite` 数据库将统计数据存储在本地 `运行目录\Data\data.db` 中。可以在设置中将统计的数据以 `.xlsx` 和 `.csv` 两种文件格式导出。
+GitHub Actions 工作流位于 [`.github/workflows/winui-build.yml`](.github/workflows/winui-build.yml)，会在推送、Pull Request 或手动触发时构建 WinUI 3 版本，并生成 `tai-winui-win-x64` 构建产物。发布前还会执行资源文件和启动冒烟测试。
 
-#### 睡眠监测
+## 项目结构
 
-Tai 能够一定程度地发现用户离开电脑从而停止统计，也可以在设置 > 行为中停用此功能以实现不间断统计。
+| 目录 | 说明 |
+| --- | --- |
+| `Tai.WinUI` | 当前 WinUI 3 前端，使用 Fluent 风格界面 |
+| `Core.Modern` | 面向 .NET 8 Windows 的核心服务构建 |
+| `Core` | 应用监测、网站服务、分类、配置和 SQLite 数据服务 |
+| `UI` | 旧版 WPF 前端，保留用于兼容和迁移对照 |
+| `WebExtensions/Chrome` | Chrome/Chromium 浏览器扩展 |
+| `Updater` | 旧版更新程序 |
+| `TaiBug` | 旧版崩溃处理程序 |
+| `scripts` | 构建和启动验证脚本 |
 
-#### 自动分类
+WinUI 3 前端复用了 `Core` 中的统计和数据库逻辑。`Core` 仍面向 .NET Framework 4.8，`Core.Modern` 将同一套核心源码编译到 .NET 8 Windows，以供 `Tai.WinUI` 使用。
 
-可以根据运行目录自动归类，在分类管理中添加/编辑分类时可以启用或关闭目录匹配。比如在 `分类A` 中启用并添加了一个目录 `C:\` ，那么C盘下所有软件都会被自动归类到 `分类A` 中。
+## 数据与隐私
 
-#### 联网和隐私
+- 统计数据保存在程序目录下的 `Data/data.db`。
+- 配置保存在程序目录下的 `Data/AppConfig.json`。
+- 启动错误记录在 `Log/startup.log`。
+- 网站扩展只通过本机 WebSocket 将浏览器标签页信息发送给 Tai；项目不提供账号体系、云端同步或统计数据上传功能。
+- Tai 可能根据浏览器提供的网站图标地址下载 favicon，并将图标缓存到本地，用于界面展示。
 
-除了检查更新/升级软件时（需要主动在设置中检查更新）之外完全没有其他网络请求。Tai 并不会收集和上传你的任何信息。
+删除程序目录即可卸载。若要保留统计数据，请在删除前备份 `Data` 目录。
 
-##  ❤️ + 👻
+## 许可证
 
-开源软件的更新动力来源于用户的支持，无论是精神还是经济上，如果 Tai 给你带去了帮助请给开发者一些鼓励吧~
+本项目采用 [MIT License](LICENSE) 发布。
 
-#### 来杯☕
+## 反馈与贡献
 
-<img src="https://github.com/noberumotto/noberumotto/raw/master/wechat.jpg" width="256px"/> <img src="https://github.com/noberumotto/noberumotto/raw/master/alipay.jpg" width="256px" />
-
-[关于&联系 →](https://github.com/noberumotto/noberumotto/blob/master/about.md)
+欢迎通过 [Issues](https://github.com/ethandong16/Tai/issues) 报告问题，或通过 [Pull Requests](https://github.com/ethandong16/Tai/pulls) 提交改进。
