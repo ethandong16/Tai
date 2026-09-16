@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Core.Servicers.Interfaces;
-using Core.Models.Config;
 using WinRT.Interop;
 using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Media;
@@ -152,26 +151,32 @@ public sealed partial class MainWindow : Window
             1 => ElementTheme.Dark,
             _ => ElementTheme.Default
         };
-        ApplyResolvedAppearance(general, root.ActualTheme == ElementTheme.Dark);
+        var dark = general.Theme == 1 || general.Theme == 2 && root.ActualTheme == ElementTheme.Dark;
+        ApplyResolvedAppearance(dark);
     }
 
     private void Root_ActualThemeChanged(FrameworkElement sender, object args)
     {
         var general = App.Services.GetService<IAppConfig>()?.GetConfig()?.General;
-        if (general?.Theme == 2)
-            ApplyResolvedAppearance(general, sender.ActualTheme == ElementTheme.Dark);
+        if (general == null) return;
+        var dark = general.Theme == 1 || general.Theme == 2 && sender.ActualTheme == ElementTheme.Dark;
+        ApplyResolvedAppearance(dark);
     }
 
-    private void ApplyResolvedAppearance(GeneralModel general, bool dark)
+    private void ApplyResolvedAppearance(bool dark)
     {
-
         var pageBackground = ParseColor(dark ? "#17191D" : "#F6F7FB", Colors.Transparent);
         var cardBackground = ParseColor(dark ? "#22252A" : "#FFFFFF", Colors.Transparent);
         var mutedBackground = ParseColor(dark ? "#2B2F35" : "#F1F4F8", Colors.Transparent);
         var primaryText = ParseColor(dark ? "#F4F5F7" : "#18212F", Colors.Transparent);
         var secondaryText = ParseColor(dark ? "#AAB1BC" : "#667085", Colors.Transparent);
         var divider = ParseColor(dark ? "#3A3F47" : "#E5E8EE", Colors.Transparent);
-        var accent = ParseColor(general.ThemeColor, ParseColor("#2B20D9", Colors.Transparent));
+        var accent = ParseColor(dark ? "#9AA8FF" : "#4657C8", Colors.Transparent);
+        var accentFill = ParseColor(dark ? "#5969D8" : "#4657C8", Colors.Transparent);
+        var accentSoft = ParseColor(dark ? "#2D3456" : "#E8EBFA", Colors.Transparent);
+        var accentHover = ParseColor(dark ? "#5060C8" : "#3E4DB3", Colors.Transparent);
+        var accentPressed = ParseColor(dark ? "#4656B8" : "#35429A", Colors.Transparent);
+        var accentDisabled = ParseColor(dark ? "#3A4165" : "#C9CDE7", Colors.Transparent);
 
         SetBrushColor("TaiPageBackgroundBrush", pageBackground);
         SetBrushColor("TaiCardBackgroundBrush", cardBackground);
@@ -180,12 +185,22 @@ public sealed partial class MainWindow : Window
         SetBrushColor("TaiSecondaryTextBrush", secondaryText);
         SetBrushColor("TaiDividerBrush", divider);
         SetBrushColor("TaiAccentBrush", accent);
-        SetBrushColor("TaiAccentSoftBrush", Blend(accent, cardBackground, 0.16));
-        SetBrushColor("TaiInfoBrush", ParseColor(dark ? "#8EA8FF" : "#4969D8", Colors.Transparent));
+        SetBrushColor("TaiAccentFillBrush", accentFill);
+        SetBrushColor("TaiAccentSoftBrush", accentSoft);
+        SetBrushColor("ToggleButtonBackgroundChecked", accentFill);
+        SetBrushColor("ToggleButtonBackgroundCheckedPointerOver", accentHover);
+        SetBrushColor("ToggleButtonBackgroundCheckedPressed", accentPressed);
+        SetBrushColor("ToggleButtonBackgroundCheckedDisabled", accentDisabled);
+        SetBrushColor("ToggleSwitchFillOn", accentFill);
+        SetBrushColor("ToggleSwitchFillOnPointerOver", accentHover);
+        SetBrushColor("ToggleSwitchFillOnPressed", accentPressed);
+        SetBrushColor("ToggleSwitchFillOnDisabled", accentDisabled);
+        SetBrushColor("NavigationViewSelectionIndicatorForeground", accent);
+        SetBrushColor("TaiInfoBrush", ParseColor(dark ? "#8EA8FF" : "#3F5FCA", Colors.Transparent));
         SetBrushColor("TaiInfoSoftBrush", ParseColor(dark ? "#252D4A" : "#E9EDFF", Colors.Transparent));
-        SetBrushColor("TaiWarningBrush", ParseColor(dark ? "#F4B860" : "#C77912", Colors.Transparent));
+        SetBrushColor("TaiWarningBrush", ParseColor(dark ? "#F4B860" : "#9A5B08", Colors.Transparent));
         SetBrushColor("TaiWarningSoftBrush", ParseColor(dark ? "#43351F" : "#FFF3DD", Colors.Transparent));
-        SetBrushColor("TaiDangerBrush", ParseColor(dark ? "#F18A9C" : "#D14C62", Colors.Transparent));
+        SetBrushColor("TaiDangerBrush", ParseColor(dark ? "#F18A9C" : "#B8324B", Colors.Transparent));
         SetBrushColor("TaiDangerSoftBrush", ParseColor(dark ? "#472A31" : "#FBE7EB", Colors.Transparent));
         ConfigureTitleBar(_appWindow.TitleBar, dark);
     }
@@ -227,13 +242,37 @@ public sealed partial class MainWindow : Window
         return fallback;
     }
 
-    private static Windows.UI.Color Blend(Windows.UI.Color foreground, Windows.UI.Color background, double amount)
+    private static Windows.UI.Color GetBrushColor(string key)
     {
-        byte Mix(byte front, byte back) => (byte)Math.Round(front * amount + back * (1 - amount));
-        return ColorHelper.FromArgb(255,
-            Mix(foreground.R, background.R),
-            Mix(foreground.G, background.G),
-            Mix(foreground.B, background.B));
+        if (Application.Current.Resources[key] is SolidColorBrush brush) return brush.Color;
+        throw new InvalidOperationException($"Theme brush {key} was not found.");
+    }
+
+    private static double ContrastRatio(Windows.UI.Color first, Windows.UI.Color second)
+    {
+        var lighter = Math.Max(RelativeLuminance(first), RelativeLuminance(second));
+        var darker = Math.Min(RelativeLuminance(first), RelativeLuminance(second));
+        return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    private static double RelativeLuminance(Windows.UI.Color color)
+    {
+        static double Channel(byte value)
+        {
+            var normalized = value / 255d;
+            return normalized <= 0.04045
+                ? normalized / 12.92
+                : Math.Pow((normalized + 0.055) / 1.055, 2.4);
+        }
+
+        return 0.2126 * Channel(color.R) + 0.7152 * Channel(color.G) + 0.0722 * Channel(color.B);
+    }
+
+    private static void RequireContrast(string name, Windows.UI.Color foreground, Windows.UI.Color background, double minimum)
+    {
+        var ratio = ContrastRatio(foreground, background);
+        if (ratio + 0.001 < minimum)
+            throw new InvalidOperationException($"{name} contrast is {ratio:F2}:1; expected at least {minimum:F1}:1.");
     }
 
     private static void ConfigureTitleBar(AppWindowTitleBar titleBar, bool dark)
@@ -365,7 +404,7 @@ public sealed partial class MainWindow : Window
 
     private static void ValidateDetailsPage(Views.DetailsPage page)
     {
-        foreach (var period in new[] { Services.UsagePeriod.Day, Services.UsagePeriod.Month, Services.UsagePeriod.Year })
+        foreach (var period in Enum.GetValues<Services.UsagePeriod>())
         {
             page.SelectPeriodForSmokeTest(period);
             if (page.CheckedPeriodCount != 1)
@@ -387,6 +426,13 @@ public sealed partial class MainWindow : Window
             throw new InvalidOperationException("Month range calculation failed.");
         if (year.Start != new DateTime(2026, 1, 1) || year.End != new DateTime(2026, 12, 31))
             throw new InvalidOperationException("Year range calculation failed.");
+        if (Services.CoreUsageDataProvider.CalculateSharePercent(159, 256) != 62
+            || Services.CoreUsageDataProvider.CalculateSharePercent(97, 256) != 38)
+            throw new InvalidOperationException("Usage share calculation failed.");
+        var reference = new DateTime(2026, 9, 16, 19, 30, 0);
+        if (Services.CoreUsageDataProvider.IsFuturePoint(Services.UsagePeriod.Day, reference.Date, 19, reference)
+            || !Services.CoreUsageDataProvider.IsFuturePoint(Services.UsagePeriod.Day, reference.Date, 20, reference))
+            throw new InvalidOperationException("Future trend point calculation failed.");
     }
 
     private static async Task ValidateUsageDataAsync()
@@ -441,27 +487,55 @@ public sealed partial class MainWindow : Window
     {
         var general = App.Services.GetRequiredService<IAppConfig>().GetConfig().General;
         var originalTheme = general.Theme;
-        var originalColor = general.ThemeColor;
         try
         {
-            general.ThemeColor = "#3578D4";
-            foreach (var theme in new[] { 0, 1, 2 })
+            foreach (var theme in new[] { 0, 1 })
             {
                 general.Theme = theme;
                 ApplyAppearance();
-                await Task.Delay(40);
+                await Task.Delay(80);
                 ValidateTitleBar();
+                ValidateResolvedPalette(theme == 1);
             }
-            if (Application.Current.Resources["TaiAccentBrush"] is not SolidColorBrush { Color: var color }
-                || color.R != 0x35 || color.G != 0x78 || color.B != 0xD4)
-                throw new InvalidOperationException("Custom accent color was not applied.");
+
+            general.Theme = 2;
+            ApplyAppearance();
+            await Task.Delay(80);
+            ValidateTitleBar();
+            if (Content is FrameworkElement root)
+                ValidateResolvedPalette(root.ActualTheme == ElementTheme.Dark);
         }
         finally
         {
             general.Theme = originalTheme;
-            general.ThemeColor = originalColor;
             ApplyAppearance();
         }
+    }
+
+    private static void ValidateResolvedPalette(bool dark)
+    {
+        var page = GetBrushColor("TaiPageBackgroundBrush");
+        var card = GetBrushColor("TaiCardBackgroundBrush");
+        var primary = GetBrushColor("TaiPrimaryTextBrush");
+        var secondary = GetBrushColor("TaiSecondaryTextBrush");
+        var accent = GetBrushColor("TaiAccentBrush");
+        var accentFill = GetBrushColor("TaiAccentFillBrush");
+        var accentSoft = GetBrushColor("TaiAccentSoftBrush");
+        var expectedAccent = ParseColor(dark ? "#9AA8FF" : "#4657C8", Colors.Transparent);
+        var expectedFill = ParseColor(dark ? "#5969D8" : "#4657C8", Colors.Transparent);
+
+        if (accent != expectedAccent || accentFill != expectedFill)
+            throw new InvalidOperationException($"The {(dark ? "dark" : "light")} fixed accent palette was not applied.");
+
+        RequireContrast("Primary text on card", primary, card, 7.0);
+        RequireContrast("Secondary text on page", secondary, page, 4.5);
+        RequireContrast("Accent text and chart lines on card", accent, card, 4.5);
+        RequireContrast("Accent text on accent soft surface", accent, accentSoft, 4.5);
+        RequireContrast("Primary button text", Colors.White, accentFill, 4.5);
+        RequireContrast("Accent fill boundary on card", accentFill, card, 3.0);
+        RequireContrast("Info text on info surface", GetBrushColor("TaiInfoBrush"), GetBrushColor("TaiInfoSoftBrush"), 4.5);
+        RequireContrast("Warning text on warning surface", GetBrushColor("TaiWarningBrush"), GetBrushColor("TaiWarningSoftBrush"), 4.5);
+        RequireContrast("Danger text on danger surface", GetBrushColor("TaiDangerBrush"), GetBrushColor("TaiDangerSoftBrush"), 4.5);
     }
 
     [DllImport("user32.dll")]

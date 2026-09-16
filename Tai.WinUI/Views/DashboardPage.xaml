@@ -84,10 +84,10 @@
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="今天的使用情况" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                        <TextBlock Text="数据会随 Tai 的记录实时更新" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="{Binding RangeText}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                        <TextBlock Text="本地记录 · 数据持续更新" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
                     </StackPanel>
-                    <Button x:Name="RefreshButton" Grid.Column="1" HorizontalAlignment="Right" Command="{Binding RefreshCommand}" Style="{StaticResource TaiPrimaryButtonStyle}" ToolTipService.ToolTip="刷新概览数据">
+                    <Button x:Name="RefreshButton" Grid.Column="1" HorizontalAlignment="Right" Click="RefreshButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="刷新概览数据">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE72C;" FontSize="14" />
                             <TextBlock Text="刷新" />
@@ -103,22 +103,22 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="HeroSecondRow" Height="0" /></Grid.RowDefinitions>
                         <StackPanel Spacing="8">
-                            <TextBlock Text="今天用了多久" Style="{StaticResource TaiCaptionStyle}" />
+                            <TextBlock Text="今日应用使用" Style="{StaticResource TaiCaptionStyle}" />
                             <TextBlock Text="{Binding TodayUsage}" FontSize="38" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                            <TextBlock Text="应用使用总时长" Style="{StaticResource TaiCaptionStyle}" />
+                            <TextBlock Text="统计前台应用，不与网站浏览重复合计" Style="{StaticResource TaiCaptionStyle}" />
                         </StackPanel>
                         <Grid x:Name="HeroFacts" Grid.Column="1" ColumnSpacing="20" VerticalAlignment="Center">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                             <StackPanel Spacing="5">
-                                <TextBlock Text="应用" Style="{StaticResource TaiCaptionStyle}" />
+                                <TextBlock Text="应用数量" Style="{StaticResource TaiCaptionStyle}" />
                                 <TextBlock Text="{Binding AppCountText}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" Spacing="5">
-                                <TextBlock Text="网站" Style="{StaticResource TaiCaptionStyle}" />
+                                <TextBlock Text="网站数量" Style="{StaticResource TaiCaptionStyle}" />
                                 <TextBlock Text="{Binding WebsiteCountText}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                             </StackPanel>
                             <StackPanel Grid.Column="2" Spacing="5">
-                                <TextBlock Text="最长使用" Style="{StaticResource TaiCaptionStyle}" />
+                                <TextBlock Text="使用最久" Style="{StaticResource TaiCaptionStyle}" />
                                 <TextBlock Text="{Binding LongestAppName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
                                 <TextBlock Text="{Binding LongestAppDuration}" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
@@ -135,7 +135,7 @@
                     <StackPanel>
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <StackPanel>
-                                <TextBlock Text="最近应用" Style="{StaticResource TaiSectionTitleStyle}" />
+                                <TextBlock Text="今日常用" Style="{StaticResource TaiSectionTitleStyle}" />
                                 <TextBlock Text="今天按使用时长排序" Margin="0,3,0,0" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
                             <Button x:Name="AppViewButton" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}">
@@ -147,14 +147,21 @@
                     <StackPanel x:Name="WebsiteSection" Grid.Column="1">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <StackPanel>
-                                <TextBlock Text="最近网站" Style="{StaticResource TaiSectionTitleStyle}" />
+                                <TextBlock Text="今日网站" Style="{StaticResource TaiSectionTitleStyle}" />
                                 <TextBlock Text="今日浏览记录" Margin="0,3,0,0" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
                             <Button x:Name="WebsiteViewButton" HorizontalAlignment="Right" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}">
                                 <StackPanel Orientation="Horizontal" Spacing="5"><TextBlock Text="查看全部" /><FontIcon Glyph="&#xE76C;" FontSize="12" /></StackPanel>
                             </Button>
                         </Grid>
-                        <ItemsControl ItemsSource="{Binding Websites}" ItemTemplate="{StaticResource UsageItemTemplate}" />
+                        <ItemsControl x:Name="WebsiteList" ItemsSource="{Binding Websites}" ItemTemplate="{StaticResource UsageItemTemplate}" />
+                        <Border x:Name="WebsiteEmptyState" Margin="0,12,0,0" Padding="16" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}" Visibility="Collapsed">
+                            <StackPanel Spacing="6">
+                                <TextBlock x:Name="WebsiteStateTitle" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                                <TextBlock x:Name="WebsiteStateDescription" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                <Button x:Name="WebsiteStateAction" Margin="-8,2,0,0" HorizontalAlignment="Left" Click="WebsiteSettings_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
 
@@ -166,7 +173,7 @@
                         </StackPanel>
                         <TextBlock Text="{Binding LastUpdated}" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                     </Grid>
-                    <widgets:UsageTrendChart Items="{Binding Trend}" Height="230" />
+                    <widgets:UsageTrendChart Items="{Binding Trend}" Height="230" AutomationProperties.Name="本周使用趋势图，纵轴为使用时长" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

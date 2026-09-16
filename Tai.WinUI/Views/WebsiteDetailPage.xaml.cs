@@ -23,4 +23,9 @@ public sealed partial class WebsiteDetailPage : Page
     {
         if (Frame?.CanGoBack == true) Frame.GoBack();
     }
+
+    private void ManageCategory_Click(object sender, RoutedEventArgs e)
+    {
+        Frame?.Navigate(typeof(CategoriesPage));
+    }
 }

@@ -5,11 +5,9 @@ using System.Data.SQLite;
 using Core.Models.Config;
 using Core.Models.Config.Link;
 using Core.Servicers.Interfaces;
-using Microsoft.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace Tai.WinUI.Views;
 
@@ -65,11 +63,7 @@ public sealed partial class SettingsPage : Page
             WebEnabledToggle.IsOn = general.IsWebEnabled;
             StartPagePicker.SelectedIndex = Math.Clamp(general.StartPage, 0, 3);
             ThemePicker.SelectedIndex = Math.Clamp(general.Theme, 0, 2);
-            var themeColor = ParseColor(general.ThemeColor);
-            ThemeColorPicker.Color = themeColor;
-            ThemeColorSwatch.Background = new SolidColorBrush(themeColor);
             FillCountPicker(FrequentCountPicker, 10, general.IndexPageFrequentUseNum);
-            FillCountPicker(MoreCountPicker, 20, general.IndexPageMoreNum);
 
             var behavior = _config.Behavior;
             SleepWatchToggle.IsOn = behavior.IsSleepWatch;
@@ -117,19 +111,8 @@ public sealed partial class SettingsPage : Page
         if (ReferenceEquals(sender, StartPagePicker)) general.StartPage = StartPagePicker.SelectedIndex;
         else if (ReferenceEquals(sender, ThemePicker)) general.Theme = ThemePicker.SelectedIndex;
         else if (ReferenceEquals(sender, FrequentCountPicker)) general.IndexPageFrequentUseNum = FrequentCountPicker.SelectedIndex + 1;
-        else if (ReferenceEquals(sender, MoreCountPicker)) general.IndexPageMoreNum = MoreCountPicker.SelectedIndex + 1;
         SaveConfig();
         if (ReferenceEquals(sender, ThemePicker)) App.MainWindowInstance?.ApplyAppearance();
-    }
-
-    private void ThemeColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
-    {
-        if (!_isLoading && _config != null) {
-            _config.General.ThemeColor = $"#{sender.Color.R:X2}{sender.Color.G:X2}{sender.Color.B:X2}";
-            ThemeColorSwatch.Background = new SolidColorBrush(sender.Color);
-            SaveConfig();
-            App.MainWindowInstance?.ApplyAppearance();
-        }
     }
 
     private void BehaviorSetting_Toggled(object sender, RoutedEventArgs e)
@@ -543,15 +526,4 @@ public sealed partial class SettingsPage : Page
 
     private void SaveConfig() => _appConfig.Save();
 
-    private static Windows.UI.Color ParseColor(string? value)
-    {
-        var hex = (value ?? string.Empty).TrimStart('#');
-        if (hex.Length == 6 && byte.TryParse(hex[..2], System.Globalization.NumberStyles.HexNumber, null, out var r)
-            && byte.TryParse(hex[2..4], System.Globalization.NumberStyles.HexNumber, null, out var g)
-            && byte.TryParse(hex[4..6], System.Globalization.NumberStyles.HexNumber, null, out var b))
-        {
-            return ColorHelper.FromArgb(255, r, g, b);
-        }
-        return ColorHelper.FromArgb(255, 43, 32, 217);
-    }
 }

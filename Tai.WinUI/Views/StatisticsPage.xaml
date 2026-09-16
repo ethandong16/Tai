@@ -124,9 +124,9 @@
                 <StackPanel Spacing="14">
                     <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                         <TextBlock Text="使用趋势" Style="{StaticResource TaiSectionTitleStyle}" />
-                        <TextBlock Text="将鼠标移到节点上查看时长" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="纵轴显示时长，移到数据点可查看精确值" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                     </Grid>
-                    <widgets:UsageTrendChart x:Name="TrendChart" Items="{Binding Trend}" Height="250" />
+                    <widgets:UsageTrendChart x:Name="TrendChart" Items="{Binding Trend}" Height="250" AutomationProperties.Name="使用趋势图，纵轴为使用时长，未来时段不计为零" />
                 </StackPanel>
 
                 <Grid x:Name="BreakdownGrid">

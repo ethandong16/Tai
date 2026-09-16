@@ -13,14 +13,16 @@ public sealed class MainViewModel : INotifyPropertyChanged
 {
     private readonly IUsageDataProvider? _dataProvider;
     private readonly bool _dashboardMode;
+    private readonly int _dashboardTake;
     private CancellationTokenSource? _loadCancellation;
     private UsagePeriod _period = UsagePeriod.Day;
     private DateTime _anchorDate = DateTime.Today;
 
-    public MainViewModel(IUsageDataProvider? dataProvider = null, bool dashboardMode = true)
+    public MainViewModel(IUsageDataProvider? dataProvider = null, bool dashboardMode = true, int dashboardTake = 8)
     {
         _dataProvider = dataProvider;
         _dashboardMode = dashboardMode;
+        _dashboardTake = Math.Max(1, dashboardTake);
         RefreshCommand = new RelayCommand(_ => _ = RefreshAsync());
     }
 
@@ -73,7 +75,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         var cancellation = BeginLoad();
         try
         {
-            var today = await _dataProvider.GetTodayAsync(cancellation.Token);
+            var today = await _dataProvider.GetTodayAsync(_dashboardTake, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
             var week = await _dataProvider.GetAsync(UsagePeriod.Week, DateTime.Today, 8, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
@@ -211,7 +213,7 @@ public sealed class UsageItem
     public string Duration { get; }
     public int Seconds { get; }
     public int Percent { get; }
-    public string PercentText => $"{Percent}%";
+    public string PercentText => Seconds > 0 && Percent == 0 ? "<1%" : $"{Percent}%";
     public string IconPath { get; }
     public string AccentHex { get; }
     public string Category { get; }

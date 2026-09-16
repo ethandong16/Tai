@@ -12,17 +12,27 @@
             <SolidColorBrush x:Key="TaiPageBackgroundBrush" Color="#F6F7FB" />
             <SolidColorBrush x:Key="TaiCardBackgroundBrush" Color="#FFFFFF" />
             <SolidColorBrush x:Key="TaiCardMutedBrush" Color="#F1F4F8" />
-            <SolidColorBrush x:Key="TaiAccentBrush" Color="#12966F" />
-            <SolidColorBrush x:Key="TaiAccentSoftBrush" Color="#E3F4EE" />
-            <SolidColorBrush x:Key="TaiInfoBrush" Color="#4969D8" />
+            <SolidColorBrush x:Key="TaiAccentBrush" Color="#4657C8" />
+            <SolidColorBrush x:Key="TaiAccentFillBrush" Color="#4657C8" />
+            <SolidColorBrush x:Key="TaiAccentSoftBrush" Color="#E8EBFA" />
+            <SolidColorBrush x:Key="TaiInfoBrush" Color="#3F5FCA" />
             <SolidColorBrush x:Key="TaiInfoSoftBrush" Color="#E9EDFF" />
-            <SolidColorBrush x:Key="TaiWarningBrush" Color="#C77912" />
+            <SolidColorBrush x:Key="TaiWarningBrush" Color="#9A5B08" />
             <SolidColorBrush x:Key="TaiWarningSoftBrush" Color="#FFF3DD" />
-            <SolidColorBrush x:Key="TaiDangerBrush" Color="#D14C62" />
+            <SolidColorBrush x:Key="TaiDangerBrush" Color="#B8324B" />
             <SolidColorBrush x:Key="TaiDangerSoftBrush" Color="#FBE7EB" />
             <SolidColorBrush x:Key="TaiPrimaryTextBrush" Color="#18212F" />
             <SolidColorBrush x:Key="TaiSecondaryTextBrush" Color="#667085" />
             <SolidColorBrush x:Key="TaiDividerBrush" Color="#E5E8EE" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundChecked" Color="#4657C8" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPointerOver" Color="#3E4DB3" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPressed" Color="#35429A" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedDisabled" Color="#C9CDE7" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#4657C8" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#3E4DB3" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#35429A" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled" Color="#C9CDE7" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#4657C8" />
 
             <Style x:Key="TaiCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
@@ -39,7 +49,7 @@
                 <Setter Property="Padding" Value="18" />
             </Style>
             <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="{StaticResource TaiAccentBrush}" />
+                <Setter Property="Background" Value="{StaticResource TaiAccentFillBrush}" />
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="CornerRadius" Value="6" />
@@ -76,6 +86,11 @@
                 <Setter Property="FontSize" Value="26" />
                 <Setter Property="FontWeight" Value="SemiBold" />
                 <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+            </Style>
+            <Style x:Key="TaiSettingToggleStyle" TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
+                <Setter Property="OnContent" Value="开启" />
+                <Setter Property="OffContent" Value="关闭" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

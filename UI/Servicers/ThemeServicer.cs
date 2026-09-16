@@ -44,12 +44,6 @@ namespace UI.Servicers
                 OnThemeChanged?.Invoke(this, EventArgs.Empty);
             }
 
-            if (oldConfig.General.ThemeColor != newConfig.General.ThemeColor)
-            {
-                LoadTheme(GetConfiguredTheme(newConfig.General.Theme), true);
-                OnThemeChanged?.Invoke(this, EventArgs.Empty);
-            }
-
             if (oldConfig.General.IsSaveWindowSize != newConfig.General.IsSaveWindowSize)
             {
                 HandleWindowSizeChangedEvent();
@@ -76,7 +70,7 @@ namespace UI.Servicers
                 return "Light";
             }
         }
-        public void LoadTheme(string themeName, bool isRefresh = false)
+        public void LoadTheme(string themeName)
         {
             if (string.IsNullOrEmpty(themeName))
             {
@@ -84,7 +78,7 @@ namespace UI.Servicers
                 themeName = themeOptions[0];
             }
 
-            if (themeName == this.themeName && !isRefresh)
+            if (themeName == this.themeName)
             {
                 return;
             }
@@ -149,17 +143,7 @@ namespace UI.Servicers
         /// </summary>
         private void UpdateThemeColor()
         {
-
-            var config = appConfig.GetConfig();
-            if (string.IsNullOrEmpty(config.General.ThemeColor))
-            {
-                StateData.ThemeColor = ((System.Windows.Media.Color)Application.Current.Resources["ThemeColor"]).ToString();
-                return;
-            }
-
-            StateData.ThemeColor = config.General.ThemeColor;
-            Application.Current.Resources["ThemeColor"] = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(config.General.ThemeColor);
-            Application.Current.Resources["ThemeBrush"] = UI.Base.Color.Colors.GetFromString(config.General.ThemeColor);
+            StateData.ThemeColor = ((System.Windows.Media.Color)Application.Current.Resources["ThemeColor"]).ToString();
         }
 
         public void SetMainWindow(MainWindow mainWindow)

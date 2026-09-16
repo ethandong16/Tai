@@ -35,7 +35,10 @@ public sealed partial class CategoriesPage : Page
             if (category.ID == selectedId) CategoryList.SelectedItem = row;
         }
         CategoryCountText.Text = $"{Categories.Count} 个分类";
-        EmptyCategoryText.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        EmptyCategoryState.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        RuleSection.Visibility = Categories.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        if (Categories.Count > 0 && CategoryList.SelectedItem == null)
+            CategoryList.SelectedIndex = 0;
     }
 
     private async void CreateButton_Click(object sender, RoutedEventArgs e)

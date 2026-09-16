@@ -23,11 +23,6 @@ namespace Core.Models.Config
         [Config(Options = "浅色|深色|跟随 Windows", Name = "主题模式", Description = "跟随系统或手动选择浅色、深色模式", Group = "外观")]
         public int Theme { get; set; } = 2;
         /// <summary>
-        /// 主题颜色
-        /// </summary>
-        [Config(Name = "主题颜色", Description = "", Group = "外观")]
-        public string ThemeColor { get; set; } = "#2b20d9";
-        /// <summary>
         /// 是否保留界面大小
         /// </summary>
         [Config(Name = "保留窗口大小", Description = "保留当前的窗口大小，而非使用系统默认尺寸", Group = "外观")]

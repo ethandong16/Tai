@@ -93,14 +93,20 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <TextBlock x:Name="EmptyCategoryText" Text="还没有分类。新建一个分类后即可整理应用。" Margin="0,18,0,0" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                        <Border x:Name="EmptyCategoryState" Margin="0,14,0,0" Padding="18" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                            <StackPanel Spacing="7">
+                                <TextBlock Text="建立第一个分类" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                                <TextBlock Text="可以从工作、学习或娱乐开始，名称之后仍可修改。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                <Button Content="新建分类" Margin="-8,2,0,0" HorizontalAlignment="Left" Click="CreateButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <StackPanel x:Name="RuleSection" Grid.Column="1" Spacing="14">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
                         </Grid>
-                        <TextBlock Text="为选中的分类配置应用目录。Tai 会按照目录匹配新发现的应用。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="Tai 会预览目录规则；保存后，新发现的应用将自动归入这个分类。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                         <Button HorizontalAlignment="Left" Click="ManageRules_Click" Style="{StaticResource TaiSubtleButtonStyle}">
                             <StackPanel Orientation="Horizontal" Spacing="7"><FontIcon Glyph="&#xE713;" FontSize="14" /><TextBlock Text="管理匹配规则" /></StackPanel>
                         </Button>

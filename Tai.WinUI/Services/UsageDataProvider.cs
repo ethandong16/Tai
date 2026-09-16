@@ -21,9 +21,9 @@ public readonly record struct UsageDateRange(DateTime Start, DateTime End)
             : $"{Start:yyyy年M月d日} - {End:yyyy年M月d日}";
 }
 
-public sealed record TrendPoint(string Label, double Seconds)
+public sealed record TrendPoint(string Label, double Seconds, bool IsFuture = false)
 {
-    public string Duration => FormatDuration(Seconds);
+    public string Duration => IsFuture ? "尚未发生" : FormatDuration(Seconds);
 
     internal static string FormatDuration(double seconds)
     {
@@ -40,7 +40,7 @@ public interface IUsageDataProvider
         int take = 8,
         CancellationToken cancellationToken = default);
 
-    Task<UsageSnapshot> GetTodayAsync(CancellationToken cancellationToken = default);
+    Task<UsageSnapshot> GetTodayAsync(int take = 8, CancellationToken cancellationToken = default);
 }
 
 public sealed class UsageSnapshot
@@ -81,8 +81,8 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         _categories = categories;
     }
 
-    public Task<UsageSnapshot> GetTodayAsync(CancellationToken cancellationToken = default) =>
-        GetAsync(UsagePeriod.Day, DateTime.Today, 8, cancellationToken);
+    public Task<UsageSnapshot> GetTodayAsync(int take = 8, CancellationToken cancellationToken = default) =>
+        GetAsync(UsagePeriod.Day, DateTime.Today, take, cancellationToken);
 
     public Task<UsageSnapshot> GetAsync(
         UsagePeriod period,
@@ -108,7 +108,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
             var categories = CreateCategories(period, range);
             var longest = allAppLogs.OrderByDescending(item => item.Time).FirstOrDefault();
             var longestName = GetAppDisplayName(longest?.AppModel);
-            var peak = trend.OrderByDescending(point => point.Seconds).FirstOrDefault();
+            var peak = trend.Where(point => !point.IsFuture).OrderByDescending(point => point.Seconds).FirstOrDefault();
 
             return new UsageSnapshot
             {
@@ -160,7 +160,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         int take)
     {
         var rows = take > 0 ? logs.Take(take) : logs;
-        var max = logs.Count == 0 ? 1 : Math.Max(1, logs.Max(item => item.Time));
+        var total = logs.Sum(item => Math.Max(0, item.Time));
         return rows.Select(item =>
         {
             var app = item.AppModel;
@@ -171,7 +171,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
                 GetAppDisplayName(app),
                 Time.ToString(item.Time),
                 item.Time,
-                Math.Max(2, item.Time * 100 / max),
+                CalculateSharePercent(item.Time, total),
                 AppIconResolver.Resolve(app?.IconFile, app?.File, app?.Name, app?.Description),
                 accent,
                 category?.Name ?? "未分类",
@@ -184,7 +184,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         int take)
     {
         var rows = take > 0 ? logs.Take(take) : logs;
-        var max = logs.Count == 0 ? 1 : Math.Max(1, logs.Max(item => item.Duration));
+        var total = logs.Sum(item => Math.Max(0, item.Duration));
         var categories = _webData.GetWebSiteCategories().ToDictionary(item => item.ID);
         return rows.Select(item =>
         {
@@ -194,7 +194,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
                 string.IsNullOrWhiteSpace(item.Alias) ? (item.Title ?? item.Domain ?? "未知网站") : item.Alias,
                 Time.ToString(item.Duration),
                 item.Duration,
-                Math.Max(2, item.Duration * 100 / max),
+                CalculateSharePercent(item.Duration, total),
                 AppIconResolver.Resolve(item.IconFile),
                 NormalizeColor(category?.Color, "#12966F"),
                 category?.Name ?? "未分类",
@@ -222,8 +222,9 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         var result = new List<TrendPoint>(count);
         for (var index = 0; index < count; index++)
         {
-            var seconds = ValueAt(appValues, index) + ValueAt(webValues, index);
-            result.Add(new TrendPoint(GetTrendLabel(period, range.Start, index), seconds));
+            var isFuture = IsFuturePoint(period, range.Start, index, DateTime.Now);
+            var seconds = isFuture ? 0 : ValueAt(appValues, index) + ValueAt(webValues, index);
+            result.Add(new TrendPoint(GetTrendLabel(period, range.Start, index), seconds, isFuture));
         }
         return result;
     }
@@ -280,6 +281,33 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
 
     private static double ValueAt(IReadOnlyList<double> values, int index) =>
         index >= 0 && index < values.Count ? values[index] : 0;
+
+    internal static int CalculateSharePercent(double value, double total)
+    {
+        if (value <= 0 || total <= 0) return 0;
+        return Math.Clamp((int)Math.Round(value * 100 / total, MidpointRounding.AwayFromZero), 0, 100);
+    }
+
+    internal static bool IsFuturePoint(UsagePeriod period, DateTime start, int index, DateTime now)
+    {
+        var pointDate = period switch
+        {
+            UsagePeriod.Day => start.Date.AddHours(index),
+            UsagePeriod.Week or UsagePeriod.Month => start.Date.AddDays(index),
+            UsagePeriod.Year => new DateTime(start.Year, index + 1, 1),
+            _ => start.Date
+        };
+
+        return period switch
+        {
+            UsagePeriod.Day => pointDate.Date > now.Date ||
+                               (pointDate.Date == now.Date && pointDate.Hour > now.Hour),
+            UsagePeriod.Week or UsagePeriod.Month => pointDate.Date > now.Date,
+            UsagePeriod.Year => pointDate.Year > now.Year ||
+                                (pointDate.Year == now.Year && pointDate.Month > now.Month),
+            _ => false
+        };
+    }
 
     private static string GetTrendLabel(UsagePeriod period, DateTime start, int index) => period switch
     {

@@ -51,8 +51,8 @@ public sealed partial class DetailsPage : Page
             var snapshot = await _provider.GetAsync(_period, date, take: 0, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
 
-            var nextRows = snapshot.Apps.Select(item => new DetailRow(item))
-                .Concat(snapshot.Websites.Select(item => new DetailRow(item)))
+            var nextRows = snapshot.Apps.Select(item => new DetailRow(item, snapshot.RangeText))
+                .Concat(snapshot.Websites.Select(item => new DetailRow(item, snapshot.RangeText)))
                 .OrderByDescending(item => item.Seconds)
                 .ToList();
             _allRows.Clear();
@@ -80,7 +80,7 @@ public sealed partial class DetailsPage : Page
 
     private void SelectPeriod(ToggleButton clicked, string value)
     {
-        foreach (var button in new[] { DayButton, MonthButton, YearButton })
+        foreach (var button in new[] { DayButton, WeekButton, MonthButton, YearButton })
             button.IsChecked = ReferenceEquals(button, clicked);
         if (!Enum.TryParse(value, out _period)) _period = UsagePeriod.Day;
     }
@@ -114,12 +114,13 @@ public sealed partial class DetailsPage : Page
     }
 
     internal int CheckedPeriodCount =>
-        new[] { DayButton, MonthButton, YearButton }.Count(button => button.IsChecked == true);
+        new[] { DayButton, WeekButton, MonthButton, YearButton }.Count(button => button.IsChecked == true);
 
     internal void SelectPeriodForSmokeTest(UsagePeriod period)
     {
         var button = period switch
         {
+            UsagePeriod.Week => WeekButton,
             UsagePeriod.Month => MonthButton,
             UsagePeriod.Year => YearButton,
             _ => DayButton
@@ -130,8 +131,8 @@ public sealed partial class DetailsPage : Page
 
 public sealed class DetailRow
 {
-    public DetailRow(UsageItem item)
-        : this(item.Id, item.Name, item.Duration, item.Seconds, item.Percent, item.IconPath, item.AccentHex, item.Category, item.Kind)
+    public DetailRow(UsageItem item, string rangeText)
+        : this(item.Id, item.Name, item.Duration, item.Seconds, item.Percent, item.IconPath, item.AccentHex, item.Category, item.Kind, rangeText)
     {
     }
 
@@ -144,7 +145,8 @@ public sealed class DetailRow
         string iconPath,
         string accent,
         string category,
-        string kind)
+        string kind,
+        string rangeText = "所选范围")
     {
         Id = id;
         Name = name;
@@ -156,6 +158,7 @@ public sealed class DetailRow
         AccentBrush = new SolidColorBrush(ParseColor(accent));
         Category = category;
         Kind = kind;
+        RangeText = rangeText;
     }
 
     public int Id { get; }
@@ -163,12 +166,13 @@ public sealed class DetailRow
     public string Duration { get; }
     public int Seconds { get; }
     public int Percent { get; }
-    public string PercentText => $"{Percent}%";
+    public string PercentText => Seconds > 0 && Percent == 0 ? "<1%" : $"{Percent}%";
     public string IconPath { get; }
     public string AccentHex { get; }
     public SolidColorBrush AccentBrush { get; }
     public string Category { get; }
     public string Kind { get; }
+    public string RangeText { get; }
     public ImageSource Icon => new BitmapImage(new Uri(IconPath, UriKind.Absolute));
 
     private static Windows.UI.Color ParseColor(string value)

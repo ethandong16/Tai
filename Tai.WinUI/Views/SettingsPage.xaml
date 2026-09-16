@@ -20,10 +20,6 @@
                         <Setter Target="ThemePicker.(Grid.Column)" Value="1" />
                         <Setter Target="ThemePicker.HorizontalAlignment" Value="Right" />
                         <Setter Target="ThemePicker.Margin" Value="0" />
-                        <Setter Target="ThemeColorButton.(Grid.Row)" Value="0" />
-                        <Setter Target="ThemeColorButton.(Grid.Column)" Value="1" />
-                        <Setter Target="ThemeColorButton.HorizontalAlignment" Value="Right" />
-                        <Setter Target="ThemeColorButton.Margin" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Row)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Column)" Value="0" />
                         <Setter Target="DeleteStartPicker.Margin" Value="0" />
@@ -58,10 +54,6 @@
                         <Setter Target="ThemePicker.(Grid.Column)" Value="0" />
                         <Setter Target="ThemePicker.HorizontalAlignment" Value="Stretch" />
                         <Setter Target="ThemePicker.Margin" Value="0,10,0,0" />
-                        <Setter Target="ThemeColorButton.(Grid.Row)" Value="1" />
-                        <Setter Target="ThemeColorButton.(Grid.Column)" Value="0" />
-                        <Setter Target="ThemeColorButton.HorizontalAlignment" Value="Stretch" />
-                        <Setter Target="ThemeColorButton.Margin" Value="0,10,0,0" />
                         <Setter Target="DeleteStartPicker.(Grid.Row)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Column)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.ColumnSpan)" Value="3" />
@@ -104,8 +96,22 @@
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="16">
                                     <TextBlock Text="基础" Style="{StaticResource TaiSectionTitleStyle}" />
-                                    <ToggleSwitch x:Name="StartAtBootToggle" Header="开机自启动" Toggled="GeneralSetting_Toggled" />
-                                    <ToggleSwitch x:Name="StartupShowToggle" Header="启动软件时显示主界面" Toggled="GeneralSetting_Toggled" />
+                                    <Grid MinHeight="56">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="开机自启动" />
+                                            <TextBlock Text="登录 Windows 后自动启动 Tai" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
+                                        <ToggleSwitch x:Name="StartAtBootToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
+                                    </Grid>
+                                    <Grid MinHeight="56">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="启动时显示窗口" />
+                                            <TextBlock Text="打开 Tai 时同时显示主界面" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
+                                        <ToggleSwitch x:Name="StartupShowToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
+                                    </Grid>
                                     <Grid>
                                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
@@ -133,28 +139,14 @@
                                             <ComboBoxItem Content="浅色" /><ComboBoxItem Content="深色" /><ComboBoxItem Content="跟随 Windows" />
                                         </ComboBox>
                                     </Grid>
-                                    <Grid>
-                                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                    <Grid MinHeight="56">
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="主题颜色" />
-                                            <TextBlock Text="用于导航、按钮和图表" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="记住窗口大小" />
+                                            <TextBlock Text="下次打开时恢复当前窗口尺寸" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
                                         </StackPanel>
-                                        <Button x:Name="ThemeColorButton" Grid.Column="1" MinWidth="150" Style="{StaticResource TaiSubtleButtonStyle}">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                                    <Border x:Name="ThemeColorSwatch" Width="18" Height="18" CornerRadius="4" />
-                                                    <TextBlock Text="选择颜色" VerticalAlignment="Center" />
-                                                </StackPanel>
-                                            </Button.Content>
-                                            <Button.Flyout>
-                                                <Flyout>
-                                                    <controls:ColorPicker x:Name="ThemeColorPicker" ColorChanged="ThemeColorPicker_ColorChanged" />
-                                                </Flyout>
-                                            </Button.Flyout>
-                                        </Button>
+                                        <ToggleSwitch x:Name="SaveWindowSizeToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
                                     </Grid>
-                                    <ToggleSwitch x:Name="SaveWindowSizeToggle" Header="保留窗口大小" Toggled="GeneralSetting_Toggled" />
                                 </StackPanel>
                             </Border>
                             <Border Style="{StaticResource TaiCardStyle}">
@@ -162,27 +154,31 @@
                                     <TextBlock Text="概览页" Style="{StaticResource TaiSectionTitleStyle}" />
                                     <Grid>
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <TextBlock Text="最为频繁显示条数" VerticalAlignment="Center" />
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="首页常用排行条数" />
+                                            <TextBlock Text="控制概览页展示的应用和网站数量" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
                                         <ComboBox x:Name="FrequentCountPicker" Grid.Column="1" MinWidth="100" SelectionChanged="GeneralSetting_SelectionChanged" />
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <TextBlock Text="更多显示条数" VerticalAlignment="Center" />
-                                        <ComboBox x:Name="MoreCountPicker" Grid.Column="1" MinWidth="100" SelectionChanged="GeneralSetting_SelectionChanged" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="12">
                                     <TextBlock Text="功能" Style="{StaticResource TaiSectionTitleStyle}" />
-                                    <ToggleSwitch x:Name="WebEnabledToggle" Header="网站浏览统计" Toggled="GeneralSetting_Toggled" />
-                                    <TextBlock Text="统计浏览器的网站访问数据，需要安装 Chrome 或 Edge 浏览器插件。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                    <Grid MinHeight="64">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="网站浏览统计" />
+                                            <TextBlock Text="需要安装并连接 Chrome 或 Edge 浏览器插件" Margin="0,4,0,0" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
+                                        <ToggleSwitch x:Name="WebEnabledToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Header="关联" IsClosable="False">
+                    <controls:TabViewItem Header="进程合并" IsClosable="False">
                         <StackPanel Margin="0,12,0,0" Spacing="12">
                             <TextBlock Text="将多个进程关联为一个统计项目，任意一个进程运行时都会同步记录。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                             <StackPanel x:Name="LinksPanel" Spacing="12" />
@@ -190,12 +186,12 @@
                         </StackPanel>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Header="行为" IsClosable="False">
+                    <controls:TabViewItem Header="记录规则" IsClosable="False">
                         <StackPanel Margin="0,12,0,0" Spacing="16">
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="14">
                                     <TextBlock Text="偏好" Style="{StaticResource TaiSectionTitleStyle}" />
-                                    <ToggleSwitch x:Name="SleepWatchToggle" Header="睡眠监测" Toggled="BehaviorSetting_Toggled" />
+                                    <ToggleSwitch x:Name="SleepWatchToggle" Header="睡眠监测" Style="{StaticResource TaiSettingToggleStyle}" Toggled="BehaviorSetting_Toggled" />
                                     <TextBlock Text="离开电脑时自动停止统计，重启软件生效。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                                 </StackPanel>
                             </Border>
@@ -235,7 +231,7 @@
                             </Border>
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="12">
-                                    <ToggleSwitch x:Name="WhiteListToggle" Header="应用白名单" Toggled="BehaviorSetting_Toggled" />
+                                    <ToggleSwitch x:Name="WhiteListToggle" Header="应用白名单" Style="{StaticResource TaiSettingToggleStyle}" Toggled="BehaviorSetting_Toggled" />
                                     <TextBlock Text="启用后仅统计白名单内的应用。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                                     <Grid ColumnSpacing="8">
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>

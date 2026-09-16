@@ -34,7 +34,7 @@
         </VisualStateManager.VisualStateGroups>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="24">
-                <Button HorizontalAlignment="Left" Click="Back_Click" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="返回详细">
+                <Button HorizontalAlignment="Left" Click="Back_Click" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="返回详细" AutomationProperties.Name="返回详细记录">
                     <FontIcon Glyph="&#xE72B;" FontSize="14" />
                 </Button>
                 <StackPanel>
@@ -57,18 +57,21 @@
                         </StackPanel>
                         <StackPanel x:Name="DurationPanel" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
                             <TextBlock Text="{Binding Duration}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TaiAccentBrush}" />
-                            <TextBlock Text="所选范围" Style="{StaticResource TaiCaptionStyle}" />
+                            <TextBlock Text="{Binding RangeText}" Style="{StaticResource TaiCaptionStyle}" />
                         </StackPanel>
                     </Grid>
                 </Border>
                 <StackPanel Spacing="14">
-                    <TextBlock Text="使用概览" Style="{StaticResource TaiSectionTitleStyle}" />
+                    <Grid>
+                        <TextBlock Text="使用概览" Style="{StaticResource TaiSectionTitleStyle}" />
+                        <Button Content="管理分类" HorizontalAlignment="Right" Click="ManageCategory_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
+                    </Grid>
                     <Grid Padding="0,12" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,1,0,1">
                         <TextBlock Text="所属分类" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding Category}" HorizontalAlignment="Right" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </Grid>
                     <Grid>
-                        <TextBlock Text="范围内相对占比" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="应用时长占比" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding PercentText}" HorizontalAlignment="Right" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </Grid>
                     <ProgressBar Value="{Binding Percent}" Maximum="100" Height="6" Foreground="{Binding AccentBrush}" Background="{StaticResource TaiCardMutedBrush}" />
