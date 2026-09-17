@@ -45,6 +45,10 @@ Tai 是一款面向 Windows 的本地时间统计工具，用来记录应用使�
 
 浏览器扩展位于 [`WebExtensions/Chrome`](WebExtensions/Chrome)，适用于 Chrome、Microsoft Edge 以及其他支持 Chrome 扩展的 Chromium 浏览器。
 
+WinUI 发布包已附带扩展。在 Tai 的“设置 → 常规 → 功能”中，可以检测 Chrome、Edge、Brave、Vivaldi 和 Opera 的常见安装位置，分别或批量打开扩展安装页，并复制扩展目录。便携版或未识别的 Chromium 浏览器可手动打开扩展管理页，使用同一目录加载。Firefox 暂不支持。
+
+这是辅助安装：打开页面后仍需在每个浏览器（或个人资料）中开启开发者模式并选择“加载已解压的扩展”。打开页面不表示安装成功；请开启 Tai 的网站浏览统计，再访问普通网页确认有浏览记录。加载后请保留 Tai 附带的扩展目录；移动 Tai 后需从新路径重新加载扩展。普通 Windows 环境无法通用地静默安装未上架的本地扩展，程序不会修改浏览器企业策略。
+
 1. 启动 Tai，在“设置”中开启“网站浏览统计”。
 2. 打开浏览器的扩展管理页面，例如 `chrome://extensions` 或 `edge://extensions`。
 3. 开启“开发者模式”。

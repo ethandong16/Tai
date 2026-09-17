@@ -173,6 +173,17 @@
                                         </StackPanel>
                                         <ToggleSwitch x:Name="WebEnabledToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
                                     </Grid>
+                                    <TextBlock Text="安装网站统计扩展" Style="{StaticResource TaiSectionTitleStyle}" />
+                                    <TextBlock Text="自动检测 Chrome、Edge、Brave、Vivaldi 和 Opera 的常见安装位置。打开安装页后，开启开发者模式，点击“加载已解压的扩展”，选择下方目录。每个浏览器或个人资料需分别加载；Firefox 暂不支持。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                    <TextBox x:Name="ExtensionPathBox" Header="随 Tai 附带的扩展目录（加载后请保留此目录）" IsReadOnly="True" TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="重新检测" Click="DetectBrowsers_Click" />
+                                        <Button Content="复制扩展路径" Click="CopyExtensionPath_Click" />
+                                        <Button Content="打开扩展目录" Click="OpenExtensionFolder_Click" />
+                                    </StackPanel>
+                                    <StackPanel x:Name="ExtensionBrowsersPanel" Spacing="8" />
+                                    <Button x:Name="OpenAllExtensionPagesButton" Content="为检测到的浏览器打开安装页" Click="OpenAllExtensionPages_Click" HorizontalAlignment="Left" />
+                                    <TextBlock x:Name="ExtensionInstallStatus" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
