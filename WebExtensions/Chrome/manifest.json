@@ -1,7 +1,9 @@
 {
-    "name": "Tai Sentry",
-    "description": "Tai网页浏览数据统计拓展",
-    "version": "0.1",
+    "name": "Tai WinUI3 网页统计助手",
+    "short_name": "Tai WinUI3",
+    "description": "配合 Tai WinUI3 修改版，统计当前活动网页的本地浏览时长；数据仅发送到本机 Tai。",
+    "version": "1.0.0",
+    "homepage_url": "https://github.com/ethandong16/Tai",
     "icons": {
         "48": "icon48.png",
         "128": "icon128.png"

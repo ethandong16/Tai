@@ -1,6 +1,8 @@
-# Tai
+# Tai WinUI3 修改版
 
-Tai 是一款面向 Windows 的本地时间统计工具，用来记录应用使用时长和网站浏览时长，帮助你准确了解时间花在了哪里。
+本仓库是基于 MIT 许可的 Tai 独立 fork，以 WinUI 3 重建桌面界面。它不是原 Tai 项目的官方发行版。Tai 是一款面向 Windows 的本地时间统计工具，用来记录应用使用时长和网站浏览时长，帮助你准确了解时间花在了哪里。
+
+原项目版权归原作者所有，完整版权声明和许可条款见 [`LICENSE`](LICENSE)。本修改版的维护、发布和商店条目由本仓库维护者负责。
 
 > [!IMPORTANT]
 > Tai 的主线界面已经迁移到 **WinUI 3**。`Tai.WinUI` 是当前唯一维护、构建和发布的桌面端；`UI` 目录中的传统 WPF 界面仅保留为历史源码和迁移参考，不再新增功能、不再修复界面问题，也不再作为发布版本。
@@ -56,6 +58,8 @@ WinUI 发布包已附带扩展。在 Tai 的“设置 → 常规 → 功能”�
 5. 扩展连接成功后，网站浏览记录会显示在 Tai 的概览、统计和详细页面中。
 
 扩展使用 `tabs` 权限读取当前标签页信息，并通过本机 WebSocket 地址 `ws://127.0.0.1:8908/TaiWebSentry` 与 Tai 通信。数据不会因此上传到远程服务器。
+
+扩展的[隐私政策](docs/browser-extension-privacy.md)、[商店文案与审核清单](WebExtensions/STORE_LISTING.md)以及 `scripts/Pack-BrowserExtension.ps1` 打包脚本均已包含在仓库中。上架 Chrome 或 Edge 商店后取得扩展 ID，才能接入浏览器支持的外部安装提示流程。
 
 ## 从源码构建
 
