@@ -1,0 +1,108 @@
+name: Release Tai WinUI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Locate Visual Studio MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Read release version
+        id: version
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Unsupported release tag: $env:GITHUB_REF_NAME"
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Validate extension version
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $manifest = Get-Content -LiteralPath WebExtensions/Chrome/manifest.json -Raw -Encoding UTF8 | ConvertFrom-Json
+          if ($manifest.version -ne $env:RELEASE_VERSION) {
+            throw "manifest.json version $($manifest.version) does not match release version $env:RELEASE_VERSION"
+          }
+
+      - name: Restore WinUI project
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Restore
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:Version=${{ steps.version.outputs.version }}
+          /p:RestoreIgnoreFailedSources=false
+
+      - name: Build WinUI project
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Build
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:Version=${{ steps.version.outputs.version }}
+          /p:WindowsAppSDKSelfContained=true
+          /p:EnableMsixTooling=true
+          /p:Restore=false
+
+      - name: Publish unpackaged WinUI app
+        run: >-
+          msbuild Tai.WinUI/Tai.WinUI.csproj
+          /t:Publish
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:Version=${{ steps.version.outputs.version }}
+          /p:SelfContained=true
+          /p:WindowsAppSDKSelfContained=true
+          /p:EnableMsixTooling=true
+          /p:Restore=false
+
+      - name: Verify published resources and startup
+        shell: pwsh
+        run: ./scripts/Test-WinUIStartup.ps1 -PublishDirectory Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
+
+      - name: Package release archives
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          ./scripts/Pack-WinUIRelease.ps1 `
+            -PublishDirectory Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish `
+            -OutputDirectory artifacts `
+            -Version $env:RELEASE_VERSION
+          ./scripts/Pack-BrowserExtension.ps1 -OutputDirectory artifacts
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = '${{ steps.version.outputs.version }}'
+          gh release create $env:GITHUB_REF_NAME `
+            "artifacts/Tai-WinUI-$version-win-x64.zip" `
+            "artifacts/Tai-WinUI3-Browser-Extension-$version.zip" `
+            --title "Tai v$version" `
+            --generate-notes

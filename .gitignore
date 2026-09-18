@@ -64,6 +64,11 @@ project.fragment.lock.json
 artifacts/
 .tools/
 
+# Local design review output; keep these files out of product releases.
+design-audit/
+design-qa.md
+scripts/CreateDesignQaComparisons.py
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
