@@ -158,7 +158,7 @@ public sealed partial class SettingsPage : Page
             DeleteEndPicker.Date ??= now;
             ExportStartPicker.Date ??= now;
             ExportEndPicker.Date ??= now;
-            VersionText.Text = $"Tai 版本号 {Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "1.0.0"}";
+            VersionText.Text = $"Tai 版本号 {Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.1.0"}";
         }
         finally
         {
@@ -513,7 +513,7 @@ public sealed partial class SettingsPage : Page
 
     private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
     {
-        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/Planshit/Tai/releases"));
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/ethandong16/Tai/releases"));
     }
 
     private static bool TryGetMonthRange(CalendarDatePicker startPicker, CalendarDatePicker endPicker, out DateTime start, out DateTime end)

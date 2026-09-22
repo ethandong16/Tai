@@ -30,7 +30,16 @@ public sealed partial class DashboardPage : Page
 
     private void ViewAll_Click(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(DetailsPage));
+        Frame?.Navigate(typeof(DetailsPage), ReferenceEquals(sender, WebsiteViewButton) ? "网站" : "应用");
+    }
+
+    private void Statistics_Click(object sender, RoutedEventArgs e) => Frame?.Navigate(typeof(StatisticsPage));
+
+    private void UsageItem_Click(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is not UsageItem item) return;
+        var row = new DetailRow(item, DateTime.Today.ToString("yyyy年M月d日"));
+        Frame?.Navigate(item.Kind == "网站" ? typeof(WebsiteDetailPage) : typeof(AppDetailPage), row);
     }
 
     private async void RefreshButton_Click(object sender, RoutedEventArgs e)

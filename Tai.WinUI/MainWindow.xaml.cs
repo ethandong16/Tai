@@ -72,6 +72,7 @@ public sealed partial class MainWindow : Window
             typeof(Views.AppDetailPage), typeof(Views.WebsiteDetailPage)];
         (int Width, int Height)[] windowSizes =
         [
+            (1240, 900),
             (920, 640),
             (700, 640),
             (480, 640)
@@ -88,6 +89,8 @@ public sealed partial class MainWindow : Window
             if (RootFrame.Content is not MainPage shell) throw new InvalidOperationException("MainPage did not load");
             ValidateShellLayout(shell);
             await CaptureSmokeScreenshotAsync(shell, windowSize.Width);
+            if (windowSize.Width == 1240)
+                await ValidateDashboardNavigationAsync(shell);
 
             foreach (var page in pages)
             {
@@ -97,6 +100,8 @@ public sealed partial class MainWindow : Window
                 RootFrame.UpdateLayout();
                 if (RootFrame.Content is not FrameworkElement content) throw new InvalidOperationException($"{page.Name} did not load");
                 ValidatePageLayout(content);
+                if (windowSize.Width == 1240 && Content is FrameworkElement screenshotRoot)
+                    await CaptureSmokeScreenshotAsync(screenshotRoot, windowSize.Width, page.Name);
                 if (content is Views.StatisticsPage statisticsPage)
                     ValidateStatisticsPage(statisticsPage);
                 if (content is Views.DetailsPage detailsPage)
@@ -107,6 +112,25 @@ public sealed partial class MainWindow : Window
         }
 
         ResizeForEffectiveSize(1240, 820, constrainToWorkArea: true);
+    }
+
+    private static async Task ValidateDashboardNavigationAsync(MainPage shell)
+    {
+        if (shell.FindName("ContentFrame") is not Frame frame)
+            throw new InvalidOperationException("Shell content frame was not created.");
+        var item = new ViewModels.UsageItem(0, "Navigation smoke test", "1分钟", 60, 100,
+            Services.AppIconResolver.DefaultIconPath, "#628AF0", "未分类", "应用");
+        frame.Navigate(typeof(Views.AppDetailPage), new Views.DetailRow(item, "Smoke test"));
+        await Task.Delay(80);
+        if (frame.Content is not Views.AppDetailPage)
+            throw new InvalidOperationException("Selecting a dashboard row redirected away from its detail page.");
+        frame.Navigate(typeof(Views.DetailsPage), "网站");
+        if (frame.Content is not Views.DetailsPage details
+            || details.FindName("TypeFilter") is not ComboBox { SelectedIndex: 2 })
+            throw new InvalidOperationException("Website view-all did not preserve its source filter.");
+        if (shell.FindName("PageTitle") is not TextBlock { Text: "一天的轨迹。" })
+            throw new InvalidOperationException("Returning from a detail page did not restore the page title.");
+        frame.Navigate(typeof(Views.DashboardPage));
     }
 
     private void ResizeForEffectiveSize(int width, int height, bool constrainToWorkArea)
@@ -165,19 +189,26 @@ public sealed partial class MainWindow : Window
 
     private void ApplyResolvedAppearance(bool dark)
     {
-        var pageBackground = ParseColor(dark ? "#17191D" : "#F6F7FB", Colors.Transparent);
-        var cardBackground = ParseColor(dark ? "#22252A" : "#FFFFFF", Colors.Transparent);
-        var mutedBackground = ParseColor(dark ? "#2B2F35" : "#F1F4F8", Colors.Transparent);
-        var primaryText = ParseColor(dark ? "#F4F5F7" : "#18212F", Colors.Transparent);
-        var secondaryText = ParseColor(dark ? "#AAB1BC" : "#667085", Colors.Transparent);
-        var divider = ParseColor(dark ? "#3A3F47" : "#E5E8EE", Colors.Transparent);
-        var accent = ParseColor(dark ? "#9AA8FF" : "#4657C8", Colors.Transparent);
-        var accentFill = ParseColor(dark ? "#5969D8" : "#4657C8", Colors.Transparent);
-        var accentSoft = ParseColor(dark ? "#2D3456" : "#E8EBFA", Colors.Transparent);
-        var accentHover = ParseColor(dark ? "#5060C8" : "#3E4DB3", Colors.Transparent);
-        var accentPressed = ParseColor(dark ? "#4656B8" : "#35429A", Colors.Transparent);
+        var pageBackground = ParseColor(dark ? "#17191E" : "#F6F7FA", Colors.Transparent);
+        var cardBackground = ParseColor(dark ? "#22252C" : "#FFFFFF", Colors.Transparent);
+        var mutedBackground = ParseColor(dark ? "#303540" : "#F0F2F6", Colors.Transparent);
+        var primaryText = ParseColor(dark ? "#F1F2F7" : "#242730", Colors.Transparent);
+        var secondaryText = ParseColor(dark ? "#A1A7B5" : "#626A78", Colors.Transparent);
+        var divider = ParseColor(dark ? "#333740" : "#ECEEF3", Colors.Transparent);
+        var accent = ParseColor(dark ? "#8EB6FF" : "#2463CC", Colors.Transparent);
+        var accentFill = ParseColor(dark ? "#346FD1" : "#2463CC", Colors.Transparent);
+        var accentSoft = ParseColor(dark ? "#26364F" : "#EAF1FF", Colors.Transparent);
+        var accentHover = ParseColor(dark ? "#2B63BF" : "#215ABC", Colors.Transparent);
+        var accentPressed = ParseColor(dark ? "#2456AC" : "#1B4DAB", Colors.Transparent);
         var accentDisabled = ParseColor(dark ? "#3A4165" : "#C9CDE7", Colors.Transparent);
 
+        SetBrushColor("TaiSidebarBrush", ParseColor(dark ? "#1F232B" : "#EBEEF5", Colors.Transparent));
+        SetBrushColor("TaiChartBrush", ParseColor(dark ? "#8EB6FF" : "#628AF0", Colors.Transparent));
+        if (Application.Current.Resources["TaiSidebarMaterial"] is AcrylicBrush material)
+        {
+            material.TintColor = ParseColor(dark ? "#1F232B" : "#EBEEF5", Colors.Transparent);
+            material.FallbackColor = material.TintColor;
+        }
         SetBrushColor("TaiPageBackgroundBrush", pageBackground);
         SetBrushColor("TaiCardBackgroundBrush", cardBackground);
         SetBrushColor("TaiCardMutedBrush", mutedBackground);
@@ -187,10 +218,10 @@ public sealed partial class MainWindow : Window
         SetBrushColor("TaiAccentBrush", accent);
         SetBrushColor("TaiAccentFillBrush", accentFill);
         SetBrushColor("TaiAccentSoftBrush", accentSoft);
-        SetBrushColor("ToggleButtonBackgroundChecked", accentFill);
-        SetBrushColor("ToggleButtonBackgroundCheckedPointerOver", accentHover);
-        SetBrushColor("ToggleButtonBackgroundCheckedPressed", accentPressed);
-        SetBrushColor("ToggleButtonBackgroundCheckedDisabled", accentDisabled);
+        SetBrushColor("ToggleButtonBackgroundChecked", cardBackground);
+        SetBrushColor("ToggleButtonBackgroundCheckedPointerOver", mutedBackground);
+        SetBrushColor("ToggleButtonBackgroundCheckedPressed", divider);
+        SetBrushColor("ToggleButtonBackgroundCheckedDisabled", mutedBackground);
         SetBrushColor("ToggleSwitchFillOn", accentFill);
         SetBrushColor("ToggleSwitchFillOnPointerOver", accentHover);
         SetBrushColor("ToggleSwitchFillOnPressed", accentPressed);
@@ -357,7 +388,7 @@ public sealed partial class MainWindow : Window
             throw new InvalidOperationException($"Settings controls did not reflow at {page.ActualWidth:F0} effective pixels.");
     }
 
-    private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth)
+    private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth, string? name = null)
     {
         RenderTargetBitmap? bitmap = null;
         byte[]? pixels = null;
@@ -378,7 +409,8 @@ public sealed partial class MainWindow : Window
             throw new InvalidOperationException($"The {effectiveWidth}px responsive layout rendered as a blank image.");
 
         var folder = await StorageFolder.GetFolderFromPathAsync(AppContext.BaseDirectory);
-        var file = await folder.CreateFileAsync($"layout-{effectiveWidth}.png", CreationCollisionOption.ReplaceExisting);
+        var suffix = name == null ? string.Empty : $"-{name}";
+        var file = await folder.CreateFileAsync($"layout-{effectiveWidth}{suffix}.png", CreationCollisionOption.ReplaceExisting);
         using var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
         var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
         encoder.SetPixelData(
@@ -493,9 +525,11 @@ public sealed partial class MainWindow : Window
             {
                 general.Theme = theme;
                 ApplyAppearance();
-                await Task.Delay(80);
+                await Task.Delay(350);
                 ValidateTitleBar();
                 ValidateResolvedPalette(theme == 1);
+                if (Content is FrameworkElement captureRoot)
+                    await CaptureSmokeScreenshotAsync(captureRoot, 1240, theme == 1 ? "dark" : "light");
             }
 
             general.Theme = 2;
@@ -521,8 +555,8 @@ public sealed partial class MainWindow : Window
         var accent = GetBrushColor("TaiAccentBrush");
         var accentFill = GetBrushColor("TaiAccentFillBrush");
         var accentSoft = GetBrushColor("TaiAccentSoftBrush");
-        var expectedAccent = ParseColor(dark ? "#9AA8FF" : "#4657C8", Colors.Transparent);
-        var expectedFill = ParseColor(dark ? "#5969D8" : "#4657C8", Colors.Transparent);
+        var expectedAccent = ParseColor(dark ? "#8EB6FF" : "#2463CC", Colors.Transparent);
+        var expectedFill = ParseColor(dark ? "#346FD1" : "#2463CC", Colors.Transparent);
 
         if (accent != expectedAccent || accentFill != expectedFill)
             throw new InvalidOperationException($"The {(dark ? "dark" : "light")} fixed accent palette was not applied.");

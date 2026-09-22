@@ -45,7 +45,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition x:Name="SummaryColumn3" Width="Auto" /></Grid.ColumnDefinitions>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="SummaryRow2" Height="0" /></Grid.RowDefinitions>
-                        <Border Width="54" Height="54" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                        <Border Width="54" Height="54" CornerRadius="16" Background="{StaticResource TaiCardMutedBrush}">
                             <Image Source="{Binding Icon}" Width="42" Height="42" Stretch="Uniform" />
                         </Border>
                         <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="4">
@@ -61,7 +61,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <StackPanel Spacing="14">
+                <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
                     <Grid>
                         <TextBlock Text="使用概览" Style="{StaticResource TaiSectionTitleStyle}" />
                         <Button Content="管理分类" HorizontalAlignment="Right" Click="ManageCategory_Click" Style="{StaticResource TaiSubtleButtonStyle}" />

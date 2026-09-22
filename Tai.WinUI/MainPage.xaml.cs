@@ -10,11 +10,12 @@ namespace Tai.WinUI;
 public sealed partial class MainPage : Page
 {
     private bool _initializationStarted;
+    private bool _synchronizingNavigation;
     private readonly Dictionary<string, (Type Page, string Title)> _routes = new()
     {
         ["Dashboard"] = (typeof(DashboardPage), "概览"),
         ["Statistics"] = (typeof(StatisticsPage), "统计"),
-        ["Details"] = (typeof(DetailsPage), "详细"),
+        ["Details"] = (typeof(DetailsPage), "详细记录"),
         ["Categories"] = (typeof(CategoriesPage), "分类"),
         ["Settings"] = (typeof(SettingsPage), "设置")
     };
@@ -62,6 +63,7 @@ public sealed partial class MainPage : Page
     private void ApplyResponsiveNavigation()
     {
         if (RootNavigation == null || PageHeader == null || ActualWidth <= 0) return;
+        SidebarBrand.Visibility = ActualWidth >= 900 ? Visibility.Visible : Visibility.Collapsed;
         if (ActualWidth >= 900)
         {
             RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
@@ -92,10 +94,10 @@ public sealed partial class MainPage : Page
     {
         if (args.SelectedItem is NavigationViewItem item && item.Tag is string route && _routes.TryGetValue(route, out var page))
         {
-            PageTitle.Text = page.Title;
-            if (ContentFrame.CurrentSourcePageType != page.Page)
+            PageTitle.Text = RouteTitle(route);
+            if (!_synchronizingNavigation && ContentFrame.CurrentSourcePageType != page.Page)
             {
-                ContentFrame.Navigate(page.Page);
+                ContentFrame.Navigate(page.Page, null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
             }
         }
     }
@@ -113,7 +115,21 @@ public sealed partial class MainPage : Page
             .FirstOrDefault(candidate => string.Equals(candidate.Tag as string, route, StringComparison.Ordinal));
         if (item != null && !ReferenceEquals(RootNavigation.SelectedItem, item))
         {
-            RootNavigation.SelectedItem = item;
+            _synchronizingNavigation = true;
+            try { RootNavigation.SelectedItem = item; }
+            finally { _synchronizingNavigation = false; }
         }
+        PageTitle.Text = e.SourcePageType == typeof(AppDetailPage) || e.SourcePageType == typeof(WebsiteDetailPage)
+            ? "使用详情" : RouteTitle(route);
     }
+
+    private string RouteTitle(string route) => route switch
+    {
+        "Dashboard" => "让时间，清晰可见。",
+        "Statistics" => "每一段时间，都有答案。",
+        "Details" => "一天的轨迹。",
+        "Categories" => "为时间，找到归属。",
+        "Settings" => "用你习惯的方式。",
+        _ => _routes[route].Title
+    };
 }

@@ -40,7 +40,7 @@
         <Grid>
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <StackPanel>
-                <TextBlock Text="查看每一个应用和网站的具体使用记录。" Style="{StaticResource TaiCaptionStyle}" />
+                <TextBlock Text="应用与网站的使用记录，随时回看。" Style="{StaticResource TaiCaptionStyle}" />
                 <TextBlock x:Name="RangeText" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
             </StackPanel>
             <StackPanel x:Name="FilterPanel" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
@@ -54,20 +54,22 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1" Margin="0,20,0,12" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-            <StackPanel x:Name="PeriodSelector" Orientation="Horizontal" Spacing="4">
-                <ToggleButton x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="80" Click="PeriodButton_Click" />
-                <ToggleButton x:Name="WeekButton" Content="按周" Tag="Week" MinWidth="80" Click="PeriodButton_Click" />
-                <ToggleButton x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="80" Click="PeriodButton_Click" />
-                <ToggleButton x:Name="YearButton" Content="按年" Tag="Year" MinWidth="80" Click="PeriodButton_Click" />
+            <StackPanel x:Name="PeriodSelector" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="3" Background="{StaticResource TaiCardMutedBrush}" Padding="4" CornerRadius="10">
+                <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="80" Click="PeriodButton_Click" />
+                <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="WeekButton" Content="按周" Tag="Week" MinWidth="80" Click="PeriodButton_Click" />
+                <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="80" Click="PeriodButton_Click" />
+                <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="YearButton" Content="按年" Tag="Year" MinWidth="80" Click="PeriodButton_Click" />
             </StackPanel>
         </ScrollViewer>
 
-        <Grid Grid.Row="2" Margin="0,0,0,8">
+        <Grid Grid.Row="2" Margin="0,0,0,12" RowSpacing="10">
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <TextBox x:Name="SearchBox" Grid.Row="1" PlaceholderText="搜索应用、网站或分类…" TextChanged="SearchBox_TextChanged" AutomationProperties.Name="搜索使用记录" MaxWidth="360" HorizontalAlignment="Left" MinWidth="220"/>
             <TextBlock x:Name="ResultCountText" Style="{StaticResource TaiCaptionStyle}" />
             <TextBlock x:Name="LoadStatusText" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
         </Grid>
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="3" Background="{StaticResource TaiCardBackgroundBrush}" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="1" CornerRadius="16" Padding="16">
             <ListView x:Name="WideList" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RowsList_ItemClick" ItemsSource="{x:Bind Rows}" BorderThickness="0">
                 <ListView.Header>
                     <Grid Padding="8,0,8,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
@@ -83,7 +85,7 @@
                         <Grid MinHeight="58" Padding="0,7">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <Border Width="32" Height="32" CornerRadius="6" Background="{StaticResource TaiCardMutedBrush}">
+                                <Border Width="32" Height="32" CornerRadius="10" Background="{StaticResource TaiCardMutedBrush}">
                                     <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
                                 </Border>
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
@@ -107,7 +109,7 @@
                     <DataTemplate>
                         <Grid MinHeight="68" Padding="0,8" ColumnSpacing="10">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="38" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                            <Border Width="34" Height="34" CornerRadius="6" Background="{StaticResource TaiCardMutedBrush}">
+                            <Border Width="34" Height="34" CornerRadius="10" Background="{StaticResource TaiCardMutedBrush}">
                                 <Image Source="{Binding Icon}" Width="26" Height="26" Stretch="Uniform" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">

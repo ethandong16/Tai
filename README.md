@@ -13,10 +13,10 @@ This repository is an independent fork and WinUI 3 edition of Tai. It is not an 
 
 Download the latest package from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
 
-For the first formal release, download:
+For the current release, download:
 
-- `Tai-WinUI-1.0.0-win-x64.zip` for the self-contained desktop application.
-- `Tai-WinUI3-Browser-Extension-1.0.0.zip` for the Chromium browser extension.
+- `Tai-WinUI-1.1.0-win-x64.zip` for the self-contained desktop application.
+- `Tai-WinUI3-Browser-Extension-1.1.0.zip` for the Chromium browser extension.
 
 The desktop package is unpackaged and portable. Extract it and run `Tai.WinUI.exe`.
 
@@ -90,7 +90,7 @@ Create release archives locally:
 ./scripts/Pack-WinUIRelease.ps1 `
   -PublishDirectory "Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish" `
   -OutputDirectory artifacts `
-  -Version 1.0.0
+  -Version 1.1.0
 
 ./scripts/Pack-BrowserExtension.ps1 -OutputDirectory artifacts
 ```

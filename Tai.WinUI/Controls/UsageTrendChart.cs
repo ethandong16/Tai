@@ -18,7 +18,8 @@ public sealed class UsageTrendChart : UserControl
         MinHeight = 220;
         Content = _canvas;
         SizeChanged += (_, _) => Render();
-        Loaded += (_, _) => Render();
+        Loaded += (_, _) => { Subscribe(); Render(); };
+        Unloaded += (_, _) => Unsubscribe();
     }
 
     public object? Items
@@ -34,13 +35,25 @@ public sealed class UsageTrendChart : UserControl
         new PropertyMetadata(null, (dependencyObject, args) =>
         {
             var chart = (UsageTrendChart)dependencyObject;
-            if (chart._collection != null) chart._collection.CollectionChanged -= chart.Items_CollectionChanged;
-            chart._collection = args.NewValue as INotifyCollectionChanged;
-            if (chart._collection != null) chart._collection.CollectionChanged += chart.Items_CollectionChanged;
+            chart.Subscribe();
             chart.Render();
         }));
 
     private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => Render();
+
+    private void Subscribe()
+    {
+        Unsubscribe();
+        if (!IsLoaded) return;
+        _collection = Items as INotifyCollectionChanged;
+        if (_collection != null) _collection.CollectionChanged += Items_CollectionChanged;
+    }
+
+    private void Unsubscribe()
+    {
+        if (_collection != null) _collection.CollectionChanged -= Items_CollectionChanged;
+        _collection = null;
+    }
 
     private void Render()
     {
@@ -68,89 +81,49 @@ public sealed class UsageTrendChart : UserControl
         var maximum = GetNiceMaximum(actualPoints.Count == 0 ? 0 : actualPoints.Max(point => point.Seconds));
         DrawGrid(width, top, plotBottom, plotHeight, maximum, left, right);
 
-        var coordinates = new Point?[points.Count];
+        var slotWidth = plotWidth / points.Count;
+        var barWidth = Math.Max(3, Math.Min(38, slotWidth * 0.56));
+        var labelStep = Math.Max(1, (int)Math.Ceiling(points.Count * 42d / plotWidth));
         for (var index = 0; index < points.Count; index++)
         {
-            var x = points.Count == 1 ? left + plotWidth / 2 : left + plotWidth * index / (points.Count - 1);
-            if (!points[index].IsFuture)
+            var point = points[index];
+            var x = left + slotWidth * (index + 0.5);
+            if (!point.IsFuture)
             {
-                var y = plotBottom - points[index].Seconds / maximum * (plotHeight - 8);
-                coordinates[index] = new Point(x, y);
-            }
-        }
-
-        var visibleCoordinates = coordinates.Where(point => point.HasValue).Select(point => point!.Value).ToList();
-        if (visibleCoordinates.Count > 1 && actualPoints.Any(point => point.Seconds > 0))
-        {
-            var areaPoints = new PointCollection { new(visibleCoordinates[0].X, plotBottom) };
-            foreach (var point in visibleCoordinates) areaPoints.Add(point);
-            areaPoints.Add(new Point(visibleCoordinates[^1].X, plotBottom));
-            _canvas.Children.Add(new Polygon
-            {
-                Points = areaPoints,
-                Fill = Brush("TaiAccentSoftBrush"),
-                Opacity = 0.58
-            });
-        }
-
-        if (visibleCoordinates.Count > 1)
-        {
-            var linePoints = new PointCollection();
-            foreach (var point in visibleCoordinates) linePoints.Add(point);
-            _canvas.Children.Add(new Polyline
-            {
-                Points = linePoints,
-                Stroke = Brush("TaiAccentBrush"),
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round
-            });
-        }
-
-        if (actualPoints.All(point => point.Seconds <= 0))
-            AddEmptyMessage("这个时间范围内还没有使用记录", top + plotHeight / 2 - 12);
-
-        var labelStep = points.Count switch
-        {
-            <= 12 => 1,
-            <= 24 => 3,
-            _ => 5
-        };
-
-        for (var index = 0; index < points.Count; index++)
-        {
-            var x = points.Count == 1 ? left + plotWidth / 2 : left + plotWidth * index / (points.Count - 1);
-            var coordinate = coordinates[index];
-            if (coordinate.HasValue && points[index].Seconds > 0)
-            {
-                var dot = new Ellipse
+                var barHeight = Math.Max(3, point.Seconds / maximum * (plotHeight - 8));
+                var bar = new Button
                 {
-                    Width = 8,
-                    Height = 8,
-                    Fill = Brush("TaiCardBackgroundBrush"),
-                    Stroke = Brush("TaiAccentBrush"),
-                    StrokeThickness = 2
+                    Width = barWidth, Height = barHeight, MinWidth = 0, MinHeight = 0,
+                    Padding = new Thickness(0), BorderThickness = new Thickness(0),
+                    CornerRadius = new CornerRadius(4, 4, 2, 2),
+                    Background = Brush(point.Seconds > 0 ? "TaiChartBrush" : "TaiCardMutedBrush"),
+                    VerticalContentAlignment = VerticalAlignment.Stretch
                 };
-                Canvas.SetLeft(dot, coordinate.Value.X - 4);
-                Canvas.SetTop(dot, coordinate.Value.Y - 4);
-                ToolTipService.SetToolTip(dot, $"{points[index].Label}\n{points[index].Duration}");
-                _canvas.Children.Add(dot);
+                var description = $"{point.Label} · {point.Duration}";
+                Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(bar, description);
+                ToolTipService.SetToolTip(bar, description);
+                var flyout = new Flyout { Content = new TextBlock { Text = description } };
+                bar.Flyout = flyout;
+                Canvas.SetLeft(bar, x - barWidth / 2);
+                Canvas.SetTop(bar, plotBottom - barHeight);
+                _canvas.Children.Add(bar);
             }
-
             if (index % labelStep != 0 && index != points.Count - 1) continue;
+            // Do not collide the penultimate label with the last one on narrow charts.
+            if (index != points.Count - 1 && points.Count - 1 - index < labelStep) continue;
             var label = new TextBlock
             {
-                Text = points[index].Label,
-                Width = 68,
+                Text = point.Label.Contains(' ') ? point.Label[(point.Label.LastIndexOf(' ') + 1)..] : point.Label,
+                Width = 44, FontSize = 11,
                 TextAlignment = TextAlignment.Center,
-                FontSize = 11,
-                Opacity = points[index].IsFuture ? 0.52 : 1,
-                Foreground = Brush("TaiSecondaryTextBrush"),
-                TextTrimming = TextTrimming.CharacterEllipsis
+                Foreground = Brush("TaiSecondaryTextBrush")
             };
-            Canvas.SetLeft(label, Math.Clamp(x - 34, left - 34, Math.Max(left - 34, width - 68)));
-            Canvas.SetTop(label, plotBottom + 9);
+            Canvas.SetLeft(label, Math.Clamp(x - 22, left - 12, width - 44));
+            Canvas.SetTop(label, plotBottom + 10);
             _canvas.Children.Add(label);
         }
+        if (actualPoints.All(point => point.Seconds <= 0))
+            AddEmptyMessage("这个时间范围内还没有使用记录", top + plotHeight / 2 - 12);
     }
 
     private void DrawGrid(double width, double top, double plotBottom, double plotHeight, double maximum, double left, double right)
@@ -188,6 +161,9 @@ public sealed class UsageTrendChart : UserControl
         var message = new TextBlock
         {
             Text = text,
+            FontSize = 12,
+            TextWrapping = TextWrapping.Wrap,
+            MaxWidth = Math.Max(40, ActualWidth - 78),
             Foreground = Brush("TaiSecondaryTextBrush")
         };
         Canvas.SetLeft(message, 68);

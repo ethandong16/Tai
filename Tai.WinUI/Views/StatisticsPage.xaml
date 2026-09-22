@@ -67,7 +67,7 @@
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="按周期查看应用和网站的使用趋势。" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="拉长一点视角，发现日常的变化。" Style="{StaticResource TaiCaptionStyle}" />
                         <TextBlock Text="{Binding RangeText}" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </StackPanel>
                     <StackPanel x:Name="HeaderActions" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
@@ -79,11 +79,11 @@
                 </Grid>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-                    <StackPanel x:Name="PeriodSelector" Orientation="Horizontal" Spacing="4">
-                        <ToggleButton x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="72" Click="PeriodButton_Click" />
-                        <ToggleButton x:Name="WeekButton" Content="按周" Tag="Week" MinWidth="72" Click="PeriodButton_Click" />
-                        <ToggleButton x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="72" Click="PeriodButton_Click" />
-                        <ToggleButton x:Name="YearButton" Content="按年" Tag="Year" MinWidth="72" Click="PeriodButton_Click" />
+                    <StackPanel x:Name="PeriodSelector" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="3" Background="{StaticResource TaiCardMutedBrush}" Padding="4" CornerRadius="10">
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="72" Click="PeriodButton_Click" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="WeekButton" Content="按周" Tag="Week" MinWidth="72" Click="PeriodButton_Click" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="72" Click="PeriodButton_Click" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="YearButton" Content="按年" Tag="Year" MinWidth="72" Click="PeriodButton_Click" />
                     </StackPanel>
                 </ScrollViewer>
 
@@ -121,10 +121,10 @@
                     </Border>
                 </Grid>
 
-                <StackPanel Spacing="14">
-                    <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
+                    <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
                         <TextBlock Text="使用趋势" Style="{StaticResource TaiSectionTitleStyle}" />
-                        <TextBlock Text="纵轴显示时长，移到数据点可查看精确值" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
+                        <TextBlock Text="选择柱状条查看时长" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource TaiCaptionStyle}" />
                     </Grid>
                     <widgets:UsageTrendChart x:Name="TrendChart" Items="{Binding Trend}" Height="250" AutomationProperties.Name="使用趋势图，纵轴为使用时长，未来时段不计为零" />
                 </StackPanel>
@@ -135,7 +135,7 @@
                         <ColumnDefinition x:Name="BreakdownColumn2" Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="BreakdownRow2" Height="0" /></Grid.RowDefinitions>
-                    <StackPanel>
+                    <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <TextBlock Text="应用排名" Style="{StaticResource TaiSectionTitleStyle}" />
                             <TextBlock Text="按使用时长" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
@@ -158,7 +158,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
-                    <StackPanel x:Name="CategorySection" Grid.Column="1">
+                    <StackPanel x:Name="CategorySection" Grid.Column="1" Style="{StaticResource TaiSurfacePanelStyle}">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <TextBlock Text="分类占比" Style="{StaticResource TaiSectionTitleStyle}" />
                             <TextBlock Text="应用与网站合计" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />

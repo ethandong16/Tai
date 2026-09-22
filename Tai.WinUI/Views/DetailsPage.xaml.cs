@@ -37,6 +37,17 @@ public sealed partial class DetailsPage : Page
         _ = LoadRowsAsync();
     }
 
+    protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        TypeFilter.SelectedIndex = (e.Parameter as string) switch { "应用" => 1, "网站" => 2, _ => 0 };
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_ready) ApplyTypeFilter();
+    }
+
     private async Task LoadRowsAsync()
     {
         if (_provider == null) return;
@@ -109,7 +120,10 @@ public sealed partial class DetailsPage : Page
             : _allRows.Where(row => row.Kind == selected).ToList();
 
         Rows.Clear();
-        foreach (var row in filtered) Rows.Add(row);
+        var search = SearchBox.Text.Trim();
+        foreach (var row in filtered.Where(row => string.IsNullOrEmpty(search)
+                     || row.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
+                     || row.Category.Contains(search, StringComparison.OrdinalIgnoreCase))) Rows.Add(row);
         ResultCountText.Text = Rows.Count == 0 ? "此时间范围内暂无记录" : $"共 {Rows.Count} 条记录";
     }
 

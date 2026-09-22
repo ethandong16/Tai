@@ -44,13 +44,42 @@
             x:Name="RootNavigation"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="False"
+            IsTitleBarAutoPaddingEnabled="False"
             IsPaneOpen="False"
-            OpenPaneLength="208"
+            OpenPaneLength="216"
             CompactPaneLength="56"
             PaneDisplayMode="LeftMinimal"
             IsPaneToggleButtonVisible="True"
             SelectionChanged="RootNavigation_SelectionChanged"
             Background="Transparent">
+            <controls:NavigationView.Resources>
+                <StaticResource x:Key="NavigationViewContentBackground" ResourceKey="TaiPageBackgroundBrush" />
+                <StaticResource x:Key="NavigationViewDefaultPaneBackground" ResourceKey="TaiSidebarMaterial" />
+                <StaticResource x:Key="NavigationViewExpandedPaneBackground" ResourceKey="TaiSidebarMaterial" />
+                <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="TaiCardBackgroundBrush" />
+                <StaticResource x:Key="NavigationViewItemForegroundSelected" ResourceKey="TaiAccentBrush" />
+            </controls:NavigationView.Resources>
+            <controls:NavigationView.PaneHeader>
+                <StackPanel x:Name="SidebarBrand" Margin="22,26,12,32" Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Border Background="{StaticResource TaiCardBackgroundBrush}" CornerRadius="12" Width="42" Height="42">
+                            <Image Source="ms-appx:///Resources/Icons/tai.png" Width="30" Height="30" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Tai" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                            <TextBlock Text="时间，清晰可见" FontSize="10" Foreground="{StaticResource TaiSecondaryTextBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Text="你的时间" Margin="0,20,0,0" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" />
+                </StackPanel>
+            </controls:NavigationView.PaneHeader>
+            <controls:NavigationView.MenuItemContainerStyle>
+                <Style TargetType="controls:NavigationViewItem">
+                    <Setter Property="MinHeight" Value="44" />
+                    <Setter Property="Margin" Value="8,3" />
+                    <Setter Property="CornerRadius" Value="9" />
+                </Style>
+            </controls:NavigationView.MenuItemContainerStyle>
             <controls:NavigationView.MenuItems>
                 <controls:NavigationViewItem Content="概览" Tag="Dashboard">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="Home" /></controls:NavigationViewItem.Icon>
@@ -58,7 +87,7 @@
                 <controls:NavigationViewItem Content="统计" Tag="Statistics">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="FourBars" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="详细" Tag="Details">
+                <controls:NavigationViewItem Content="详细记录" Tag="Details">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="Calendar" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
                 <controls:NavigationViewItem Content="分类" Tag="Categories">
@@ -76,10 +105,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Border x:Name="PageHeader" Grid.Row="0" Margin="12,12,12,8" Padding="0,0,0,16" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                <Border x:Name="PageHeader" Grid.Row="0" Margin="12,12,12,8" Padding="0,0,0,16" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
                     <StackPanel>
-                        <TextBlock Text="时间使用" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
-                        <TextBlock x:Name="PageTitle" Text="概览" Margin="0,4,0,0" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                        <TextBlock Text="我的时间" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
+                        <TextBlock x:Name="PageTitle" Text="概览" Margin="0,4,0,0" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </StackPanel>
                 </Border>
                 <Frame x:Name="ContentFrame" Grid.Row="1" Navigated="ContentFrame_Navigated" />

@@ -39,7 +39,7 @@
 ## 发布前清单
 
 1. 运行 `powershell -ExecutionPolicy Bypass -File scripts/Pack-BrowserExtension.ps1`。
-2. 使用新生成的 `artifacts/Tai-WinUI3-Browser-Extension-1.0.0.zip` 上传，不要上传整个仓库。
+2. 使用新生成的 `artifacts/Tai-WinUI3-Browser-Extension-1.1.0.zip` 上传，不要上传整个仓库。
 3. 上传至少一张清楚展示 Tai 网站统计结果的商店截图；截图不得暗示这是原 Tai 官方发行版。
 4. 在开发者控制台填写上面的权限理由、数据披露和隐私政策 URL。
 5. 审核通过后，记录 Chrome 和 Edge 的商店链接及扩展 ID。桌面端自动发起安装功能必须使用已审核的扩展 ID 和对应商店更新地址。

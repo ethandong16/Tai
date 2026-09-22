@@ -87,7 +87,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
                 <StackPanel>
-                    <TextBlock Text="调整 Tai 的运行方式、数据管理和外观。" Style="{StaticResource TaiCaptionStyle}" />
+                    <TextBlock Text="安静记录，轻松掌控。" Style="{StaticResource TaiCaptionStyle}" />
                 </StackPanel>
 
                 <controls:TabView x:Name="SettingsTabs" SelectionChanged="SettingsTabs_SelectionChanged" IsAddTabButtonVisible="False">
@@ -309,9 +309,9 @@
                                 <TextBlock Text="Tai 时间统计" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                                 <TextBlock x:Name="VersionText" Style="{StaticResource TaiCaptionStyle}" />
                                 <Button Content="检查更新" HorizontalAlignment="Left" Click="CheckUpdate_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
-                                <HyperlinkButton Content="浏览器统计插件" NavigateUri="https://github.com/Planshit/Tai/discussions/279" />
-                                <HyperlinkButton Content="开源项目：github.com/Planshit/Tai" NavigateUri="https://github.com/Planshit/Tai" />
-                                <HyperlinkButton Content="讨论区：github.com/Planshit/Tai/discussions" NavigateUri="https://github.com/Planshit/Tai/discussions" />
+                                <HyperlinkButton Content="浏览器统计插件" NavigateUri="https://github.com/ethandong16/Tai/tree/master/WebExtensions/Chrome" />
+                                <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai" NavigateUri="https://github.com/ethandong16/Tai" />
+                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai/discussions" NavigateUri="https://github.com/ethandong16/Tai/discussions" />
                                 <TextBlock Text="Icon 来自微软 Emoji" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
                         </Border>

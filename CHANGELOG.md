@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.0 - 2026-09-22
+
+- Redesigned the WinUI interface with responsive navigation, updated surfaces, and refined light and dark themes.
+- Added native category distribution and interactive usage trend charts.
+- Added record search and preserved application or website filters when opening the full details view.
+- Updated project, discussion, release, and browser extension links to the maintained fork.
+
 ## v1.0.0 - 2026-09-18
 
 First formal release of the Tai WinUI 3 edition.

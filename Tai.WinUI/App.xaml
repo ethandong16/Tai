@@ -9,57 +9,86 @@
                 <controls:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
 
-            <SolidColorBrush x:Key="TaiPageBackgroundBrush" Color="#F6F7FB" />
+            <!-- Solid content surfaces over a restrained, system-managed translucent sidebar. -->
+            <SolidColorBrush x:Key="TaiSidebarBrush" Color="#EBEEF5" />
+            <SolidColorBrush x:Key="TaiChartBrush" Color="#628AF0" />
+            <AcrylicBrush x:Key="TaiSidebarMaterial" TintColor="#EBEEF5" TintOpacity="0.85" TintLuminosityOpacity="0.96" FallbackColor="#EBEEF5" />
+            <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+            <CornerRadius x:Key="OverlayCornerRadius">16</CornerRadius>
+            <Style x:Key="TaiSurfacePanelStyle" TargetType="StackPanel">
+                <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="24" />
+                <Setter Property="Spacing" Value="14" />
+            </Style>
+            <Style x:Key="TaiPeriodButtonStyle" TargetType="ToggleButton">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="7" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="16,7" />
+                <Setter Property="MinWidth" Value="64" />
+                <Setter Property="FontSize" Value="13" />
+            </Style>
+
+            <SolidColorBrush x:Key="TaiPageBackgroundBrush" Color="#F6F7FA" />
             <SolidColorBrush x:Key="TaiCardBackgroundBrush" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="TaiCardMutedBrush" Color="#F1F4F8" />
-            <SolidColorBrush x:Key="TaiAccentBrush" Color="#4657C8" />
-            <SolidColorBrush x:Key="TaiAccentFillBrush" Color="#4657C8" />
-            <SolidColorBrush x:Key="TaiAccentSoftBrush" Color="#E8EBFA" />
+            <SolidColorBrush x:Key="TaiCardMutedBrush" Color="#F0F2F6" />
+            <SolidColorBrush x:Key="TaiAccentBrush" Color="#2463CC" />
+            <SolidColorBrush x:Key="TaiAccentFillBrush" Color="#2463CC" />
+            <SolidColorBrush x:Key="TaiAccentSoftBrush" Color="#EAF1FF" />
             <SolidColorBrush x:Key="TaiInfoBrush" Color="#3F5FCA" />
             <SolidColorBrush x:Key="TaiInfoSoftBrush" Color="#E9EDFF" />
             <SolidColorBrush x:Key="TaiWarningBrush" Color="#9A5B08" />
             <SolidColorBrush x:Key="TaiWarningSoftBrush" Color="#FFF3DD" />
             <SolidColorBrush x:Key="TaiDangerBrush" Color="#B8324B" />
             <SolidColorBrush x:Key="TaiDangerSoftBrush" Color="#FBE7EB" />
-            <SolidColorBrush x:Key="TaiPrimaryTextBrush" Color="#18212F" />
-            <SolidColorBrush x:Key="TaiSecondaryTextBrush" Color="#667085" />
-            <SolidColorBrush x:Key="TaiDividerBrush" Color="#E5E8EE" />
-            <SolidColorBrush x:Key="ToggleButtonBackgroundChecked" Color="#4657C8" />
-            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPointerOver" Color="#3E4DB3" />
-            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPressed" Color="#35429A" />
+            <SolidColorBrush x:Key="TaiPrimaryTextBrush" Color="#242730" />
+            <SolidColorBrush x:Key="TaiSecondaryTextBrush" Color="#626A78" />
+            <SolidColorBrush x:Key="TaiDividerBrush" Color="#ECEEF3" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundChecked" Color="#2463CC" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPointerOver" Color="#215ABC" />
+            <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPressed" Color="#1B4DAB" />
             <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedDisabled" Color="#C9CDE7" />
-            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#4657C8" />
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#3E4DB3" />
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#35429A" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#2463CC" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#215ABC" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#1B4DAB" />
             <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled" Color="#C9CDE7" />
-            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#4657C8" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#2463CC" />
+            <StaticResource x:Key="ToggleButtonForegroundChecked" ResourceKey="TaiPrimaryTextBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPointerOver" ResourceKey="TaiPrimaryTextBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPressed" ResourceKey="TaiPrimaryTextBrush" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="White" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="White" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressed" Color="White" />
 
             <Style x:Key="TaiCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="18" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="24" />
             </Style>
             <Style x:Key="TaiSummaryCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="18" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="24" />
             </Style>
             <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource TaiAccentFillBrush}" />
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="CornerRadius" Value="9" />
                 <Setter Property="Padding" Value="14,8" />
             </Style>
             <Style x:Key="TaiDangerButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource TaiDangerSoftBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource TaiDangerBrush}" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="CornerRadius" Value="9" />
                 <Setter Property="Padding" Value="14,8" />
             </Style>
             <Style x:Key="TaiSubtleButtonStyle" TargetType="Button">
@@ -74,7 +103,7 @@
                 <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
             </Style>
             <Style x:Key="TaiSectionTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="17" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontWeight" Value="SemiBold" />
                 <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
             </Style>

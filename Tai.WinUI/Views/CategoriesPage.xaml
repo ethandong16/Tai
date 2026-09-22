@@ -64,8 +64,8 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="CategoryRow2" Height="0" /></Grid.RowDefinitions>
 
-                    <StackPanel>
-                        <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                    <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
+                        <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
                             <TextBlock Text="应用分类" Style="{StaticResource TaiSectionTitleStyle}" />
                             <TextBlock Text="选择一项以管理规则" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
@@ -74,7 +74,7 @@
                                 <DataTemplate>
                                     <Grid MinHeight="62" Padding="0,8" ColumnSpacing="10">
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="36" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <Border Width="32" Height="32" CornerRadius="6" Background="{Binding SoftBrush}">
+                                        <Border Width="32" Height="32" CornerRadius="10" Background="{Binding SoftBrush}">
                                             <FontIcon Glyph="&#xE8B7;" Foreground="{Binding AccentBrush}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
@@ -93,7 +93,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <Border x:Name="EmptyCategoryState" Margin="0,14,0,0" Padding="18" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                        <Border x:Name="EmptyCategoryState" Margin="0,14,0,0" Padding="18" CornerRadius="16" Background="{StaticResource TaiCardMutedBrush}">
                             <StackPanel Spacing="7">
                                 <TextBlock Text="建立第一个分类" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                                 <TextBlock Text="可以从工作、学习或娱乐开始，名称之后仍可修改。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
@@ -102,7 +102,7 @@
                         </Border>
                     </StackPanel>
 
-                    <StackPanel x:Name="RuleSection" Grid.Column="1" Spacing="14">
+                    <StackPanel x:Name="RuleSection" Grid.Column="1" Style="{StaticResource TaiSurfacePanelStyle}">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
                         </Grid>
