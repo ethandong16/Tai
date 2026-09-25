@@ -13,6 +13,7 @@ public sealed partial class DashboardPage : Page
     public DashboardPage()
     {
         InitializeComponent();
+        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         var itemCount = Math.Max(1,
             App.Services.GetService<IAppConfig>()?.GetConfig()?.General?.IndexPageFrequentUseNum ?? 4);
         _viewModel = new MainViewModel(

@@ -17,6 +17,7 @@ public sealed partial class StatisticsPage : Page
     {
         _viewModel = new MainViewModel(App.Services.GetService<IUsageDataProvider>(), dashboardMode: false);
         InitializeComponent();
+        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         DataContext = _viewModel;
         DatePicker.Date = DateTimeOffset.Now;
         Loaded += StatisticsPage_Loaded;
@@ -27,6 +28,25 @@ public sealed partial class StatisticsPage : Page
         if (_ready) return;
         _ready = true;
         _ = ReloadAsync();
+        _ = PreloadPeriodsAsync();
+    }
+
+    private async Task PreloadPeriodsAsync()
+    {
+        var provider = App.Services.GetService<IUsageDataProvider>();
+        if (provider == null) return;
+
+        try
+        {
+            await provider.PreloadAsync(DatePicker.Date?.DateTime ?? DateTime.Today);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+        }
     }
 
     private void PeriodButton_Click(object sender, RoutedEventArgs e)
@@ -45,7 +65,11 @@ public sealed partial class StatisticsPage : Page
 
     private void DatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
     {
-        if (_ready && args.NewDate.HasValue) _ = ReloadAsync();
+        if (_ready && args.NewDate.HasValue)
+        {
+            _ = ReloadAsync();
+            _ = PreloadPeriodsAsync();
+        }
     }
 
     private Task ReloadAsync()

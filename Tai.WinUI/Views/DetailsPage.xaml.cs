@@ -25,6 +25,7 @@ public sealed partial class DetailsPage : Page
     {
         _provider = App.Services.GetService<IUsageDataProvider>();
         InitializeComponent();
+        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         DatePicker.Date = DateTimeOffset.Now;
         Loaded += DetailsPage_Loaded;
         Unloaded += (_, _) => _loadCancellation?.Cancel();

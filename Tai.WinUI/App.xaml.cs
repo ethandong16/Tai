@@ -54,6 +54,8 @@ public partial class App : Application
             await main.RunAsync();
             _window.ApplyStartupSettings();
             CoreReadySource.TrySetResult(null);
+            if (!smokeTest)
+                _ = WarmUsageCacheAsync();
             if (smokeTest)
             {
                 if (!_window.IsPerMonitorDpiAware())
@@ -81,6 +83,19 @@ public partial class App : Application
             {
                 _window.ShowStartupError();
             }
+        }
+    }
+
+    private static async Task WarmUsageCacheAsync()
+    {
+        try
+        {
+            await Services.GetRequiredService<Tai.WinUI.Services.IUsageDataProvider>()
+                .PreloadAsync(DateTime.Today);
+        }
+        catch (Exception exception)
+        {
+            LogStartupException(exception);
         }
     }
 

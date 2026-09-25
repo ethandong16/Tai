@@ -1,6 +1,7 @@
 using Core.Librarys;
 using Core.Models;
 using Core.Servicers.Interfaces;
+using System.Collections.Concurrent;
 
 namespace Tai.WinUI.Services;
 
@@ -41,6 +42,17 @@ public interface IUsageDataProvider
         CancellationToken cancellationToken = default);
 
     Task<UsageSnapshot> GetTodayAsync(int take = 8, CancellationToken cancellationToken = default);
+
+    bool TryGetCached(
+        UsagePeriod period,
+        DateTime anchorDate,
+        int take,
+        out UsageSnapshot snapshot);
+
+    Task PreloadAsync(
+        DateTime anchorDate,
+        int take = 8,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed class UsageSnapshot
@@ -73,6 +85,8 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
     private readonly IData _data;
     private readonly IWebData _webData;
     private readonly ICategorys _categories;
+    private readonly ConcurrentDictionary<UsageCacheKey, UsageSnapshot> _cache = new();
+    private readonly ConcurrentDictionary<UsageCacheKey, Task<UsageSnapshot>> _loads = new();
 
     public CoreUsageDataProvider(IData data, IWebData webData, ICategorys categories)
     {
@@ -90,46 +104,95 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         int take = 8,
         CancellationToken cancellationToken = default)
     {
-        return Task.Run(async () =>
-        {
-            await App.CoreReady.WaitAsync(cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var range = GetDateRange(period, anchorDate);
-            var queryEnd = range.End.Date.AddDays(1).AddTicks(-1);
-            var allAppLogs = _data.GetDateRangelogList(range.Start, queryEnd).ToList();
-            cancellationToken.ThrowIfCancellationRequested();
-            var allSiteLogs = _webData.GetDateRangeWebSiteList(range.Start, queryEnd) ?? new();
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var apps = CreateAppItems(allAppLogs, take);
-            var websites = CreateWebsiteItems(allSiteLogs, take);
-            var trend = CreateTrend(period, range);
-            var categories = CreateCategories(period, range);
-            var longest = allAppLogs.OrderByDescending(item => item.Time).FirstOrDefault();
-            var longestName = GetAppDisplayName(longest?.AppModel);
-            var peak = trend.Where(point => !point.IsFuture).OrderByDescending(point => point.Seconds).FirstOrDefault();
-
-            return new UsageSnapshot
-            {
-                Period = period,
-                AnchorDate = anchorDate.Date,
-                DateRange = range,
-                Apps = apps,
-                Websites = websites,
-                Trend = trend,
-                Categories = categories,
-                TotalAppSeconds = allAppLogs.Sum(item => item.Time),
-                TotalWebSeconds = allSiteLogs.Sum(item => item.Duration),
-                AppCount = _data.GetDateRangeAppCount(range.Start, queryEnd),
-                WebsiteCount = _webData.GetBrowseSitesTotal(range.Start, queryEnd),
-                LongestAppName = longest == null ? "暂无数据" : longestName,
-                LongestAppDuration = longest == null ? "0分钟" : Time.ToString(longest.Time),
-                PeakLabel = peak == null || peak.Seconds <= 0 ? "暂无数据" : peak.Label,
-                PeakDuration = peak == null ? "0分钟" : peak.Duration
-            };
-        }, cancellationToken);
+        return GetFreshAsync(period, anchorDate, take, cancellationToken);
     }
+
+    public bool TryGetCached(
+        UsagePeriod period,
+        DateTime anchorDate,
+        int take,
+        out UsageSnapshot snapshot)
+    {
+        return _cache.TryGetValue(CreateCacheKey(period, anchorDate, take), out snapshot!);
+    }
+
+    public async Task PreloadAsync(
+        DateTime anchorDate,
+        int take = 8,
+        CancellationToken cancellationToken = default)
+    {
+        foreach (var period in Enum.GetValues<UsagePeriod>())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await GetFreshAsync(period, anchorDate, take, cancellationToken);
+        }
+    }
+
+    private async Task<UsageSnapshot> GetFreshAsync(
+        UsagePeriod period,
+        DateTime anchorDate,
+        int take,
+        CancellationToken cancellationToken)
+    {
+        await App.CoreReady.WaitAsync(cancellationToken);
+        var key = CreateCacheKey(period, anchorDate, take);
+        var load = _loads.GetOrAdd(key, LoadAndCacheAsync);
+        return await load.WaitAsync(cancellationToken);
+    }
+
+    private async Task<UsageSnapshot> LoadAndCacheAsync(UsageCacheKey key)
+    {
+        try
+        {
+            var snapshot = await Task.Run(() => BuildSnapshot(key)).ConfigureAwait(false);
+
+            _cache[key] = snapshot;
+            return snapshot;
+        }
+        finally
+        {
+            _loads.TryRemove(key, out _);
+        }
+    }
+
+    private UsageSnapshot BuildSnapshot(UsageCacheKey key)
+    {
+        var range = GetDateRange(key.Period, key.AnchorDate);
+        var queryEnd = range.End.Date.AddDays(1).AddTicks(-1);
+        var allAppLogs = _data.GetDateRangelogList(range.Start, queryEnd).ToList();
+        var allSiteLogs = _webData.GetDateRangeWebSiteList(range.Start, queryEnd) ?? new();
+        var apps = CreateAppItems(allAppLogs, key.Take);
+        var websites = CreateWebsiteItems(allSiteLogs, key.Take);
+        var trend = CreateTrend(key.Period, range);
+        var categories = CreateCategories(key.Period, range);
+        var longest = allAppLogs.OrderByDescending(item => item.Time).FirstOrDefault();
+        var longestName = GetAppDisplayName(longest?.AppModel);
+        var peak = trend.Where(point => !point.IsFuture).OrderByDescending(point => point.Seconds).FirstOrDefault();
+
+        return new UsageSnapshot
+        {
+            Period = key.Period,
+            AnchorDate = key.AnchorDate,
+            DateRange = range,
+            Apps = apps,
+            Websites = websites,
+            Trend = trend,
+            Categories = categories,
+            TotalAppSeconds = allAppLogs.Sum(item => item.Time),
+            TotalWebSeconds = allSiteLogs.Sum(item => item.Duration),
+            AppCount = _data.GetDateRangeAppCount(range.Start, queryEnd),
+            WebsiteCount = _webData.GetBrowseSitesTotal(range.Start, queryEnd),
+            LongestAppName = longest == null ? "暂无数据" : longestName,
+            LongestAppDuration = longest == null ? "0分钟" : Time.ToString(longest.Time),
+            PeakLabel = peak == null || peak.Seconds <= 0 ? "暂无数据" : peak.Label,
+            PeakDuration = peak == null ? "0分钟" : peak.Duration
+        };
+    }
+
+    private static UsageCacheKey CreateCacheKey(UsagePeriod period, DateTime anchorDate, int take) =>
+        new(period, anchorDate.Date, take);
+
+    private readonly record struct UsageCacheKey(UsagePeriod Period, DateTime AnchorDate, int Take);
 
     public static UsageDateRange GetDateRange(UsagePeriod period, DateTime anchorDate)
     {

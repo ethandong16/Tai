@@ -18,7 +18,7 @@ public sealed partial class MainWindow : Window
 {
     private readonly AppWindow _appWindow;
     private readonly double _rasterizationScale;
-    private readonly Windows.Graphics.SizeInt32 _workAreaSize;
+    private readonly Windows.Graphics.RectInt32 _workArea;
     private readonly bool _isSmokeTest;
 
     public MainWindow()
@@ -35,7 +35,7 @@ public sealed partial class MainWindow : Window
         _isSmokeTest = Environment.GetCommandLineArgs().Contains("--smoke-test");
         _rasterizationScale = Math.Max(1d, GetDpiForWindow(hwnd) / 96d);
         var workArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Primary).WorkArea;
-        _workAreaSize = new Windows.Graphics.SizeInt32(workArea.Width, workArea.Height);
+        _workArea = workArea;
         _appWindow.Title = "Tai";
         ConfigureTitleBar(_appWindow.TitleBar, false);
         ResizeForEffectiveSize(1240, 820, constrainToWorkArea: true);
@@ -139,15 +139,21 @@ public sealed partial class MainWindow : Window
         var physicalHeight = (int)Math.Round(height * _rasterizationScale);
         if (constrainToWorkArea)
         {
-            physicalWidth = Math.Min(physicalWidth, (int)Math.Round(_workAreaSize.Width * 0.95));
-            physicalHeight = Math.Min(physicalHeight, (int)Math.Round(_workAreaSize.Height * 0.9));
+            physicalWidth = Math.Min(physicalWidth, (int)Math.Round(_workArea.Width * 0.95));
+            physicalHeight = Math.Min(physicalHeight, (int)Math.Round(_workArea.Height * 0.9));
         }
         else
         {
-            physicalHeight = Math.Min(physicalHeight, _workAreaSize.Height);
+            physicalHeight = Math.Min(physicalHeight, _workArea.Height);
         }
 
         _appWindow.Resize(new Windows.Graphics.SizeInt32(physicalWidth, physicalHeight));
+        if (constrainToWorkArea)
+        {
+            var x = _workArea.X + Math.Max(0, (_workArea.Width - physicalWidth) / 2);
+            var y = _workArea.Y + Math.Max(0, (_workArea.Height - physicalHeight) / 2);
+            _appWindow.Move(new Windows.Graphics.PointInt32(x, y));
+        }
     }
 
     internal void ApplyStartupSettings()
@@ -483,6 +489,9 @@ public sealed partial class MainWindow : Window
             var snapshot = await provider.GetAsync(pair.Key, date, 2);
             if (snapshot.Trend.Count != pair.Value)
                 throw new InvalidOperationException($"{pair.Key} trend expected {pair.Value} points, actual {snapshot.Trend.Count}.");
+            if (!provider.TryGetCached(pair.Key, date, 2, out var cached)
+                || cached.Trend.Count != pair.Value)
+                throw new InvalidOperationException($"{pair.Key} snapshot was not retained in the usage cache.");
             if (snapshot.Apps.Concat(snapshot.Websites).Any(item => !File.Exists(item.IconPath)))
                 throw new InvalidOperationException($"{pair.Key} contains an unresolved icon path.");
         }

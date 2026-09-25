@@ -75,11 +75,24 @@ public sealed class MainViewModel : INotifyPropertyChanged
         var cancellation = BeginLoad();
         try
         {
+            var hasCachedToday = _dataProvider.TryGetCached(
+                UsagePeriod.Day, DateTime.Today, _dashboardTake, out var cachedToday);
+            if (!hasCachedToday && _dashboardTake != 8)
+                hasCachedToday = _dataProvider.TryGetCached(
+                    UsagePeriod.Day, DateTime.Today, 8, out cachedToday);
+            if (hasCachedToday)
+                ApplySnapshot(cachedToday, includeTrend: false, appsTake: _dashboardTake);
+            if (_dataProvider.TryGetCached(UsagePeriod.Week, DateTime.Today, 8, out var cachedWeek))
+            {
+                Replace(Trend, cachedWeek.Trend);
+                RangeText = cachedWeek.RangeText;
+            }
+
             var today = await _dataProvider.GetTodayAsync(_dashboardTake, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
             var week = await _dataProvider.GetAsync(UsagePeriod.Week, DateTime.Today, 8, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
-            ApplySnapshot(today, includeTrend: false);
+            ApplySnapshot(today, includeTrend: false, appsTake: _dashboardTake);
             Replace(Trend, week.Trend);
             RangeText = week.RangeText;
             LastUpdated = $"{DateTime.Now:HH:mm} 更新";
@@ -106,6 +119,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
         var cancellation = BeginLoad();
         try
         {
+            if (_dataProvider.TryGetCached(period, _anchorDate, 8, out var cached))
+                ApplySnapshot(cached, includeTrend: true);
+
             var snapshot = await _dataProvider.GetAsync(period, anchorDate, 8, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
             ApplySnapshot(snapshot, includeTrend: true);
@@ -144,9 +160,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
         IsLoading = false;
     }
 
-    private void ApplySnapshot(UsageSnapshot snapshot, bool includeTrend)
+    private void ApplySnapshot(UsageSnapshot snapshot, bool includeTrend, int? appsTake = null)
     {
-        Replace(Apps, snapshot.Apps);
+        Replace(Apps, appsTake is > 0 ? snapshot.Apps.Take(appsTake.Value) : snapshot.Apps);
         Replace(Websites, snapshot.Websites);
         Replace(Categories, snapshot.Categories);
         if (includeTrend) Replace(Trend, snapshot.Trend);
