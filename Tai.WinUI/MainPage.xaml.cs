@@ -69,24 +69,24 @@ public sealed partial class MainPage : Page
             RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
             RootNavigation.IsPaneOpen = true;
             RootNavigation.IsPaneToggleButtonVisible = false;
-            PageHeader.Margin = new Thickness(24, 20, 24, 12);
-            PageHeader.Padding = new Thickness(0, 0, 0, 16);
+            PageHeader.Margin = new Thickness(24, 12, 24, 4);
+            PageHeader.Padding = new Thickness(0);
         }
         else if (ActualWidth >= 640)
         {
             RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
             RootNavigation.IsPaneOpen = false;
             RootNavigation.IsPaneToggleButtonVisible = true;
-            PageHeader.Margin = new Thickness(20, 16, 20, 10);
-            PageHeader.Padding = new Thickness(0, 0, 0, 16);
+            PageHeader.Margin = new Thickness(20, 12, 20, 4);
+            PageHeader.Padding = new Thickness(0);
         }
         else
         {
             RootNavigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
             RootNavigation.IsPaneOpen = false;
             RootNavigation.IsPaneToggleButtonVisible = true;
-            PageHeader.Margin = new Thickness(12, 12, 12, 8);
-            PageHeader.Padding = new Thickness(44, 0, 0, 16);
+            PageHeader.Margin = new Thickness(12, 12, 12, 4);
+            PageHeader.Padding = new Thickness(44, 0, 0, 0);
         }
     }
 
@@ -94,7 +94,7 @@ public sealed partial class MainPage : Page
     {
         if (args.SelectedItem is NavigationViewItem item && item.Tag is string route && _routes.TryGetValue(route, out var page))
         {
-            PageTitle.Text = RouteTitle(route);
+            PageTitle.Text = page.Title;
             if (!_synchronizingNavigation && ContentFrame.CurrentSourcePageType != page.Page)
             {
                 ContentFrame.Navigate(page.Page, null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
@@ -120,16 +120,6 @@ public sealed partial class MainPage : Page
             finally { _synchronizingNavigation = false; }
         }
         PageTitle.Text = e.SourcePageType == typeof(AppDetailPage) || e.SourcePageType == typeof(WebsiteDetailPage)
-            ? "使用详情" : RouteTitle(route);
+            ? "使用详情" : _routes[route].Title;
     }
-
-    private string RouteTitle(string route) => route switch
-    {
-        "Dashboard" => "让时间，清晰可见。",
-        "Statistics" => "每一段时间，都有答案。",
-        "Details" => "一天的轨迹。",
-        "Categories" => "为时间，找到归属。",
-        "Settings" => "用你习惯的方式。",
-        _ => _routes[route].Title
-    };
 }

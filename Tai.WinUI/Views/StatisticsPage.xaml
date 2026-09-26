@@ -67,8 +67,7 @@
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="拉长一点视角，发现日常的变化。" Style="{StaticResource TaiCaptionStyle}" />
-                        <TextBlock Text="{Binding RangeText}" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                        <TextBlock Text="{Binding RangeText}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </StackPanel>
                     <StackPanel x:Name="HeaderActions" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                         <CalendarDatePicker x:Name="DatePicker" MinWidth="150" PlaceholderText="选择日期" DateChanged="DatePicker_DateChanged" />

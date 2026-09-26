@@ -8,8 +8,6 @@ using Core.Servicers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Tai.WinUI.Services;
-using Windows.ApplicationModel.DataTransfer;
 
 namespace Tai.WinUI.Views;
 
@@ -22,11 +20,11 @@ public sealed partial class SettingsPage : Page
     private readonly IDatabase _database;
     private ConfigModel _config = null!;
     private bool _isLoading;
-    private IReadOnlyList<ExtensionBrowser> _extensionBrowsers = Array.Empty<ExtensionBrowser>();
 
     public SettingsPage()
     {
         InitializeComponent();
+        SettingsTabs.SelectedItem = GeneralTab;
         _appConfig = App.Services.GetRequiredService<IAppConfig>();
         _data = App.Services.GetRequiredService<IData>();
         _webData = App.Services.GetRequiredService<IWebData>();
@@ -42,83 +40,6 @@ public sealed partial class SettingsPage : Page
         _config = _appConfig.GetConfig() ?? new ConfigModel();
         NormalizeConfig(_config);
         PopulateControls();
-        DetectExtensionBrowsers();
-    }
-
-    private void DetectBrowsers_Click(object sender, RoutedEventArgs e) => DetectExtensionBrowsers();
-
-    private void DetectExtensionBrowsers()
-    {
-        ExtensionPathBox.Text = BrowserExtensionInstaller.ExtensionDirectory;
-        _extensionBrowsers = BrowserExtensionInstaller.DetectBrowsers();
-        ExtensionBrowsersPanel.Children.Clear();
-        foreach (var browser in _extensionBrowsers)
-        {
-            var button = new Button { Content = $"打开 {browser.Name} 安装页", Tag = browser };
-            button.Click += OpenExtensionPage_Click;
-            ExtensionBrowsersPanel.Children.Add(button);
-        }
-        OpenAllExtensionPagesButton.IsEnabled = _extensionBrowsers.Count > 0;
-        ExtensionInstallStatus.Text = _extensionBrowsers.Count == 0
-            ? "未检测到支持的浏览器。便携版或其他 Chromium 浏览器可手动打开扩展管理页，加载上方目录。"
-            : $"检测到 {_extensionBrowsers.Count} 个浏览器。浏览器内仍需确认加载，打开页面不代表安装完成。";
-    }
-
-    private void OpenExtensionPage_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { Tag: ExtensionBrowser browser }) OpenExtensionPages(new[] { browser });
-    }
-
-    private void OpenAllExtensionPages_Click(object sender, RoutedEventArgs e) => OpenExtensionPages(_extensionBrowsers);
-
-    private void OpenExtensionPages(IEnumerable<ExtensionBrowser> browsers)
-    {
-        var results = new List<string>();
-        foreach (var browser in browsers)
-        {
-            try
-            {
-                BrowserExtensionInstaller.OpenInstallPage(browser);
-                results.Add($"{browser.Name}：已请求打开安装页，等待手动加载。");
-            }
-            catch (Exception exception)
-            {
-                App.LogStartupException(exception);
-                results.Add($"{browser.Name}：打开失败，{exception.Message}");
-            }
-        }
-        ExtensionInstallStatus.Text = string.Join(Environment.NewLine, results);
-    }
-
-    private void CopyExtensionPath_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            BrowserExtensionInstaller.ValidatePackage();
-            var data = new DataPackage();
-            data.SetText(BrowserExtensionInstaller.ExtensionDirectory);
-            Clipboard.SetContent(data);
-            ExtensionInstallStatus.Text = "扩展路径已复制。在浏览器中开启开发者模式，点击“加载已解压的扩展”，粘贴路径并选择文件夹。";
-        }
-        catch (Exception exception)
-        {
-            App.LogStartupException(exception);
-            ExtensionInstallStatus.Text = $"无法复制扩展路径：{exception.Message}";
-        }
-    }
-
-    private void OpenExtensionFolder_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            BrowserExtensionInstaller.ValidatePackage();
-            using var process = Process.Start(new ProcessStartInfo(BrowserExtensionInstaller.ExtensionDirectory) { UseShellExecute = true });
-        }
-        catch (Exception exception)
-        {
-            App.LogStartupException(exception);
-            ExtensionInstallStatus.Text = $"无法打开扩展目录：{exception.Message}";
-        }
     }
 
     private static void NormalizeConfig(ConfigModel config)
@@ -203,9 +124,14 @@ public sealed partial class SettingsPage : Page
         SaveConfig();
     }
 
-    private void SettingsTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void SettingsTabs_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs e)
     {
-        // All tabs edit the same persisted ConfigModel.
+        if (GeneralSection == null) return;
+        GeneralSection.Visibility = sender.SelectedItem == GeneralTab ? Visibility.Visible : Visibility.Collapsed;
+        LinksSection.Visibility = sender.SelectedItem == LinksTab ? Visibility.Visible : Visibility.Collapsed;
+        RulesSection.Visibility = sender.SelectedItem == RulesTab ? Visibility.Visible : Visibility.Collapsed;
+        DataSection.Visibility = sender.SelectedItem == DataTab ? Visibility.Visible : Visibility.Collapsed;
+        AboutSection.Visibility = sender.SelectedItem == AboutTab ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void AddIgnoreProcess_Click(object sender, RoutedEventArgs e) => AddListItem(IgnoreProcessInput, IgnoreProcessList, _config.Behavior.IgnoreProcessList);

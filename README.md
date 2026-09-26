@@ -16,7 +16,6 @@ Download the latest package from [GitHub Releases](https://github.com/ethandong1
 For the current release, download:
 
 - `Tai-WinUI-1.1.0-win-x64.zip` for the self-contained desktop application.
-- `Tai-WinUI3-Browser-Extension-1.1.0.zip` for the Chromium browser extension.
 
 The desktop package is unpackaged and portable. Extract it and run `Tai.WinUI.exe`.
 
@@ -40,17 +39,15 @@ The desktop package is unpackaged and portable. Extract it and run `Tai.WinUI.ex
 
 ## Browser extension
 
-The companion extension is in [`WebExtensions/Chrome`](WebExtensions/Chrome). It works with Chrome, Microsoft Edge, and other Chromium browsers that support unpacked extensions.
+Install the companion extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim). It works with Chrome and Chromium-based browsers that support Chrome Web Store extensions.
 
 1. Start Tai and enable website tracking in Settings.
-2. Open the browser extension page, such as `chrome://extensions` or `edge://extensions`.
-3. Enable Developer mode.
-4. Choose **Load unpacked** and select the extracted `WebExtensions/Chrome` directory.
-5. Keep the extension directory in place while Tai is using it. If Tai is moved, load the extension again from its new path.
+2. Open the [Tai Sentry Chrome Web Store page](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim).
+3. Install the extension from the store, then return to Tai.
 
 The extension reads the active tab URL, title, favicon URL, and timing information through the `tabs` permission. It sends data only to Tai on the same computer through `ws://127.0.0.1:8908/TaiWebSentry`. It does not read page contents, forms, passwords, cookies, downloads, or browser account data. See the full [browser extension privacy policy](docs/browser-extension-privacy.md).
 
-The extension is currently distributed as an unpacked extension. Store listing materials are available in [`WebExtensions/STORE_LISTING.md`](WebExtensions/STORE_LISTING.md).
+The desktop application no longer bundles or installs an unpacked extension. Store listing materials and the extension source remain available in [`WebExtensions`](WebExtensions) for maintenance.
 
 ## Build from source
 
@@ -84,15 +81,13 @@ powershell -ExecutionPolicy Bypass `
   -PublishDirectory "Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish"
 ```
 
-Create release archives locally:
+Create the desktop release archive locally:
 
 ```powershell
 ./scripts/Pack-WinUIRelease.ps1 `
   -PublishDirectory "Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish" `
   -OutputDirectory artifacts `
   -Version 1.1.0
-
-./scripts/Pack-BrowserExtension.ps1 -OutputDirectory artifacts
 ```
 
 Every `v*.*.*` tag runs the Windows build, startup smoke test, archive packaging, and GitHub Release workflow. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development rules.
@@ -130,6 +125,6 @@ Please use [Issues](https://github.com/ethandong16/Tai/issues) for reproducible 
 
 Tai is a local Windows time tracker focused on application and website usage. The maintained desktop client is built with WinUI 3 and targets `win-x64`. The browser companion connects to the desktop app over the local loopback WebSocket endpoint and does not upload browsing data to a remote service.
 
-Install the desktop ZIP from [Releases](https://github.com/ethandong16/Tai/releases), then load the `WebExtensions/Chrome` folder as an unpacked Chromium extension. Build instructions, privacy details, and release scripts are documented above and in the linked project files.
+Install the desktop ZIP from [Releases](https://github.com/ethandong16/Tai/releases), then install [Tai Sentry from the Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim). Build instructions, privacy details, and release scripts are documented above and in the linked project files.
 
 This is an independent fork and is not an official release of the original Tai project. Tai is distributed under the [MIT License](LICENSE).

@@ -11,6 +11,8 @@ namespace Core.Models.Config
     /// </summary>
     public class GeneralModel
     {
+        public bool DefaultCategoriesInitialized { get; set; }
+        public Dictionary<string, int> DefaultCategoryIds { get; set; } = new Dictionary<string, int>();
         [Config(Name = "开机自启动", Description = "在电脑启动时自动运行 Tai", Group = "基础")]
         /// <summary>
         /// 是否启用开机自启动
@@ -60,7 +62,7 @@ namespace Core.Models.Config
         /// <summary>
         /// 是否启用网站记录功能
         /// </summary>
-        [Config(Name = "网站浏览统计", Description = "统计浏览器的网站访问数据，支持：Google Chrome、MSEdge或任何能够安装Chrome拓展的浏览器。请点击 “关于 > 浏览器统计插件” 了解如何安装和使用此功能。", Group = "功能")]
+        [Config(Name = "网站浏览统计", Description = "统计浏览器的网站访问数据。请先从 Chrome 网上应用店安装 Tai Sentry 扩展，再开启此功能。", Group = "功能")]
         public bool IsWebEnabled { get; set; } = false;
     }
 }

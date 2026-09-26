@@ -158,8 +158,6 @@ namespace Core.Servicers.Instances
 
                  // 加载分类信息
                  categories.Load();
-
-                 AppState.IsLoading = false;
              });
 
 
@@ -167,6 +165,15 @@ namespace Core.Servicers.Instances
             //  加载应用配置（确保配置文件最先加载
             appConfig.Load();
             config = appConfig.GetConfig();
+            await Task.Run(() =>
+            {
+                InitializeDefaultCategories();
+                foreach (var app in appData.GetAllApps().Where(item => item.CategoryID == 0))
+                {
+                    DispatchCateogry(app.Name, app.File);
+                }
+            });
+            AppState.IsLoading = false;
             UpdateConfigIgnoreProcess();
             UpdateConfigProcessWhiteList();
 
@@ -522,6 +529,32 @@ namespace Core.Servicers.Instances
         #endregion
 
         #region 自动分类
+        private void InitializeDefaultCategories()
+        {
+            if (config.General.DefaultCategoriesInitialized) return;
+
+            var ids = config.General.DefaultCategoryIds;
+            foreach (var definition in DefaultCategoryCatalog.Categories)
+            {
+                var category = categories.GetCategories().FirstOrDefault(item =>
+                    string.Equals(item.Name, definition.Name, StringComparison.OrdinalIgnoreCase));
+                if (category == null)
+                {
+                    category = categories.Create(new CategoryModel
+                    {
+                        Name = definition.Name,
+                        Color = definition.Color,
+                        IconFile = string.Empty,
+                        Directories = "[]"
+                    });
+                }
+                ids[definition.Key] = category.ID;
+            }
+
+            config.General.DefaultCategoriesInitialized = true;
+            appConfig.Save();
+        }
+
         /// <summary>
         /// 自动分类
         /// </summary>
@@ -531,7 +564,7 @@ namespace Core.Servicers.Instances
             try
             {
                 AppModel app = appData.GetApp(processName_);
-                if (app != null)
+                if (app != null && app.CategoryID == 0)
                 {
                     var categoryList = categories.GetCategories().Where(c => c.IsDirectoryMath && c.DirectoryList.Count > 0).ToList();
                     CategoryModel mathCategory = null;
@@ -543,8 +576,9 @@ namespace Core.Servicers.Instances
                         }
                         foreach (var item in category.DirectoryList)
                         {
-                            string path = item.Replace("\\", "\\\\");
-                            if (Regex.IsMatch(executablePath_, @"^" + path))
+                            string path = item.TrimEnd('\\', '/');
+                            if (!string.IsNullOrEmpty(executablePath_) && path.Length > 0 &&
+                                executablePath_.StartsWith(path + "\\", StringComparison.OrdinalIgnoreCase))
                             {
                                 mathCategory = category;
                                 Debug.WriteLine("匹配成功：" + category.Name);
@@ -553,6 +587,8 @@ namespace Core.Servicers.Instances
                         }
 
                     }
+                    mathCategory = mathCategory ?? DefaultCategoryCatalog.Find(
+                        processName_, config.General.DefaultCategoryIds, categories.GetCategories());
                     if (mathCategory != null)
                     {
                         //  匹配成功

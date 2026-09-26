@@ -14,8 +14,8 @@
                         <Setter Target="RootNavigation.PaneDisplayMode" Value="Left" />
                         <Setter Target="RootNavigation.IsPaneOpen" Value="True" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="False" />
-                        <Setter Target="PageHeader.Margin" Value="24,20,24,12" />
-                        <Setter Target="PageHeader.Padding" Value="0,0,0,16" />
+                        <Setter Target="PageHeader.Margin" Value="24,12,24,4" />
+                        <Setter Target="PageHeader.Padding" Value="0" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="MediumLayout">
@@ -24,8 +24,8 @@
                         <Setter Target="RootNavigation.PaneDisplayMode" Value="LeftCompact" />
                         <Setter Target="RootNavigation.IsPaneOpen" Value="False" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="True" />
-                        <Setter Target="PageHeader.Margin" Value="20,16,20,10" />
-                        <Setter Target="PageHeader.Padding" Value="0,0,0,16" />
+                        <Setter Target="PageHeader.Margin" Value="20,12,20,4" />
+                        <Setter Target="PageHeader.Padding" Value="0" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="NarrowLayout">
@@ -34,8 +34,8 @@
                         <Setter Target="RootNavigation.PaneDisplayMode" Value="LeftMinimal" />
                         <Setter Target="RootNavigation.IsPaneOpen" Value="False" />
                         <Setter Target="RootNavigation.IsPaneToggleButtonVisible" Value="True" />
-                        <Setter Target="PageHeader.Margin" Value="12,12,12,8" />
-                        <Setter Target="PageHeader.Padding" Value="44,0,0,16" />
+                        <Setter Target="PageHeader.Margin" Value="12,12,12,4" />
+                        <Setter Target="PageHeader.Padding" Value="44,0,0,0" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -60,17 +60,13 @@
                 <StaticResource x:Key="NavigationViewItemForegroundSelected" ResourceKey="TaiAccentBrush" />
             </controls:NavigationView.Resources>
             <controls:NavigationView.PaneHeader>
-                <StackPanel x:Name="SidebarBrand" Margin="22,26,12,32" Spacing="8">
+                <StackPanel x:Name="SidebarBrand" Margin="22,26,12,16">
                     <StackPanel Orientation="Horizontal" Spacing="12">
                         <Border Background="{StaticResource TaiCardBackgroundBrush}" CornerRadius="12" Width="42" Height="42">
                             <Image Source="ms-appx:///Resources/Icons/tai.png" Width="30" Height="30" />
                         </Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Tai" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                            <TextBlock Text="时间，清晰可见" FontSize="10" Foreground="{StaticResource TaiSecondaryTextBrush}" />
-                        </StackPanel>
+                        <TextBlock Text="Tai" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                     </StackPanel>
-                    <TextBlock Text="你的时间" Margin="0,20,0,0" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" />
                 </StackPanel>
             </controls:NavigationView.PaneHeader>
             <controls:NavigationView.MenuItemContainerStyle>
@@ -105,11 +101,8 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Border x:Name="PageHeader" Grid.Row="0" Margin="12,12,12,8" Padding="0,0,0,16" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
-                    <StackPanel>
-                        <TextBlock Text="我的时间" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" />
-                        <TextBlock x:Name="PageTitle" Text="概览" Margin="0,4,0,0" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                    </StackPanel>
+                <Border x:Name="PageHeader" Grid.Row="0" Margin="12,12,12,4" Padding="44,0,0,0">
+                    <TextBlock x:Name="PageTitle" Text="概览" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                 </Border>
                 <Frame x:Name="ContentFrame" Grid.Row="1" Navigated="ContentFrame_Navigated" />
             </Grid>

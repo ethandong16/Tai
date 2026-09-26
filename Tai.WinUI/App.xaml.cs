@@ -58,6 +58,13 @@ public partial class App : Application
                 _ = WarmUsageCacheAsync();
             if (smokeTest)
             {
+                var categoryService = Services.GetRequiredService<ICategorys>();
+                var general = Services.GetRequiredService<IAppConfig>().GetConfig().General;
+                if (!general.DefaultCategoriesInitialized || general.DefaultCategoryIds.Count != 9 ||
+                    general.DefaultCategoryIds.Values.Any(id => categoryService.GetCategory(id) == null))
+                {
+                    throw new InvalidOperationException("Default application categories were not initialized.");
+                }
                 if (!_window.IsPerMonitorDpiAware())
                 {
                     throw new InvalidOperationException("The WinUI window is not per-monitor DPI aware.");

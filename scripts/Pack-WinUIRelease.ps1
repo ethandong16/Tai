@@ -20,9 +20,7 @@ $requiredFiles = @(
     "Tai.WinUI.exe",
     "resources.pri",
     "Resources\Icons\tai.ico",
-    "Resources\Icons\defaultIcon.png",
-    "WebExtensions\Chrome\manifest.json",
-    "WebExtensions\Chrome\service-worker.js"
+    "Resources\Icons\defaultIcon.png"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -30,11 +28,6 @@ foreach ($relativePath in $requiredFiles) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Missing required published file: $relativePath"
     }
-}
-
-$publishedManifest = Get-Content -LiteralPath (Join-Path $publishPath "WebExtensions\Chrome\manifest.json") -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($publishedManifest.version -ne $Version) {
-    throw "Published browser extension version $($publishedManifest.version) does not match release version $Version."
 }
 
 $resolvedOutput = [System.IO.Path]::GetFullPath($OutputDirectory)
@@ -46,7 +39,7 @@ try {
     New-Item -ItemType Directory -Path $stagingDirectory -Force | Out-Null
 
     foreach ($item in Get-ChildItem -LiteralPath $publishPath -Force) {
-        if ($item.Name -in @("Data", "Log")) {
+        if ($item.Name -in @("Data", "Log", "WebExtensions")) {
             continue
         }
 

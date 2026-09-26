@@ -36,6 +36,26 @@ public sealed partial class DetailsPage : Page
         if (_ready) return;
         _ready = true;
         _ = LoadRowsAsync();
+        _ = PreloadPeriodsAsync();
+    }
+
+    private async Task PreloadPeriodsAsync()
+    {
+        if (_provider == null) return;
+
+        try
+        {
+            await _provider.PreloadAsync(
+                DatePicker.Date?.DateTime ?? DateTime.Today,
+                take: 0);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+        }
     }
 
     protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -60,17 +80,15 @@ public sealed partial class DetailsPage : Page
         try
         {
             var date = DatePicker.Date?.DateTime ?? DateTime.Today;
+            if (_provider.TryGetCached(_period, date, take: 0, out var cached))
+            {
+                ApplySnapshotRows(cached);
+                LoadStatusText.Text = "已显示缓存，正在更新...";
+            }
+
             var snapshot = await _provider.GetAsync(_period, date, take: 0, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
-
-            var nextRows = snapshot.Apps.Select(item => new DetailRow(item, snapshot.RangeText))
-                .Concat(snapshot.Websites.Select(item => new DetailRow(item, snapshot.RangeText)))
-                .OrderByDescending(item => item.Seconds)
-                .ToList();
-            _allRows.Clear();
-            _allRows.AddRange(nextRows);
-            RangeText.Text = snapshot.RangeText;
-            ApplyTypeFilter();
+            ApplySnapshotRows(snapshot);
             LoadStatusText.Text = $"{DateTime.Now:HH:mm} 更新";
         }
         catch (OperationCanceledException)
@@ -99,7 +117,11 @@ public sealed partial class DetailsPage : Page
 
     private void DatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
     {
-        if (_ready && args.NewDate.HasValue) _ = LoadRowsAsync();
+        if (_ready && args.NewDate.HasValue)
+        {
+            _ = LoadRowsAsync();
+            _ = PreloadPeriodsAsync();
+        }
     }
 
     private void RowsList_ItemClick(object sender, ItemClickEventArgs e)
@@ -126,6 +148,18 @@ public sealed partial class DetailsPage : Page
                      || row.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
                      || row.Category.Contains(search, StringComparison.OrdinalIgnoreCase))) Rows.Add(row);
         ResultCountText.Text = Rows.Count == 0 ? "此时间范围内暂无记录" : $"共 {Rows.Count} 条记录";
+    }
+
+    private void ApplySnapshotRows(UsageSnapshot snapshot)
+    {
+        var nextRows = snapshot.Apps.Select(item => new DetailRow(item, snapshot.RangeText))
+            .Concat(snapshot.Websites.Select(item => new DetailRow(item, snapshot.RangeText)))
+            .OrderByDescending(item => item.Seconds)
+            .ToList();
+        _allRows.Clear();
+        _allRows.AddRange(nextRows);
+        RangeText.Text = snapshot.RangeText;
+        ApplyTypeFilter();
     }
 
     internal int CheckedPeriodCount =>

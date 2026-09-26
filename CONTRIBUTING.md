@@ -31,7 +31,7 @@ powershell -ExecutionPolicy Bypass `
 - Keep browser extension changes under `WebExtensions/Chrome`.
 - Do not commit `bin`, `obj`, `artifacts`, local databases, logs, or generated design-review files.
 - Update the privacy documentation when data handling or permissions change.
-- Keep version changes consistent across the WinUI project, browser extension manifest, changelog, and release tag.
+- Keep desktop version changes consistent across the WinUI project, changelog, and release tag. Version the store extension independently.
 
 ## Pull requests
 
@@ -39,4 +39,4 @@ Describe the user-visible behavior, affected areas, and verification performed. 
 
 ## Releases
 
-Releases are created by pushing a semantic version tag such as `v1.0.0`. The release workflow builds the self-contained WinUI package, validates startup, packages the browser extension, and uploads both archives to GitHub Releases.
+Releases are created by pushing a semantic version tag such as `v1.0.0`. The release workflow builds the self-contained WinUI package, validates startup, and uploads the desktop archive to GitHub Releases. The browser extension is distributed through the Chrome Web Store.

@@ -40,8 +40,7 @@
         <Grid>
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <StackPanel>
-                <TextBlock Text="应用与网站的使用记录，随时回看。" Style="{StaticResource TaiCaptionStyle}" />
-                <TextBlock x:Name="RangeText" Margin="0,5,0,0" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                <TextBlock x:Name="RangeText" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
             </StackPanel>
             <StackPanel x:Name="FilterPanel" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                 <CalendarDatePicker x:Name="DatePicker" MinWidth="145" PlaceholderText="选择日期" DateChanged="DatePicker_DateChanged" />

@@ -34,16 +34,6 @@ jobs:
           }
           "version=$version" >> $env:GITHUB_OUTPUT
 
-      - name: Validate extension version
-        shell: pwsh
-        env:
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          $manifest = Get-Content -LiteralPath WebExtensions/Chrome/manifest.json -Raw -Encoding UTF8 | ConvertFrom-Json
-          if ($manifest.version -ne $env:RELEASE_VERSION) {
-            throw "manifest.json version $($manifest.version) does not match release version $env:RELEASE_VERSION"
-          }
-
       - name: Restore WinUI project
         run: >-
           msbuild Tai.WinUI/Tai.WinUI.csproj
@@ -83,7 +73,7 @@ jobs:
         shell: pwsh
         run: ./scripts/Test-WinUIStartup.ps1 -PublishDirectory Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
 
-      - name: Package release archives
+      - name: Package desktop release
         shell: pwsh
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
@@ -93,7 +83,6 @@ jobs:
             -PublishDirectory Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish `
             -OutputDirectory artifacts `
             -Version $env:RELEASE_VERSION
-          ./scripts/Pack-BrowserExtension.ps1 -OutputDirectory artifacts
 
       - name: Create GitHub Release
         shell: pwsh
@@ -103,6 +92,5 @@ jobs:
           $version = '${{ steps.version.outputs.version }}'
           gh release create $env:GITHUB_REF_NAME `
             "artifacts/Tai-WinUI-$version-win-x64.zip" `
-            "artifacts/Tai-WinUI3-Browser-Extension-$version.zip" `
             --title "Tai v$version" `
             --generate-notes

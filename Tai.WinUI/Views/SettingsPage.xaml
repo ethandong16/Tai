@@ -11,7 +11,7 @@
                     <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="PageStack.Margin" Value="24,8,28,32" />
-                        <Setter Target="SettingsTabs.Margin" Value="0,12,0,0" />
+                        <Setter Target="SettingsTabs.Margin" Value="0" />
                         <Setter Target="StartPagePicker.(Grid.Row)" Value="0" />
                         <Setter Target="StartPagePicker.(Grid.Column)" Value="1" />
                         <Setter Target="StartPagePicker.HorizontalAlignment" Value="Right" />
@@ -45,7 +45,7 @@
                     <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="PageStack.Margin" Value="12,8,12,24" />
-                        <Setter Target="SettingsTabs.Margin" Value="0,8,0,0" />
+                        <Setter Target="SettingsTabs.Margin" Value="0" />
                         <Setter Target="StartPagePicker.(Grid.Row)" Value="1" />
                         <Setter Target="StartPagePicker.(Grid.Column)" Value="0" />
                         <Setter Target="StartPagePicker.HorizontalAlignment" Value="Stretch" />
@@ -86,13 +86,18 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
-                <StackPanel>
-                    <TextBlock Text="安静记录，轻松掌控。" Style="{StaticResource TaiCaptionStyle}" />
-                </StackPanel>
-
-                <controls:TabView x:Name="SettingsTabs" SelectionChanged="SettingsTabs_SelectionChanged" IsAddTabButtonVisible="False">
-                    <controls:TabViewItem Header="常规" IsClosable="False">
-                        <StackPanel Spacing="16" Margin="0,12,0,0">
+                <controls:SelectorBar x:Name="SettingsTabs" SelectionChanged="SettingsTabs_SelectionChanged">
+                    <controls:SelectorBar.Resources>
+                        <StaticResource x:Key="SelectorBarItemPillFill" ResourceKey="TaiAccentBrush" />
+                    </controls:SelectorBar.Resources>
+                    <controls:SelectorBarItem x:Name="GeneralTab" Text="常规" />
+                    <controls:SelectorBarItem x:Name="LinksTab" Text="进程合并" />
+                    <controls:SelectorBarItem x:Name="RulesTab" Text="记录规则" />
+                    <controls:SelectorBarItem x:Name="DataTab" Text="数据" />
+                    <controls:SelectorBarItem x:Name="AboutTab" Text="关于" />
+                </controls:SelectorBar>
+                <Grid>
+                    <StackPanel x:Name="GeneralSection" Spacing="16" Margin="0,12,0,0">
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="16">
                                     <TextBlock Text="基础" Style="{StaticResource TaiSectionTitleStyle}" />
@@ -174,31 +179,19 @@
                                         <ToggleSwitch x:Name="WebEnabledToggle" Grid.Column="1" Style="{StaticResource TaiSettingToggleStyle}" Toggled="GeneralSetting_Toggled" />
                                     </Grid>
                                     <TextBlock Text="安装网站统计扩展" Style="{StaticResource TaiSectionTitleStyle}" />
-                                    <TextBlock Text="自动检测 Chrome、Edge、Brave、Vivaldi 和 Opera 的常见安装位置。打开安装页后，开启开发者模式，点击“加载已解压的扩展”，选择下方目录。每个浏览器或个人资料需分别加载；Firefox 暂不支持。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
-                                    <TextBox x:Name="ExtensionPathBox" Header="随 Tai 附带的扩展目录（加载后请保留此目录）" IsReadOnly="True" TextWrapping="Wrap" />
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <Button Content="重新检测" Click="DetectBrowsers_Click" />
-                                        <Button Content="复制扩展路径" Click="CopyExtensionPath_Click" />
-                                        <Button Content="打开扩展目录" Click="OpenExtensionFolder_Click" />
-                                    </StackPanel>
-                                    <StackPanel x:Name="ExtensionBrowsersPanel" Spacing="8" />
-                                    <Button x:Name="OpenAllExtensionPagesButton" Content="为检测到的浏览器打开安装页" Click="OpenAllExtensionPages_Click" HorizontalAlignment="Left" />
-                                    <TextBlock x:Name="ExtensionInstallStatus" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                    <TextBlock Text="安装 Tai Sentry 后开启网站浏览统计。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
+                                    <HyperlinkButton Content="打开 Chrome 网上应用店安装 Tai Sentry" NavigateUri="https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim" HorizontalAlignment="Left" Style="{StaticResource TaiLinkButtonStyle}" />
                                 </StackPanel>
                             </Border>
-                        </StackPanel>
-                    </controls:TabViewItem>
+                    </StackPanel>
 
-                    <controls:TabViewItem Header="进程合并" IsClosable="False">
-                        <StackPanel Margin="0,12,0,0" Spacing="12">
+                    <StackPanel x:Name="LinksSection" Margin="0,12,0,0" Spacing="12" Visibility="Collapsed">
                             <TextBlock Text="将多个进程关联为一个统计项目，任意一个进程运行时都会同步记录。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />
                             <StackPanel x:Name="LinksPanel" Spacing="12" />
                             <Button Content="新建关联" HorizontalAlignment="Left" Click="AddLink_Click" Style="{StaticResource TaiPrimaryButtonStyle}" />
-                        </StackPanel>
-                    </controls:TabViewItem>
+                    </StackPanel>
 
-                    <controls:TabViewItem Header="记录规则" IsClosable="False">
-                        <StackPanel Margin="0,12,0,0" Spacing="16">
+                    <StackPanel x:Name="RulesSection" Margin="0,12,0,0" Spacing="16" Visibility="Collapsed">
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="14">
                                     <TextBlock Text="偏好" Style="{StaticResource TaiSectionTitleStyle}" />
@@ -257,11 +250,9 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
-                        </StackPanel>
-                    </controls:TabViewItem>
+                    </StackPanel>
 
-                    <controls:TabViewItem Header="数据" IsClosable="False">
-                        <StackPanel Margin="0,12,0,0" Spacing="16">
+                    <StackPanel x:Name="DataSection" Margin="0,12,0,0" Spacing="16" Visibility="Collapsed">
                             <Border Style="{StaticResource TaiCardStyle}">
                                 <StackPanel Spacing="12">
                                     <TextBlock Text="删除数据" Foreground="{StaticResource TaiDangerBrush}" Style="{StaticResource TaiSectionTitleStyle}" />
@@ -299,24 +290,21 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
-                        </StackPanel>
-                    </controls:TabViewItem>
+                    </StackPanel>
 
-                    <controls:TabViewItem Header="关于" IsClosable="False">
-                        <Border Margin="0,12,0,0" Style="{StaticResource TaiCardStyle}">
+                    <Border x:Name="AboutSection" Margin="0,12,0,0" Style="{StaticResource TaiCardStyle}" Visibility="Collapsed">
                             <StackPanel Spacing="12">
                                 <Image x:Name="SettingsLogo" Source="ms-appx:///Resources/Icons/tai.png" Width="48" Height="48" HorizontalAlignment="Left" />
                                 <TextBlock Text="Tai 时间统计" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
                                 <TextBlock x:Name="VersionText" Style="{StaticResource TaiCaptionStyle}" />
                                 <Button Content="检查更新" HorizontalAlignment="Left" Click="CheckUpdate_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
-                                <HyperlinkButton Content="浏览器统计插件" NavigateUri="https://github.com/ethandong16/Tai/tree/master/WebExtensions/Chrome" />
-                                <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai" NavigateUri="https://github.com/ethandong16/Tai" />
-                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai/discussions" NavigateUri="https://github.com/ethandong16/Tai/discussions" />
+                                <HyperlinkButton Content="Chrome 网上应用店：Tai Sentry" NavigateUri="https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim" Style="{StaticResource TaiLinkButtonStyle}" />
+                                <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai" NavigateUri="https://github.com/ethandong16/Tai" Style="{StaticResource TaiLinkButtonStyle}" />
+                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai/discussions" NavigateUri="https://github.com/ethandong16/Tai/discussions" Style="{StaticResource TaiLinkButtonStyle}" />
                                 <TextBlock Text="Icon 来自微软 Emoji" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
-                        </Border>
-                    </controls:TabViewItem>
-                </controls:TabView>
+                    </Border>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -22,17 +22,40 @@ public sealed partial class CategoriesPage : Page
         _categoryService = App.Services.GetRequiredService<ICategorys>();
         _appData = App.Services.GetRequiredService<IAppData>();
         InitializeComponent();
-        Loaded += (_, _) => RefreshCategories();
+        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
+        Loaded += CategoriesPage_Loaded;
+    }
+
+    private async void CategoriesPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        Loaded -= CategoriesPage_Loaded;
+        var snapshot = await Task.Run(BuildCategorySnapshot);
+        ApplyCategorySnapshot(snapshot);
+    }
+
+    private List<CategorySnapshot> BuildCategorySnapshot()
+    {
+        return _categoryService.GetCategories()
+            .OrderBy(item => item.Name)
+            .Select(category => new CategorySnapshot(
+                category,
+                _appData.GetAppsByCategoryID(category.ID).Count))
+            .ToList();
     }
 
     private void RefreshCategories(int selectedId = 0)
     {
+        ApplyCategorySnapshot(BuildCategorySnapshot(), selectedId);
+    }
+
+    private void ApplyCategorySnapshot(IReadOnlyList<CategorySnapshot> snapshot, int selectedId = 0)
+    {
         Categories.Clear();
-        foreach (var category in _categoryService.GetCategories().OrderBy(item => item.Name))
+        foreach (var item in snapshot)
         {
-            var row = new CategoryRow(category, _appData.GetAppsByCategoryID(category.ID).Count);
+            var row = new CategoryRow(item.Category, item.ItemCount);
             Categories.Add(row);
-            if (category.ID == selectedId) CategoryList.SelectedItem = row;
+            if (item.Category.ID == selectedId) CategoryList.SelectedItem = row;
         }
         CategoryCountText.Text = $"{Categories.Count} 个分类";
         EmptyCategoryState.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -40,6 +63,8 @@ public sealed partial class CategoriesPage : Page
         if (Categories.Count > 0 && CategoryList.SelectedItem == null)
             CategoryList.SelectedIndex = 0;
     }
+
+    private sealed record CategorySnapshot(CategoryModel Category, int ItemCount);
 
     private async void CreateButton_Click(object sender, RoutedEventArgs e)
     {

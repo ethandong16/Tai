@@ -100,7 +100,8 @@ public sealed partial class MainWindow : Window
                 RootFrame.UpdateLayout();
                 if (RootFrame.Content is not FrameworkElement content) throw new InvalidOperationException($"{page.Name} did not load");
                 ValidatePageLayout(content);
-                if (windowSize.Width == 1240 && Content is FrameworkElement screenshotRoot)
+                if ((windowSize.Width == 1240 || (windowSize.Width == 480 && page == typeof(Views.SettingsPage)))
+                    && Content is FrameworkElement screenshotRoot)
                     await CaptureSmokeScreenshotAsync(screenshotRoot, windowSize.Width, page.Name);
                 if (content is Views.StatisticsPage statisticsPage)
                     ValidateStatisticsPage(statisticsPage);
@@ -128,7 +129,7 @@ public sealed partial class MainWindow : Window
         if (frame.Content is not Views.DetailsPage details
             || details.FindName("TypeFilter") is not ComboBox { SelectedIndex: 2 })
             throw new InvalidOperationException("Website view-all did not preserve its source filter.");
-        if (shell.FindName("PageTitle") is not TextBlock { Text: "一天的轨迹。" })
+        if (shell.FindName("PageTitle") is not TextBlock { Text: "详细记录" })
             throw new InvalidOperationException("Returning from a detail page did not restore the page title.");
         frame.Navigate(typeof(Views.DashboardPage));
     }
@@ -207,6 +208,8 @@ public sealed partial class MainWindow : Window
         var accentHover = ParseColor(dark ? "#2B63BF" : "#215ABC", Colors.Transparent);
         var accentPressed = ParseColor(dark ? "#2456AC" : "#1B4DAB", Colors.Transparent);
         var accentDisabled = ParseColor(dark ? "#3A4165" : "#C9CDE7", Colors.Transparent);
+        var buttonHover = ParseColor(dark ? "#394456" : "#E2E8F5", Colors.Transparent);
+        var buttonPressed = ParseColor(dark ? "#46536A" : "#D3DDEF", Colors.Transparent);
 
         SetBrushColor("TaiSidebarBrush", ParseColor(dark ? "#1F232B" : "#EBEEF5", Colors.Transparent));
         SetBrushColor("TaiChartBrush", ParseColor(dark ? "#8EB6FF" : "#628AF0", Colors.Transparent));
@@ -224,9 +227,11 @@ public sealed partial class MainWindow : Window
         SetBrushColor("TaiAccentBrush", accent);
         SetBrushColor("TaiAccentFillBrush", accentFill);
         SetBrushColor("TaiAccentSoftBrush", accentSoft);
+        SetBrushColor("TaiButtonHoverBrush", buttonHover);
+        SetBrushColor("TaiButtonPressedBrush", buttonPressed);
         SetBrushColor("ToggleButtonBackgroundChecked", cardBackground);
-        SetBrushColor("ToggleButtonBackgroundCheckedPointerOver", mutedBackground);
-        SetBrushColor("ToggleButtonBackgroundCheckedPressed", divider);
+        SetBrushColor("ToggleButtonBackgroundCheckedPointerOver", buttonHover);
+        SetBrushColor("ToggleButtonBackgroundCheckedPressed", buttonPressed);
         SetBrushColor("ToggleButtonBackgroundCheckedDisabled", mutedBackground);
         SetBrushColor("ToggleSwitchFillOn", accentFill);
         SetBrushColor("ToggleSwitchFillOnPointerOver", accentHover);
@@ -380,8 +385,20 @@ public sealed partial class MainWindow : Window
 
     private static void ValidateSettingsPage(Views.SettingsPage page)
     {
-        if (page.FindName("SettingsTabs") is not TabView { TabItems.Count: 5 })
-            throw new InvalidOperationException("The five legacy settings sections were not created.");
+        if (page.FindName("SettingsTabs") is not SelectorBar { Items.Count: 5 } selectorBar)
+            throw new InvalidOperationException("The five settings sections were not created.");
+        var sections = new[] { "GeneralSection", "LinksSection", "RulesSection", "DataSection", "AboutSection" };
+        for (var index = 0; index < selectorBar.Items.Count; index++)
+        {
+            selectorBar.SelectedItem = selectorBar.Items[index] as SelectorBarItem;
+            for (var sectionIndex = 0; sectionIndex < sections.Length; sectionIndex++)
+            {
+                if (page.FindName(sections[sectionIndex]) is not UIElement section ||
+                    section.Visibility != (sectionIndex == index ? Visibility.Visible : Visibility.Collapsed))
+                    throw new InvalidOperationException("Settings section selection did not update content.");
+            }
+        }
+        selectorBar.SelectedItem = selectorBar.Items[0] as SelectorBarItem;
         if (page.FindName("SettingsLogo") is not Image { Source: Microsoft.UI.Xaml.Media.Imaging.BitmapImage image }
             || !image.UriSource.AbsoluteUri.EndsWith("/Resources/Icons/tai.png", StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("The original Tai settings icon is not configured.");

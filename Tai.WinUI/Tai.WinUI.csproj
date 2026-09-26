@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\WebExtensions\Chrome\**\*" Link="WebExtensions\Chrome\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\tai.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\defaultIcon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\tai.png" CopyToOutputDirectory="PreserveNewest" />

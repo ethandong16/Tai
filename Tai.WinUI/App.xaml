@@ -15,6 +15,110 @@
             <AcrylicBrush x:Key="TaiSidebarMaterial" TintColor="#EBEEF5" TintOpacity="0.85" TintLuminosityOpacity="0.96" FallbackColor="#EBEEF5" />
             <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
             <CornerRadius x:Key="OverlayCornerRadius">16</CornerRadius>
+            <SolidColorBrush x:Key="TaiButtonHoverBrush" Color="#E2E8F5" />
+            <SolidColorBrush x:Key="TaiButtonPressedBrush" Color="#D3DDEF" />
+            <ControlTemplate x:Key="TaiTextButtonTemplate" TargetType="Button">
+                <Grid>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Target="ButtonSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Target="ButtonSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border x:Name="ButtonSurface"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+            <ControlTemplate x:Key="TaiLinkButtonTemplate" TargetType="HyperlinkButton">
+                <Grid>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Target="ButtonSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Target="ButtonSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border x:Name="ButtonSurface"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+            <ControlTemplate x:Key="TaiPeriodButtonTemplate" TargetType="ToggleButton">
+                <Grid>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                        <VisualStateGroup x:Name="CheckStates">
+                            <VisualState x:Name="Unchecked" />
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiCardBackgroundBrush}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Indeterminate" />
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border x:Name="PeriodSurface"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
             <Style x:Key="TaiSurfacePanelStyle" TargetType="StackPanel">
                 <Setter Property="Background" Value="{StaticResource TaiCardBackgroundBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource TaiDividerBrush}" />
@@ -30,6 +134,8 @@
                 <Setter Property="Padding" Value="16,7" />
                 <Setter Property="MinWidth" Value="64" />
                 <Setter Property="FontSize" Value="13" />
+                <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+                <Setter Property="Template" Value="{StaticResource TaiPeriodButtonTemplate}" />
             </Style>
 
             <SolidColorBrush x:Key="TaiPageBackgroundBrush" Color="#F6F7FA" />
@@ -95,7 +201,16 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="{StaticResource TaiAccentBrush}" />
                 <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="8,4" />
+                <Setter Property="Template" Value="{StaticResource TaiTextButtonTemplate}" />
+            </Style>
+            <Style x:Key="TaiLinkButtonStyle" TargetType="HyperlinkButton">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="{StaticResource TaiAccentBrush}" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="8,4" />
+                <Setter Property="Template" Value="{StaticResource TaiLinkButtonTemplate}" />
             </Style>
             <Style x:Key="TaiPageTitleStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="28" />
