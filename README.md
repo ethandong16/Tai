@@ -7,8 +7,6 @@ Tai is a local Windows usage tracker rebuilt around a WinUI 3 desktop interface.
 
 This repository is an independent fork and WinUI 3 edition of Tai. It is not an official release of the original Tai project. The original MIT license and attribution are preserved in [`LICENSE`](LICENSE).
 
-![Tai WinUI overview](docs/images/tai-winui-overview.png)
-
 ## Download
 
 Download the latest package from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
