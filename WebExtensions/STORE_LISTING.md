@@ -8,7 +8,7 @@ Tai Sentry is the companion browser extension for the Tai WinUI desktop app. It 
 - Short description: `Track active website usage locally with the Tai Windows desktop app.`
 - Category: Productivity
 - Default language: English
-- Website: `https://github.com/ethandong16/Tai`
+- Website: `https://github.com/ethandong16/Tai.WinUI`
 
 ### Detailed description
 

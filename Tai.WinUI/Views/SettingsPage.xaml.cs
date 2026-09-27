@@ -439,7 +439,7 @@ public sealed partial class SettingsPage : Page
 
     private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
     {
-        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/ethandong16/Tai/releases"));
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/ethandong16/Tai.WinUI/releases"));
     }
 
     private static bool TryGetMonthRange(CalendarDatePicker startPicker, CalendarDatePicker endPicker, out DateTime start, out DateTime end)

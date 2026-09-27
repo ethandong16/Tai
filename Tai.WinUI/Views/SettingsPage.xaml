@@ -299,8 +299,8 @@
                                 <TextBlock x:Name="VersionText" Style="{StaticResource TaiCaptionStyle}" />
                                 <Button Content="检查更新" HorizontalAlignment="Left" Click="CheckUpdate_Click" Style="{StaticResource TaiSubtleButtonStyle}" />
                                 <HyperlinkButton Content="Chrome 网上应用店：Tai Sentry" NavigateUri="https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim" Style="{StaticResource TaiLinkButtonStyle}" />
-                                <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai" NavigateUri="https://github.com/ethandong16/Tai" Style="{StaticResource TaiLinkButtonStyle}" />
-                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai/discussions" NavigateUri="https://github.com/ethandong16/Tai/discussions" Style="{StaticResource TaiLinkButtonStyle}" />
+                                <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai.WinUI" NavigateUri="https://github.com/ethandong16/Tai.WinUI" Style="{StaticResource TaiLinkButtonStyle}" />
+                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai.WinUI/discussions" NavigateUri="https://github.com/ethandong16/Tai.WinUI/discussions" Style="{StaticResource TaiLinkButtonStyle}" />
                                 <TextBlock Text="Icon 来自微软 Emoji" Style="{StaticResource TaiCaptionStyle}" />
                             </StackPanel>
                     </Border>

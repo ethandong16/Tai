@@ -1,6 +1,6 @@
 # Tai
 
-[![Build Tai WinUI](https://github.com/ethandong16/Tai/actions/workflows/winui-build.yml/badge.svg?branch=master)](https://github.com/ethandong16/Tai/actions/workflows/winui-build.yml)
+[![Build Tai WinUI](https://github.com/ethandong16/Tai.WinUI/actions/workflows/winui-build.yml/badge.svg?branch=master)](https://github.com/ethandong16/Tai.WinUI/actions/workflows/winui-build.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Tai is a lightweight Windows app for understanding how you spend time on your computer. It tracks foreground applications locally and can also track active websites through the Tai Sentry browser extension.
@@ -10,9 +10,9 @@ Tai is an independent fork and is not an official release of the original Tai pr
 
 ## Download
 
-Download the latest version from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
+Download the latest version from [GitHub Releases](https://github.com/ethandong16/Tai.WinUI/releases).
 
-For version 1.1.0, download [`Tai-WinUI-1.1.0-win-x64.zip`](https://github.com/ethandong16/Tai/releases/download/v1.1.0/Tai-WinUI-1.1.0-win-x64.zip).
+For version 1.1.0, download [`Tai-WinUI-1.1.0-win-x64.zip`](https://github.com/ethandong16/Tai.WinUI/releases/download/v1.1.0/Tai-WinUI-1.1.0-win-x64.zip).
 
 Tai is a portable desktop app:
 
@@ -96,9 +96,9 @@ Tai restores the window inside the available display area. Use the Windows snap 
 
 ## Links
 
-- [Latest releases](https://github.com/ethandong16/Tai/releases)
+- [Latest releases](https://github.com/ethandong16/Tai.WinUI/releases)
 - [Tai Sentry on the Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim)
-- [Report a bug](https://github.com/ethandong16/Tai/issues)
-- [Project discussions](https://github.com/ethandong16/Tai/discussions)
+- [Report a bug](https://github.com/ethandong16/Tai.WinUI/issues)
+- [Project discussions](https://github.com/ethandong16/Tai.WinUI/discussions)
 
 Tai is an independent fork and is not an official release of the original Tai project. It is distributed under the [MIT License](LICENSE).
