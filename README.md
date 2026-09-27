@@ -7,8 +7,6 @@ Tai is a lightweight Windows app for understanding how you spend time on your co
 
 No account is required. Your usage database stays on your computer.
 
-![Tai overview](docs/images/tai-winui-overview.png)
-
 ## Download
 
 Download the latest version from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
