@@ -6,6 +6,7 @@
 Tai is a lightweight Windows app for understanding how you spend time on your computer. It tracks foreground applications locally and can also track active websites through the Tai Sentry browser extension.
 
 No account is required. Your usage database stays on your computer.
+Tai is an independent fork and is not an official release of the original Tai project. The original MIT license and attribution are preserved in [`LICENSE`](LICENSE).
 
 ## Download
 
