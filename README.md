@@ -3,128 +3,103 @@
 [![Build Tai WinUI](https://github.com/ethandong16/Tai/actions/workflows/winui-build.yml/badge.svg?branch=master)](https://github.com/ethandong16/Tai/actions/workflows/winui-build.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Tai is a local Windows usage tracker rebuilt around a WinUI 3 desktop interface. It records foreground application usage and, with the companion Chromium extension, active website usage. Data is stored locally by default; no account or cloud service is required.
+Tai is a lightweight Windows app for understanding how you spend time on your computer. It tracks foreground applications locally and can also track active websites through the Tai Sentry browser extension.
 
-This repository is an independent fork and WinUI 3 edition of Tai. It is not an official release of the original Tai project. The original MIT license and attribution are preserved in [`LICENSE`](LICENSE).
+No account is required. Your usage database stays on your computer.
 
-![Tai WinUI overview](docs/images/tai-winui-overview.png)
+![Tai overview](docs/images/tai-winui-overview.png)
 
 ## Download
 
-Download the latest package from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
+Download the latest version from [GitHub Releases](https://github.com/ethandong16/Tai/releases).
 
-For the current release, download:
+For version 1.1.0, download [`Tai-WinUI-1.1.0-win-x64.zip`](https://github.com/ethandong16/Tai/releases/download/v1.1.0/Tai-WinUI-1.1.0-win-x64.zip).
 
-- `Tai-WinUI-1.1.0-win-x64.zip` for the self-contained desktop application.
+Tai is a portable desktop app:
 
-The desktop package is unpackaged and portable. Extract it and run `Tai.WinUI.exe`.
+1. Download the ZIP file.
+2. Extract it to a folder you control.
+3. Run `Tai.WinUI.exe`.
 
-### Requirements
+### System requirements
 
 - Windows 10 version 1809 (build 17763) or later.
 - 64-bit Windows.
-- Administrator permissions may be required to observe some elevated applications.
+- Administrator permission may be required to observe applications running with elevated permission.
 
-## Features
+## What Tai tracks
 
-- Track foreground application usage time.
-- View daily, weekly, monthly, and yearly trends, rankings, and category breakdowns.
-- Track active website time in Chrome, Microsoft Edge, and other Chromium browsers.
-- Configure application categories, process matching, allowlists, URL filters, and regular expressions.
-- Monitor sleep and idle states to reduce inaccurate records.
-- Import and export configuration and database data.
-- Export statistics as `.xlsx` or `.csv`.
-- Use light, dark, or Windows-synchronized themes.
-- Keep statistics in a local SQLite database.
+- Foreground application usage time.
+- Daily, weekly, monthly, and yearly statistics.
+- Frequently used applications and usage trends.
+- Website usage through the optional browser extension.
+- Application categories and category breakdowns.
+- Detailed records with date, period, source, and search filters.
 
-## Browser extension
+Tai includes default categories for common browsers, office apps, development tools, communication apps, creative tools, learning apps, media players, games, and system utilities. You can rename, delete, or add categories at any time.
 
-Install the companion extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim). It works with Chrome and Chromium-based browsers that support Chrome Web Store extensions.
+## Website tracking
 
-1. Start Tai and enable website tracking in Settings.
-2. Open the [Tai Sentry Chrome Web Store page](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim).
-3. Install the extension from the store, then return to Tai.
+Website tracking is optional. Install [Tai Sentry from the Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim), then:
 
-The extension reads the active tab URL, title, favicon URL, and timing information through the `tabs` permission. It sends data only to Tai on the same computer through `ws://127.0.0.1:8908/TaiWebSentry`. It does not read page contents, forms, passwords, cookies, downloads, or browser account data. See the full [browser extension privacy policy](docs/browser-extension-privacy.md).
+1. Open Tai.
+2. Open **Settings**.
+3. Enable **Website tracking**.
+4. Keep Tai running while you browse.
 
-The desktop application no longer bundles or installs an unpacked extension. Store listing materials and the extension source remain available in [`WebExtensions`](WebExtensions) for maintenance.
+Tai Sentry supports Chrome and Chromium-based browsers that can install Chrome Web Store extensions. It sends website timing data to Tai on the same computer through the local connection. It does not provide a separate account or cloud sync service.
 
-## Build from source
+## Using Tai
 
-### Environment
+### Overview
 
-- .NET 8 SDK.
-- Visual Studio 2022 17.10 or later with a Windows desktop workload, or an equivalent MSBuild environment.
-- Windows App SDK `1.6.240829007`.
-- Windows 10 SDK `10.0.19041` or a compatible version.
+See today's total application time, the number of applications and websites recorded, the weekly trend, category distribution, and frequently used items.
 
-The maintained build target is `Tai.WinUI/Tai.WinUI.csproj`. The shared implementation is compiled through `Core.Modern/Core.Modern.csproj`.
+### Statistics
 
-```powershell
-dotnet restore Tai.WinUI/Tai.WinUI.csproj -r win-x64
+Switch between day, week, month, and year views to compare trends, rankings, and category usage.
 
-dotnet publish Tai.WinUI/Tai.WinUI.csproj `
-  -c Release `
-  -p:Platform=x64 `
-  -p:RuntimeIdentifier=win-x64 `
-  -p:SelfContained=true `
-  -p:WindowsAppSDKSelfContained=true `
-  -p:EnableMsixTooling=true `
-  --no-restore
-```
+### Detailed records
 
-Run the published startup check:
+Filter records by date range and source, search for an application or website, and open an item for more detail.
 
-```powershell
-powershell -ExecutionPolicy Bypass `
-  -File scripts/Test-WinUIStartup.ps1 `
-  -PublishDirectory "Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish"
-```
+### Categories
 
-Create the desktop release archive locally:
+Create your own categories or edit directory matching rules. Tai also assigns recognized applications to its built-in categories automatically. Manual categorization takes priority.
 
-```powershell
-./scripts/Pack-WinUIRelease.ps1 `
-  -PublishDirectory "Tai.WinUI/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish" `
-  -OutputDirectory artifacts `
-  -Version 1.1.0
-```
+### Settings
 
-Every `v*.*.*` tag runs the Windows build, startup smoke test, archive packaging, and GitHub Release workflow. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development rules.
+Manage startup behavior, theme, sleep monitoring, ignored applications, process allowlists, URL filters, data export, and data cleanup.
 
-## Project structure
+## Your data
 
-| Path | Purpose |
-| --- | --- |
-| `Tai.WinUI` | Maintained WinUI 3 desktop application |
-| `Core` | Shared monitoring, database, configuration, and website services |
-| `Core.Modern` | .NET 8 Windows build entry for the shared core |
-| `WebExtensions/Chrome` | Chromium website tracking extension |
-| `scripts` | Build, smoke-test, and release packaging scripts |
-| `docs` | Privacy and product documentation |
+Tai stores its data locally in the application folder by default:
 
-## Local data and privacy
+- `Data/data.db` contains usage records.
+- `Data/AppConfig.json` contains settings.
+- `Log/startup.log` contains startup diagnostics.
 
-Tai stores its local data in the application directory by default:
+There is no Tai account, advertising service, or cloud synchronization. You can disable website tracking, delete selected records in Settings, or remove the application folder to uninstall Tai. Back up the `Data` folder before deleting it if you need to keep your history.
 
-- Statistics database: `Data/data.db`
-- Configuration: `Data/AppConfig.json`
-- Logs: `Log/startup.log`
+## Troubleshooting
 
-Tai has no account system, cloud synchronization, or telemetry service. The browser extension communicates with the local Tai process only. Tai may request website favicons and cache them locally for display.
+### An application is missing
 
-Delete the application directory to uninstall. Back up the `Data` directory before removal if historical records are important.
+Make sure Tai is running and that the application is in the foreground. Some elevated applications require Tai to run with the same or higher permission level.
 
-## Contributing
+### Website data is missing
 
-New features and fixes should target the WinUI 3 application and shared core. Generated files, local databases, build output, and design review artifacts should not be committed. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Confirm that Tai Sentry is installed and enabled in your browser, Tai Sentry is connected to the same computer, and **Website tracking** is enabled in Tai.
 
-Please use [Issues](https://github.com/ethandong16/Tai/issues) for reproducible bugs and [Pull Requests](https://github.com/ethandong16/Tai/pulls) for proposed changes.
+### The window opens off-screen
 
-## English summary
+Tai restores the window inside the available display area. Use the Windows snap or move commands if a display configuration has changed.
 
-Tai is a local Windows time tracker focused on application and website usage. The maintained desktop client is built with WinUI 3 and targets `win-x64`. The browser companion connects to the desktop app over the local loopback WebSocket endpoint and does not upload browsing data to a remote service.
+## Links
 
-Install the desktop ZIP from [Releases](https://github.com/ethandong16/Tai/releases), then install [Tai Sentry from the Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim). Build instructions, privacy details, and release scripts are documented above and in the linked project files.
+- [Latest releases](https://github.com/ethandong16/Tai/releases)
+- [Tai Sentry on the Chrome Web Store](https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim)
+- [Report a bug](https://github.com/ethandong16/Tai/issues)
+- [Project discussions](https://github.com/ethandong16/Tai/discussions)
 
-This is an independent fork and is not an official release of the original Tai project. Tai is distributed under the [MIT License](LICENSE).
+Tai is an independent fork and is not an official release of the original Tai project. It is distributed under the [MIT License](LICENSE).

@@ -30,7 +30,7 @@ powershell -ExecutionPolicy Bypass `
 - Put shared monitoring, database, and configuration changes in `Core`.
 - Keep browser extension changes under `WebExtensions/Chrome`.
 - Do not commit `bin`, `obj`, `artifacts`, local databases, logs, or generated design-review files.
-- Update the privacy documentation when data handling or permissions change.
+- Update the user-facing data handling section in `README.md` when data handling or permissions change.
 - Keep desktop version changes consistent across the WinUI project, changelog, and release tag. Version the store extension independently.
 
 ## Pull requests
