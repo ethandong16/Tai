@@ -5,9 +5,24 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $publishPath = (Resolve-Path -LiteralPath $PublishDirectory).Path
-foreach ($file in @('Tai.WinUI.exe', 'resources.pri')) {
+foreach ($file in @('Tai.WinUI.exe', 'resources.pri', 'default-categories.json')) {
     $item = Get-Item -LiteralPath (Join-Path $publishPath $file)
     if ($item.Length -eq 0) { throw "Empty publish file: $file" }
+}
+
+$builtInKeys = @(
+    'browsing', 'office', 'development', 'communication', 'design',
+    'learning', 'media', 'gaming', 'utilities'
+)
+$catalog = Get-Content -LiteralPath (Join-Path $publishPath 'default-categories.json') -Raw | ConvertFrom-Json
+if ($catalog.version -ne 1 -or -not $catalog.categories) {
+    throw 'Published default-categories.json has an invalid catalog structure.'
+}
+$catalogKeys = @($catalog.categories | ForEach-Object { $_.key })
+foreach ($key in $builtInKeys) {
+    if ($catalogKeys -notcontains $key) {
+        throw "Published catalog is missing built-in category: $key"
+    }
 }
 
 # Run against a fresh copy so test data never touches an existing user database.
@@ -28,6 +43,13 @@ if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath }
 if ($process.ExitCode -ne 0 -or -not (Test-Path (Join-Path $testPath 'startup-smoke.ok')) -or
     (Test-Path -LiteralPath $logPath)) {
     throw "Startup test failed (exit $($process.ExitCode)). Diagnostics retained in $testPath"
+}
+$config = Get-Content -LiteralPath (Join-Path $testPath 'Data/AppConfig.json') -Raw | ConvertFrom-Json
+foreach ($key in $builtInKeys) {
+    $mapping = $config.General.DefaultCategoryIds.PSObject.Properties[$key]
+    if ($null -eq $mapping -or [int]$mapping.Value -le 0) {
+        throw "Startup did not map built-in category: $key. Diagnostics retained in $testPath"
+    }
 }
 Get-Content -LiteralPath (Join-Path $testPath 'startup-smoke.ok')
 Write-Output "Verified publish resources and startup. Test copy: $testPath"

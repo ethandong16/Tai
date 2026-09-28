@@ -13,11 +13,15 @@ namespace Tai.WinUI.Views;
 
 public sealed partial class SettingsPage : Page
 {
+    private static readonly int[] CategoryIntervals = { 0, 6, 12, 24, 72, 168 };
+    private static readonly SemaphoreSlim ImportOperationGate = new(1, 1);
     private readonly IAppConfig _appConfig;
     private readonly IData _data;
     private readonly IWebData _webData;
     private readonly IMain _main;
+    private readonly ICategoryCatalogService _catalogService;
     private readonly IDatabase _database;
+    private int _customCategoryIntervalHours;
     private ConfigModel _config = null!;
     private bool _isLoading;
 
@@ -29,6 +33,7 @@ public sealed partial class SettingsPage : Page
         _data = App.Services.GetRequiredService<IData>();
         _webData = App.Services.GetRequiredService<IWebData>();
         _main = App.Services.GetRequiredService<IMain>();
+        _catalogService = App.Services.GetRequiredService<ICategoryCatalogService>();
         _database = App.Services.GetRequiredService<IDatabase>();
         Loaded += SettingsPage_Loaded;
     }
@@ -45,8 +50,15 @@ public sealed partial class SettingsPage : Page
     private static void NormalizeConfig(ConfigModel config)
     {
         config.General ??= new GeneralModel();
+        config.General.DefaultCategoryIds ??= new Dictionary<string, int>();
         config.Behavior ??= new BehaviorModel();
         config.Links ??= new List<LinkModel>();
+        config.Links.RemoveAll(link => link == null);
+        foreach (var link in config.Links)
+        {
+            link.Name ??= "新的关联";
+            link.ProcessList ??= new List<string>();
+        }
         config.Behavior.IgnoreProcessList ??= new List<string>();
         config.Behavior.IgnoreURLList ??= new List<string>();
         config.Behavior.ProcessWhiteList ??= new List<string>();
@@ -64,6 +76,20 @@ public sealed partial class SettingsPage : Page
             WebEnabledToggle.IsOn = general.IsWebEnabled;
             StartPagePicker.SelectedIndex = Math.Clamp(general.StartPage, 0, 3);
             ThemePicker.SelectedIndex = Math.Clamp(general.Theme, 0, 2);
+            while (CategoryIntervalPicker.Items.Count > CategoryIntervals.Length)
+                CategoryIntervalPicker.Items.RemoveAt(CategoryIntervalPicker.Items.Count - 1);
+            var displayedInterval = Math.Clamp(general.CategoryUpdateIntervalHours, 0, 720);
+            var categoryIntervalIndex = Array.IndexOf(CategoryIntervals, displayedInterval);
+            if (categoryIntervalIndex < 0)
+            {
+                _customCategoryIntervalHours = displayedInterval;
+                CategoryIntervalPicker.Items.Add(new ComboBoxItem
+                {
+                    Content = $"每 {_customCategoryIntervalHours} 小时"
+                });
+                categoryIntervalIndex = CategoryIntervals.Length;
+            }
+            CategoryIntervalPicker.SelectedIndex = categoryIntervalIndex;
             FillCountPicker(FrequentCountPicker, 10, general.IndexPageFrequentUseNum);
 
             var behavior = _config.Behavior;
@@ -111,6 +137,10 @@ public sealed partial class SettingsPage : Page
         var general = _config.General;
         if (ReferenceEquals(sender, StartPagePicker)) general.StartPage = StartPagePicker.SelectedIndex;
         else if (ReferenceEquals(sender, ThemePicker)) general.Theme = ThemePicker.SelectedIndex;
+        else if (ReferenceEquals(sender, CategoryIntervalPicker) && CategoryIntervalPicker.SelectedIndex >= 0)
+            general.CategoryUpdateIntervalHours = CategoryIntervalPicker.SelectedIndex < CategoryIntervals.Length
+                ? CategoryIntervals[CategoryIntervalPicker.SelectedIndex]
+                : _customCategoryIntervalHours;
         else if (ReferenceEquals(sender, FrequentCountPicker)) general.IndexPageFrequentUseNum = FrequentCountPicker.SelectedIndex + 1;
         SaveConfig();
         if (ReferenceEquals(sender, ThemePicker)) App.MainWindowInstance?.ApplyAppearance();
@@ -345,53 +375,93 @@ public sealed partial class SettingsPage : Page
         var destination = Path.Combine(AppContext.BaseDirectory, "Data", "data.db");
         if (string.Equals(source, destination, StringComparison.OrdinalIgnoreCase)) return;
         if (!await ConfirmAsync("导入数据库", "导入会替换当前统计数据，并自动备份现有数据库。确定继续吗？")) return;
-
-        var dataDirectory = Path.GetDirectoryName(destination)!;
-        var staged = Path.Combine(dataDirectory, $"data.import-{Guid.NewGuid():N}.db");
-        var backup = Path.Combine(dataDirectory, $"data.before-import-{DateTime.Now:yyyyMMddHHmmss}.db");
-        var trackingStopped = false;
+        if (!await ImportOperationGate.WaitAsync(0)) return;
 
         try
         {
-            Directory.CreateDirectory(dataDirectory);
-            await Task.Run(() => CreateDatabaseSnapshot(source, staged));
-            ValidateDatabaseFile(staged);
+            var dataDirectory = Path.GetDirectoryName(destination)!;
+            var staged = Path.Combine(dataDirectory, $"data.import-{Guid.NewGuid():N}.db");
+            var backup = Path.Combine(dataDirectory, $"data.before-import-{DateTime.Now:yyyyMMddHHmmss}.db");
+            var trackingStopped = false;
+            var categoryMappingResetAttempted = false;
+            var categoryMappingCleared = false;
+            var databaseReplaced = false;
+            Dictionary<string, int>? previousCategoryIds = null;
+            var previousCategoriesInitialized = false;
 
-            _main.Stop();
-            trackingStopped = true;
-            _database.CloseWriter();
-            DeleteDatabaseSidecar(destination + "-wal");
-            DeleteDatabaseSidecar(destination + "-shm");
-            if (File.Exists(destination))
+            try
             {
-                File.Replace(staged, destination, backup, true);
-            }
-            else
-            {
-                File.Move(staged, destination);
-            }
-        }
-        catch (Exception exception)
-        {
-            TryDeleteFile(staged);
-            if (trackingStopped)
-            {
-                try { _main.Start(); } catch { }
-            }
-            App.LogStartupException(exception);
-            await ShowMessageAsync("导入失败", "所选文件不是有效的 Tai 数据库，或当前数据库无法替换。原数据未被修改。");
-            return;
-        }
+                await App.CoreReady;
+                Directory.CreateDirectory(dataDirectory);
+                await Task.Run(() => CreateDatabaseSnapshot(source, staged));
+                ValidateDatabaseFile(staged);
 
-        await ShowMessageAsync("导入完成", "数据库已导入并备份原数据。Tai 将重新启动以加载新数据。");
-        try
-        {
-            RestartApplication();
+                _main.Stop();
+                trackingStopped = true;
+                await _catalogService.PauseAndWaitAsync();
+                var general = _appConfig.GetConfig().General;
+                previousCategoryIds = new Dictionary<string, int>(general.DefaultCategoryIds ?? new());
+                previousCategoriesInitialized = general.DefaultCategoriesInitialized;
+                categoryMappingResetAttempted = true;
+                if (!_appConfig.UpdateAndSave(current =>
+                    {
+                        current.General.DefaultCategoryIds = new Dictionary<string, int>();
+                        current.General.DefaultCategoriesInitialized = false;
+                        return true;
+                    }))
+                    throw new IOException("Unable to invalidate category IDs before database import.");
+                categoryMappingCleared = true;
+                _database.CloseWriter();
+                DeleteDatabaseSidecar(destination + "-wal");
+                DeleteDatabaseSidecar(destination + "-shm");
+                if (File.Exists(destination))
+                {
+                    File.Replace(staged, destination, backup, true);
+                }
+                else
+                {
+                    File.Move(staged, destination);
+                }
+                databaseReplaced = true;
+            }
+            catch (Exception exception)
+            {
+                TryDeleteFile(staged);
+                var categoryMappingRestored = true;
+                if (categoryMappingResetAttempted && !databaseReplaced)
+                {
+                    categoryMappingRestored = _appConfig.UpdateAndSave(current =>
+                    {
+                        current.General.DefaultCategoryIds = previousCategoryIds ?? new Dictionary<string, int>();
+                        current.General.DefaultCategoriesInitialized = previousCategoriesInitialized;
+                        return categoryMappingCleared;
+                    });
+                }
+                if (trackingStopped)
+                {
+                    try { _main.Start(); } catch { }
+                }
+                App.LogStartupException(exception);
+                await ShowMessageAsync("导入失败", categoryMappingRestored
+                    ? "所选文件不是有效的 Tai 数据库，或当前数据库无法替换。原数据未被修改。"
+                    : "数据库未导入，但分类设置无法恢复。请重启 Tai 并检查现有分类。");
+                return;
+            }
+
+            await ShowMessageAsync("导入完成", "数据库已导入并备份原数据。Tai 将重新启动以加载新数据。");
+            try
+            {
+                RestartApplication();
+            }
+            catch (Exception exception)
+            {
+                App.LogStartupException(exception);
+                await ShowMessageAsync("需要手动重启", "数据库已成功导入，但 Tai 无法自动重启。请关闭并重新打开软件。");
+            }
         }
-        catch (Exception exception)
+        finally
         {
-            App.LogStartupException(exception);
-            await ShowMessageAsync("需要手动重启", "数据库已成功导入，但 Tai 无法自动重启。请关闭并重新打开软件。");
+            ImportOperationGate.Release();
         }
     }
 
@@ -415,17 +485,45 @@ public sealed partial class SettingsPage : Page
     {
         var dialog = new Microsoft.Win32.OpenFileDialog { Title = "导入 Tai 配置", Filter = "JSON 配置 (*.json)|*.json" };
         if (dialog.ShowDialog() != true || !await ConfirmAsync("导入配置", "导入会覆盖当前 Tai 配置，确定继续吗？")) return;
+        if (!await ImportOperationGate.WaitAsync(0)) return;
+        var catalogPaused = false;
+        var importedSaved = false;
         try
         {
+            await App.CoreReady;
             var imported = JsonSerializer.Deserialize<ConfigModel>(File.ReadAllText(dialog.FileName));
             if (imported == null) throw new InvalidDataException("Empty configuration");
             NormalizeConfig(imported);
-            var current = _appConfig.GetConfig();
-            current.General = imported.General;
-            current.Behavior = imported.Behavior;
-            current.Links = imported.Links;
-            _config = current;
-            _appConfig.Save();
+            catalogPaused = true;
+            await _catalogService.PauseAndWaitAsync();
+            var previous = _appConfig.GetConfig();
+            var previousGeneral = previous.General;
+            var previousBehavior = previous.Behavior;
+            var previousLinks = previous.Links;
+            if (!_appConfig.UpdateAndSave(current =>
+                {
+                    var localGeneral = current.General ?? new GeneralModel();
+                    imported.General.DefaultCategoryIds = new Dictionary<string, int>(
+                        localGeneral.DefaultCategoryIds ?? new Dictionary<string, int>());
+                    imported.General.DefaultCategoriesInitialized = localGeneral.DefaultCategoriesInitialized;
+                    imported.General.LastCategoryCatalogUpdateUtc = localGeneral.LastCategoryCatalogUpdateUtc;
+                    current.General = imported.General;
+                    current.Behavior = imported.Behavior;
+                    current.Links = imported.Links;
+                    return true;
+                }))
+            {
+                _appConfig.UpdateAndSave(current =>
+                {
+                    current.General = previousGeneral;
+                    current.Behavior = previousBehavior;
+                    current.Links = previousLinks;
+                    return false;
+                });
+                throw new IOException("Unable to save imported configuration.");
+            }
+            importedSaved = true;
+            _config = _appConfig.GetConfig();
             PopulateControls();
             App.MainWindowInstance?.ApplyAppearance();
             await ShowMessageAsync("导入完成", "Tai 配置已导入。");
@@ -433,7 +531,13 @@ public sealed partial class SettingsPage : Page
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            await ShowMessageAsync("导入失败", "无法读取该配置文件。");
+            await ShowMessageAsync(importedSaved ? "配置已保存" : "导入失败",
+                importedSaved ? "配置已导入，但界面未能刷新。请重启 Tai。" : "无法读取该配置文件或保存设置。");
+        }
+        finally
+        {
+            if (catalogPaused) _catalogService.ResumeAutomaticUpdates();
+            ImportOperationGate.Release();
         }
     }
 

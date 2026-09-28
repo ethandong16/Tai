@@ -59,13 +59,16 @@ namespace Core.Servicers.Instances
         /// 更新app数据，要先调用GetApp获得后更改并传回才有效
         /// </summary>
         /// <param name="app"></param>
-        public void UpdateApp(AppModel app_)
+        public bool UpdateApp(AppModel app_)
         {
+            TaiDbContext db = null;
             try
             {
-                using (var db = _databse.GetWriterContext())
+                db = _databse.GetWriterContext();
+                using (db)
                 {
                     var app = db.App.FirstOrDefault(c => c.ID.Equals(app_.ID));
+                    var updated = false;
                     if (app != null)
                     {
                         app.TotalTime = app_.TotalTime;
@@ -76,13 +79,19 @@ namespace Core.Servicers.Instances
                         app.CategoryID = app_.CategoryID;
                         app.Alias = app_.Alias;
                         db.SaveChanges();
+                        updated = true;
                     }
-                    _databse.CloseWriter();
+                    return updated;
                 }
             }
             catch (Exception e)
             {
                 Logger.Error(e.ToString());
+                return false;
+            }
+            finally
+            {
+                if (db != null) _databse.CloseWriter();
             }
         }
         public AppModel GetApp(string name)

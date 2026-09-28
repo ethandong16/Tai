@@ -20,6 +20,10 @@
                         <Setter Target="ThemePicker.(Grid.Column)" Value="1" />
                         <Setter Target="ThemePicker.HorizontalAlignment" Value="Right" />
                         <Setter Target="ThemePicker.Margin" Value="0" />
+                        <Setter Target="CategoryIntervalPicker.(Grid.Row)" Value="0" />
+                        <Setter Target="CategoryIntervalPicker.(Grid.Column)" Value="1" />
+                        <Setter Target="CategoryIntervalPicker.HorizontalAlignment" Value="Right" />
+                        <Setter Target="CategoryIntervalPicker.Margin" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Row)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Column)" Value="0" />
                         <Setter Target="DeleteStartPicker.Margin" Value="0" />
@@ -54,6 +58,10 @@
                         <Setter Target="ThemePicker.(Grid.Column)" Value="0" />
                         <Setter Target="ThemePicker.HorizontalAlignment" Value="Stretch" />
                         <Setter Target="ThemePicker.Margin" Value="0,10,0,0" />
+                        <Setter Target="CategoryIntervalPicker.(Grid.Row)" Value="1" />
+                        <Setter Target="CategoryIntervalPicker.(Grid.Column)" Value="0" />
+                        <Setter Target="CategoryIntervalPicker.HorizontalAlignment" Value="Stretch" />
+                        <Setter Target="CategoryIntervalPicker.Margin" Value="0,10,0,0" />
                         <Setter Target="DeleteStartPicker.(Grid.Row)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.Column)" Value="0" />
                         <Setter Target="DeleteStartPicker.(Grid.ColumnSpan)" Value="3" />
@@ -164,6 +172,27 @@
                                             <TextBlock Text="控制概览页展示的应用和网站数量" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
                                         </StackPanel>
                                         <ComboBox x:Name="FrequentCountPicker" Grid.Column="1" MinWidth="100" SelectionChanged="GeneralSetting_SelectionChanged" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource TaiCardStyle}">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="应用分类" Style="{StaticResource TaiSectionTitleStyle}" />
+                                    <Grid>
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="自动获取间隔" />
+                                            <TextBlock Text="从 GitHub 获取默认应用分类" Margin="0,4,0,0" Style="{StaticResource TaiCaptionStyle}" />
+                                        </StackPanel>
+                                        <ComboBox x:Name="CategoryIntervalPicker" Grid.Column="1" MinWidth="150" SelectionChanged="GeneralSetting_SelectionChanged">
+                                            <ComboBoxItem Content="关闭" />
+                                            <ComboBoxItem Content="每 6 小时" />
+                                            <ComboBoxItem Content="每 12 小时" />
+                                            <ComboBoxItem Content="每天" />
+                                            <ComboBoxItem Content="每 3 天" />
+                                            <ComboBoxItem Content="每周" />
+                                        </ComboBox>
                                     </Grid>
                                 </StackPanel>
                             </Border>

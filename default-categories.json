@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "key": "browsing",
+      "name": "浏览器",
+      "color": "#328B78",
+      "processes": ["chrome", "msedge", "firefox", "brave", "opera", "vivaldi", "Arc", "360chrome", "360se", "SogouExplorer"]
+    },
+    {
+      "key": "office",
+      "name": "办公文档",
+      "color": "#4969D8",
+      "processes": ["WINWORD", "EXCEL", "POWERPNT", "ONENOTE", "MSPUB", "wps", "et", "wpp", "notepad", "notepad++", "Obsidian", "Typora", "siyuan", "Notion"]
+    },
+    {
+      "key": "development",
+      "name": "开发工具",
+      "color": "#267B92",
+      "processes": ["Code", "Code - Insiders", "devenv", "rider64", "idea64", "pycharm64", "webstorm64", "goland64", "clion64", "datagrip64", "AndroidStudio", "studio64", "eclipse", "git-bash", "GitHubDesktop", "postman", "insomnia", "WindowsTerminal", "wezterm-gui", "cursor", "windsurf"]
+    },
+    {
+      "key": "communication",
+      "name": "沟通协作",
+      "color": "#7B65AA",
+      "processes": ["WeChat", "Weixin", "QQ", "WXWork", "DingTalk", "Feishu", "Lark", "Teams", "ms-teams", "Slack", "Discord", "Zoom", "Telegram", "WhatsApp", "Signal"]
+    },
+    {
+      "key": "design",
+      "name": "设计创作",
+      "color": "#BD675C",
+      "processes": ["Photoshop", "Illustrator", "InDesign", "AfterFX", "Premiere Pro", "Adobe XD", "Figma", "blender", "Canva", "Krita", "GIMP", "AffinityPhoto2", "AffinityDesigner2", "AffinityPublisher2", "DaVinci Resolve"]
+    },
+    {
+      "key": "learning",
+      "name": "学习阅读",
+      "color": "#6B8D4B",
+      "processes": ["Anki", "Calibre", "SumatraPDF", "AcroRd32", "Acrobat", "Kindle", "Zotero", "JabRef", "FoxitPDFReader"]
+    },
+    {
+      "key": "media",
+      "name": "影音娱乐",
+      "color": "#BF7C36",
+      "processes": ["Spotify", "cloudmusic", "QQMusic", "KuGou", "PotPlayerMini64", "PotPlayerMini", "vlc", "mpv", "iTunes", "Bilibili"]
+    },
+    {
+      "key": "gaming",
+      "name": "游戏",
+      "color": "#B55878",
+      "processes": ["steam", "EpicGamesLauncher", "GalaxyClient", "Battle.net", "RiotClientServices", "UbisoftConnect", "EADesktop", "WeGame"]
+    },
+    {
+      "key": "utilities",
+      "name": "系统工具",
+      "color": "#647481",
+      "processes": ["7zFM", "WinRAR", "Everything", "PowerToys", "ShareX", "SnippingTool", "KeePass", "KeePassXC", "Bitwarden", "qBittorrent", "uTorrent", "AnyDesk", "TeamViewer", "rustdesk"]
+    }
+  ]
+}

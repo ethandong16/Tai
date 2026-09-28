@@ -14,6 +14,7 @@ namespace Core.Servicers.Instances
     public class Categorys : ICategorys
     {
         private List<CategoryModel> _categories;
+        private readonly object _locker = new object();
         public Categorys()
         {
             this._categories = new List<CategoryModel>();
@@ -25,7 +26,7 @@ namespace Core.Servicers.Instances
             {
                 db.Categorys.Add(category);
                 db.SaveChanges();
-                _categories.Add(category);
+                lock (_locker) _categories.Add(category);
                 return category;
             }
         }
@@ -39,7 +40,7 @@ namespace Core.Servicers.Instances
                 {
                     db.Categorys.Remove(item);
                     db.SaveChanges();
-                    _categories.Remove(category);
+                    lock (_locker) _categories.RemoveAll(existing => existing.ID == category.ID);
                 }
             }
 
@@ -47,12 +48,12 @@ namespace Core.Servicers.Instances
 
         public List<CategoryModel> GetCategories()
         {
-            return this._categories;
+            lock (_locker) return new List<CategoryModel>(_categories);
         }
 
         public CategoryModel GetCategory(int id)
         {
-            return _categories.Where(m => m.ID == id).FirstOrDefault();
+            lock (_locker) return _categories.FirstOrDefault(m => m.ID == id);
         }
 
         public void Load()
@@ -60,7 +61,7 @@ namespace Core.Servicers.Instances
             Debug.WriteLine("加载分类");
             using (var db = new TaiDbContext())
             {
-                this._categories = db.Categorys.ToList();
+                lock (_locker) this._categories = db.Categorys.ToList();
                 Debug.WriteLine("加载分类完成");
 
             }

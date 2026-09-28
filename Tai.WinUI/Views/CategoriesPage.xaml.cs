@@ -4,6 +4,7 @@ using Core.Models;
 using Core.Servicers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -13,24 +14,43 @@ namespace Tai.WinUI.Views;
 public sealed partial class CategoriesPage : Page
 {
     private readonly ICategorys _categoryService;
+    private readonly ICategoryCatalogService _catalogService;
     private readonly IAppData _appData;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public ObservableCollection<CategoryRow> Categories { get; } = new();
 
     public CategoriesPage()
     {
         _categoryService = App.Services.GetRequiredService<ICategorys>();
+        _catalogService = App.Services.GetRequiredService<ICategoryCatalogService>();
         _appData = App.Services.GetRequiredService<IAppData>();
         InitializeComponent();
+        _dispatcherQueue = DispatcherQueue;
         NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         Loaded += CategoriesPage_Loaded;
+        _catalogService.CatalogUpdated += CatalogService_CatalogUpdated;
     }
 
     private async void CategoriesPage_Loaded(object sender, RoutedEventArgs e)
     {
-        Loaded -= CategoriesPage_Loaded;
-        var snapshot = await Task.Run(BuildCategorySnapshot);
-        ApplyCategorySnapshot(snapshot);
+        try
+        {
+            await App.CoreReady;
+            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+        }
+    }
+
+    private void CatalogService_CatalogUpdated(object? sender, EventArgs e)
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+        });
     }
 
     private List<CategorySnapshot> BuildCategorySnapshot()
@@ -65,6 +85,27 @@ public sealed partial class CategoriesPage : Page
     }
 
     private sealed record CategorySnapshot(CategoryModel Category, int ItemCount);
+
+    private async void FetchCategoriesButton_Click(object sender, RoutedEventArgs e)
+    {
+        FetchCategoriesButton.IsEnabled = false;
+        try
+        {
+            await App.CoreReady;
+            var result = await _catalogService.FetchLatestAsync();
+            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+            if (IsLoaded) await ShowMessageAsync(result.Succeeded ? "分类已更新" : "获取失败", result.Message);
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+            if (IsLoaded) await ShowMessageAsync("获取失败", "获取分类时发生错误，请稍后重试。");
+        }
+        finally
+        {
+            FetchCategoriesButton.IsEnabled = true;
+        }
+    }
 
     private async void CreateButton_Click(object sender, RoutedEventArgs e)
     {
@@ -127,13 +168,13 @@ public sealed partial class CategoriesPage : Page
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
         try
         {
-            _categoryService.Delete(row.Model);
+            _catalogService.DeleteCategory(row.Model);
             RefreshCategories();
         }
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            await ShowMessageAsync("删除失败", "请先将该分类中的应用移出，再重试。");
+            await ShowMessageAsync("删除失败", "请先将该分类中的应用移出，并确认设置可以保存。");
         }
     }
 
@@ -190,13 +231,21 @@ public sealed partial class CategoriesPage : Page
 
     private async Task ShowMessageAsync(string title, string message)
     {
-        await new ContentDialog
+        if (!IsLoaded || XamlRoot == null) return;
+        try
         {
-            Title = title,
-            Content = message,
-            CloseButtonText = "确定",
-            XamlRoot = XamlRoot
-        }.ShowAsync();
+            await new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "确定",
+                XamlRoot = XamlRoot
+            }.ShowAsync();
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+        }
     }
 
     private static IReadOnlyList<string> ReadDirectories(string? json)

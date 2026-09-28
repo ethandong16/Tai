@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Compile Include="..\Core\**\*.cs" Exclude="..\Core\obj\**;..\Core\bin\**" />
+    <EmbeddedResource Include="..\default-categories.json" LogicalName="Core.default-categories.json" />
   </ItemGroup>
 
   <ItemGroup>

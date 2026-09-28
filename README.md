@@ -35,7 +35,7 @@ Tai is a portable desktop app:
 - Application categories and category breakdowns.
 - Detailed records with date, period, source, and search filters.
 
-Tai includes default categories for common browsers, office apps, development tools, communication apps, creative tools, learning apps, media players, games, and system utilities. You can rename, delete, or add categories at any time.
+Tai includes default categories for common browsers, office apps, development tools, communication apps, creative tools, learning apps, media players, games, and system utilities. You can rename, delete, or add categories at any time. The bundled defaults are maintained in [`default-categories.json`](default-categories.json).
 
 ## Website tracking
 
@@ -46,7 +46,7 @@ Website tracking is optional. Install [Tai Sentry from the Chrome Web Store](htt
 3. Enable **Website tracking**.
 4. Keep Tai running while you browse.
 
-Tai Sentry supports Chrome and Chromium-based browsers that can install Chrome Web Store extensions. It sends website timing data to Tai on the same computer through the local connection. It does not provide a separate account or cloud sync service.
+Tai Sentry supports Chrome and Chromium-based browsers that can install Chrome Web Store extensions. It sends website timing data to Tai on the same computer through the local connection. Website timing data is not sent to GitHub.
 
 ## Using Tai
 
@@ -66,9 +66,13 @@ Filter records by date range and source, search for an application or website, a
 
 Create your own categories or edit directory matching rules. Tai also assigns recognized applications to its built-in categories automatically. Manual categorization takes priority.
 
+Use **Get latest categories** on this page to fetch the catalog from GitHub. The successful catalog is cached in `Data/default-categories.json` for offline use. Existing category names, deleted categories, directory rules, and manual application assignments are preserved. Newly recognized applications and applications without a category are assigned using the latest process rules.
+
+To update the shared catalog, edit [`default-categories.json`](default-categories.json) on the `master` branch. Each entry has a stable `key`, display `name`, hex `color`, and a list of executable `processes` without `.exe`. Keep keys unique; a process name can belong to only one category. Changes become available to users after they fetch the catalog or their automatic interval elapses.
+
 ### Settings
 
-Manage startup behavior, theme, sleep monitoring, ignored applications, process allowlists, URL filters, data export, and data cleanup.
+Manage startup behavior, theme, sleep monitoring, ignored applications, process allowlists, URL filters, data export, and data cleanup. Under **General > Application categories**, choose an automatic fetch interval or turn it off. The default interval is 24 hours.
 
 ## Your data
 
@@ -76,9 +80,12 @@ Tai stores its data locally in the application folder by default:
 
 - `Data/data.db` contains usage records.
 - `Data/AppConfig.json` contains settings.
+- `Data/default-categories.json` caches the last valid catalog fetched from GitHub.
 - `Log/startup.log` contains startup diagnostics.
 
-There is no Tai account, advertising service, or cloud synchronization. You can disable website tracking, delete selected records in Settings, or remove the application folder to uninstall Tai. Back up the `Data` folder before deleting it if you need to keep your history.
+Category updates download the public catalog from GitHub. Tai does not send application usage records, website timing data, or local category assignments with these requests. There is no Tai account or advertising service, and your usage data is not synchronized to the cloud.
+
+You can disable website tracking, delete selected records in Settings, or remove the application folder to uninstall Tai. Back up the `Data` folder before deleting it if you need to keep your history.
 
 ## Troubleshooting
 

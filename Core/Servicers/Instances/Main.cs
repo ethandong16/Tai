@@ -33,6 +33,7 @@ namespace Core.Servicers.Instances
         private readonly IAppConfig appConfig;
         private readonly IAppData appData;
         private readonly ICategorys categories;
+        private readonly ICategoryCatalogService categoryCatalog;
         private readonly IWebFilter _webFilter;
         private readonly IAppTimerServicer _appTimer;
         private readonly IWebServer _webServer;
@@ -90,6 +91,7 @@ namespace Core.Servicers.Instances
             IAppConfig appConfig,
             IDateTimeObserver dateTimeObserver,
             IAppData appData, ICategorys categories,
+            ICategoryCatalogService categoryCatalog,
             IWebFilter webFilter_,
             IAppTimerServicer appTimer_,
             IWebServer webServer_,
@@ -101,6 +103,7 @@ namespace Core.Servicers.Instances
             this.appConfig = appConfig;
             this.appData = appData;
             this.categories = categories;
+            this.categoryCatalog = categoryCatalog;
             _webFilter = webFilter_;
             _appTimer = appTimer_;
             _webServer = webServer_;
@@ -114,26 +117,39 @@ namespace Core.Servicers.Instances
 
             sleepdiscover.SleepStatusChanged += Sleepdiscover_SleepStatusChanged;
             appConfig.ConfigChanged += AppConfig_ConfigChanged;
+            categoryCatalog.CatalogUpdated += CategoryCatalog_CatalogUpdated;
             _appTimer.OnAppDurationUpdated += _appTimer_OnAppDurationUpdated;
             WebSocketEvent.OnWebLog += WebSocketEvent_OnWebLog;
         }
 
         private void AppConfig_ConfigChanged(ConfigModel oldConfig, ConfigModel newConfig)
         {
-            if (oldConfig != newConfig)
+            if (oldConfig == null || newConfig == null || config == null) return;
+
+            if (oldConfig.General?.IsStartatboot != newConfig.General?.IsStartatboot)
             {
-                //  处理开机自启
                 SystemCommon.SetStartup(newConfig.General.IsStartatboot);
+            }
 
-                //  更新忽略规则
+            if (!ListsEqual(oldConfig.Behavior?.IgnoreProcessList, newConfig.Behavior?.IgnoreProcessList))
+            {
                 UpdateConfigIgnoreProcess();
+            }
 
-                //  更新白名单
+            if (!ListsEqual(oldConfig.Behavior?.ProcessWhiteList, newConfig.Behavior?.ProcessWhiteList))
+            {
                 UpdateConfigProcessWhiteList();
+            }
 
-                //  处理web记录功能启停
+            if (oldConfig.General?.IsWebEnabled != newConfig.General?.IsWebEnabled)
+            {
                 HandleWebServiceConfig();
             }
+        }
+
+        private static bool ListsEqual(IEnumerable<string> left, IEnumerable<string> right)
+        {
+            return (left ?? Enumerable.Empty<string>()).SequenceEqual(right ?? Enumerable.Empty<string>());
         }
 
         public async void Run()
@@ -167,11 +183,8 @@ namespace Core.Servicers.Instances
             config = appConfig.GetConfig();
             await Task.Run(() =>
             {
-                InitializeDefaultCategories();
-                foreach (var app in appData.GetAllApps().Where(item => item.CategoryID == 0))
-                {
-                    DispatchCateogry(app.Name, app.File);
-                }
+                categoryCatalog.Initialize();
+                AssignUncategorizedApps();
             });
             AppState.IsLoading = false;
             UpdateConfigIgnoreProcess();
@@ -199,15 +212,18 @@ namespace Core.Servicers.Instances
                 //  启动睡眠监测
                 sleepdiscover.Start();
             }
+            categoryCatalog.ResumeAutomaticUpdates();
         }
         public void Stop()
         {
+            categoryCatalog.StopAutomaticUpdates();
             appObserver.Stop();
             _appTimer.Stop();
             _webServer.Stop();
         }
         public void Exit()
         {
+            categoryCatalog.StopAutomaticUpdates();
             appObserver?.Stop();
         }
 
@@ -529,30 +545,17 @@ namespace Core.Servicers.Instances
         #endregion
 
         #region 自动分类
-        private void InitializeDefaultCategories()
+        private void CategoryCatalog_CatalogUpdated(object sender, EventArgs e)
         {
-            if (config.General.DefaultCategoriesInitialized) return;
+            AssignUncategorizedApps();
+        }
 
-            var ids = config.General.DefaultCategoryIds;
-            foreach (var definition in DefaultCategoryCatalog.Categories)
+        private void AssignUncategorizedApps()
+        {
+            foreach (var app in appData.GetAllApps().Where(item => item.CategoryID == 0).ToList())
             {
-                var category = categories.GetCategories().FirstOrDefault(item =>
-                    string.Equals(item.Name, definition.Name, StringComparison.OrdinalIgnoreCase));
-                if (category == null)
-                {
-                    category = categories.Create(new CategoryModel
-                    {
-                        Name = definition.Name,
-                        Color = definition.Color,
-                        IconFile = string.Empty,
-                        Directories = "[]"
-                    });
-                }
-                ids[definition.Key] = category.ID;
+                DispatchCateogry(app.Name, app.File);
             }
-
-            config.General.DefaultCategoriesInitialized = true;
-            appConfig.Save();
         }
 
         /// <summary>
@@ -566,35 +569,39 @@ namespace Core.Servicers.Instances
                 AppModel app = appData.GetApp(processName_);
                 if (app != null && app.CategoryID == 0)
                 {
-                    var categoryList = categories.GetCategories().Where(c => c.IsDirectoryMath && c.DirectoryList.Count > 0).ToList();
-                    CategoryModel mathCategory = null;
-                    foreach (var category in categoryList)
+                    lock (DefaultCategoryCatalog.SyncRoot)
                     {
-                        if (mathCategory != null)
+                        if (app.CategoryID != 0) return;
+                        var categoryList = categories.GetCategories().Where(c => c.IsDirectoryMath && c.DirectoryList.Count > 0).ToList();
+                        CategoryModel mathCategory = null;
+                        foreach (var category in categoryList)
                         {
-                            break;
-                        }
-                        foreach (var item in category.DirectoryList)
-                        {
-                            string path = item.TrimEnd('\\', '/');
-                            if (!string.IsNullOrEmpty(executablePath_) && path.Length > 0 &&
-                                executablePath_.StartsWith(path + "\\", StringComparison.OrdinalIgnoreCase))
+                            if (mathCategory != null) break;
+                            foreach (var item in category.DirectoryList)
                             {
-                                mathCategory = category;
-                                Debug.WriteLine("匹配成功：" + category.Name);
-                                break;
+                                string path = item.TrimEnd('\\', '/');
+                                if (!string.IsNullOrEmpty(executablePath_) && path.Length > 0 &&
+                                    executablePath_.StartsWith(path + "\\", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    mathCategory = category;
+                                    Debug.WriteLine("匹配成功：" + category.Name);
+                                    break;
+                                }
                             }
                         }
-
-                    }
-                    mathCategory = mathCategory ?? DefaultCategoryCatalog.Find(
-                        processName_, config.General.DefaultCategoryIds, categories.GetCategories());
-                    if (mathCategory != null)
-                    {
-                        //  匹配成功
-                        app.Category = mathCategory;
-                        app.CategoryID = mathCategory.ID;
-                        appData.UpdateApp(app);
+                        mathCategory = mathCategory ?? DefaultCategoryCatalog.Find(
+                            processName_, config.General.DefaultCategoryIds, categories.GetCategories());
+                        if (mathCategory != null)
+                        {
+                            var previousCategory = app.Category;
+                            app.Category = mathCategory;
+                            app.CategoryID = mathCategory.ID;
+                            if (!appData.UpdateApp(app))
+                            {
+                                app.Category = previousCategory;
+                                app.CategoryID = 0;
+                            }
+                        }
                     }
                 }
             }

@@ -13,6 +13,15 @@ namespace Core.Models.Config
     {
         public bool DefaultCategoriesInitialized { get; set; }
         public Dictionary<string, int> DefaultCategoryIds { get; set; } = new Dictionary<string, int>();
+        /// <summary>
+        /// 自动获取 GitHub 分类目录的间隔，单位为小时；0 表示仅手动获取。
+        /// </summary>
+        public int CategoryUpdateIntervalHours { get; set; } = 24;
+
+        /// <summary>
+        /// 上一次成功获取分类目录的时间（UTC）。
+        /// </summary>
+        public DateTime? LastCategoryCatalogUpdateUtc { get; set; }
         [Config(Name = "开机自启动", Description = "在电脑启动时自动运行 Tai", Group = "基础")]
         /// <summary>
         /// 是否启用开机自启动

@@ -12,7 +12,7 @@ namespace Core.Servicers.Interfaces
         /// <summary>
         /// 更新app数据，要先调用GetApp获得后更改并传回才有效
         /// </summary>
-        void UpdateApp(AppModel app);
+        bool UpdateApp(AppModel app);
         /// <summary>
         /// 保存app数据更改
         /// </summary>

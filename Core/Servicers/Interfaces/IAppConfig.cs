@@ -29,6 +29,10 @@ namespace Core.Servicers.Interfaces
         /// </summary>
         void Save();
         /// <summary>
+        /// Updates and saves the shared config under one lock. Returns false if writing fails.
+        /// </summary>
+        bool UpdateAndSave(Func<ConfigModel, bool> update);
+        /// <summary>
         /// 配置修改时发生
         /// </summary>
         event AppConfigEventHandler ConfigChanged;

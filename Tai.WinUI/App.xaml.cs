@@ -35,6 +35,7 @@ public partial class App : Application
         serviceCollection.AddSingleton<IDateTimeObserver, DateTimeObserver>();
         serviceCollection.AddSingleton<IAppData, AppData>();
         serviceCollection.AddSingleton<ICategorys, Categorys>();
+        serviceCollection.AddSingleton<ICategoryCatalogService, CategoryCatalogService>();
         serviceCollection.AddSingleton<IWebFilter, WebFilter>();
         serviceCollection.AddSingleton<Tai.WinUI.Services.IUsageDataProvider, Tai.WinUI.Services.CoreUsageDataProvider>();
         Services = serviceCollection.BuildServiceProvider();
@@ -60,7 +61,7 @@ public partial class App : Application
             {
                 var categoryService = Services.GetRequiredService<ICategorys>();
                 var general = Services.GetRequiredService<IAppConfig>().GetConfig().General;
-                if (!general.DefaultCategoriesInitialized || general.DefaultCategoryIds.Count != 9 ||
+                if (!general.DefaultCategoriesInitialized || general.DefaultCategoryIds.Count < 9 ||
                     general.DefaultCategoryIds.Values.Any(id => categoryService.GetCategory(id) == null))
                 {
                     throw new InvalidOperationException("Default application categories were not initialized.");

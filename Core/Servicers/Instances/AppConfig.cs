@@ -18,6 +18,7 @@ namespace Core.Servicers.Instances
     {
         private string fileName;
         private ConfigModel config;
+        private readonly object saveLock = new object();
 
         public event AppConfigEventHandler ConfigChanged;
         private ConfigModel oldConfig;
@@ -37,6 +38,7 @@ namespace Core.Servicers.Instances
                 {
                     configText = File.ReadAllText(fileName);
                     config = JsonConvert.DeserializeObject<ConfigModel>(configText);
+                    if (config == null) CreateDefaultConfig();
                 }
                 else
                 {
@@ -46,9 +48,8 @@ namespace Core.Servicers.Instances
                     Save();
                 }
 
-                CopyToOldConfig();
-
                 CheckOption(config);
+                CopyToOldConfig();
             }
             catch (JsonSerializationException ex)
             {
@@ -98,23 +99,45 @@ namespace Core.Servicers.Instances
 
         public void Save()
         {
-            try
+            UpdateAndSave(_ => true);
+        }
+
+        public bool UpdateAndSave(Func<ConfigModel, bool> update)
+        {
+            lock (saveLock)
             {
-                string dir = Path.GetDirectoryName(fileName);
-                if (!Directory.Exists(dir))
+                try
                 {
-                    Directory.CreateDirectory(dir);
+                    if (config == null) return false;
+                    if (!update(config)) return true;
+                    string dir = Path.GetDirectoryName(fileName);
+                    if (!Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    var serialized = JsonConvert.SerializeObject(config);
+                    var temporaryFile = fileName + ".tmp";
+                    File.WriteAllText(temporaryFile, serialized);
+                    File.Move(temporaryFile, fileName, true);
+
+                    var previous = oldConfig ?? config;
+                    oldConfig = JsonConvert.DeserializeObject<ConfigModel>(serialized);
+                    try
+                    {
+                        ConfigChanged?.Invoke(previous, config);
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error("配置变更处理失败：" + exception);
+                    }
+                    return true;
                 }
-
-                File.WriteAllText(fileName, JsonConvert.SerializeObject(config));
-
-                ConfigChanged?.Invoke(oldConfig ?? config, config);
-
-                CopyToOldConfig();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message);
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    return false;
+                }
             }
         }
 

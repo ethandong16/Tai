@@ -100,7 +100,8 @@ public sealed partial class MainWindow : Window
                 RootFrame.UpdateLayout();
                 if (RootFrame.Content is not FrameworkElement content) throw new InvalidOperationException($"{page.Name} did not load");
                 ValidatePageLayout(content);
-                if ((windowSize.Width == 1240 || (windowSize.Width == 480 && page == typeof(Views.SettingsPage)))
+                if ((windowSize.Width == 1240 || (windowSize.Width == 480 &&
+                    (page == typeof(Views.SettingsPage) || page == typeof(Views.CategoriesPage))))
                     && Content is FrameworkElement screenshotRoot)
                     await CaptureSmokeScreenshotAsync(screenshotRoot, windowSize.Width, page.Name);
                 if (content is Views.StatisticsPage statisticsPage)
@@ -109,6 +110,8 @@ public sealed partial class MainWindow : Window
                     ValidateDetailsPage(detailsPage);
                 if (content is Views.SettingsPage settingsPage)
                     ValidateSettingsPage(settingsPage);
+                if (content is Views.CategoriesPage categoriesPage)
+                    ValidateCategoriesPage(categoriesPage);
             }
         }
 
@@ -409,6 +412,21 @@ public sealed partial class MainWindow : Window
         var expectedColumn = narrow ? 0 : 1;
         if (Grid.GetRow(startPagePicker) != expectedRow || Grid.GetColumn(startPagePicker) != expectedColumn)
             throw new InvalidOperationException($"Settings controls did not reflow at {page.ActualWidth:F0} effective pixels.");
+        if (page.FindName("CategoryIntervalPicker") is not ComboBox categoryIntervalPicker ||
+            Grid.GetRow(categoryIntervalPicker) != expectedRow ||
+            Grid.GetColumn(categoryIntervalPicker) != expectedColumn)
+            throw new InvalidOperationException("The category update interval control was not laid out correctly.");
+    }
+
+    private static void ValidateCategoriesPage(Views.CategoriesPage page)
+    {
+        if (page.FindName("FetchCategoriesButton") is not Button ||
+            page.FindName("CategoryActions") is not StackPanel actions)
+            throw new InvalidOperationException("The category update action was not created.");
+
+        var expectedRow = page.ActualWidth < 820 ? 1 : 0;
+        if (Grid.GetRow(actions) != expectedRow)
+            throw new InvalidOperationException("Category actions did not reflow with the window.");
     }
 
     private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth, string? name = null)

@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\default-categories.json" Link="default-categories.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\tai.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\defaultIcon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Resources\Icons\tai.png" CopyToOutputDirectory="PreserveNewest" />
