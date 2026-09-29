@@ -107,6 +107,7 @@ public sealed partial class MainWindow : Window
                 ValidatePageLayout(content);
                 if (content is Views.CategoriesPage categoriesPage)
                 {
+                    await categoriesPage.LoadDataTask;
                     ValidateCategoriesPage(categoriesPage);
                     await Task.Delay(80);
                     RootFrame.UpdateLayout();

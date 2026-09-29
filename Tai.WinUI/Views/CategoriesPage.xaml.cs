@@ -21,13 +21,17 @@ public sealed partial class CategoriesPage : Page
     private readonly IAppData _appData;
     private readonly IWebData _webData;
     private readonly DispatcherQueue _dispatcherQueue;
-    private List<WebSiteModel> _websites = new();
+    private IReadOnlyDictionary<int, CategoryAppRow[]> _appsByCategory = new Dictionary<int, CategoryAppRow[]>();
+    private IReadOnlyDictionary<int, CategoryWebsiteRow[]> _websitesByCategory = new Dictionary<int, CategoryWebsiteRow[]>();
     private bool _refreshingCategories;
+    private int _refreshGeneration;
+    private int _websiteRefreshGeneration;
 
     public ObservableCollection<CategoryRow> Categories { get; } = new();
-    public ObservableCollection<CategoryAppRow> CategoryApps { get; } = new();
+    public IReadOnlyList<CategoryAppRow> CategoryApps { get; private set; } = Array.Empty<CategoryAppRow>();
     public ObservableCollection<WebsiteCategoryRow> WebsiteCategories { get; } = new();
-    public ObservableCollection<CategoryWebsiteRow> CategoryWebsites { get; } = new();
+    public IReadOnlyList<CategoryWebsiteRow> CategoryWebsites { get; private set; } = Array.Empty<CategoryWebsiteRow>();
+    public Task LoadDataTask { get; private set; } = Task.CompletedTask;
 
     public CategoriesPage()
     {
@@ -49,10 +53,7 @@ public sealed partial class CategoriesPage : Page
         {
             await App.CoreReady;
             if (IsLoaded)
-            {
-                RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
-                RefreshWebsiteCategories((WebsiteCategoryList.SelectedItem as WebsiteCategoryRow)?.Id ?? 0);
-            }
+                await (LoadDataTask = RefreshDataAsync());
         }
         catch (Exception exception)
         {
@@ -64,8 +65,14 @@ public sealed partial class CategoriesPage : Page
     {
         _dispatcherQueue.TryEnqueue(() =>
         {
-            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+            if (IsLoaded) LoadDataTask = RefreshAfterCatalogUpdateAsync();
         });
+    }
+
+    private async Task RefreshAfterCatalogUpdateAsync()
+    {
+        try { await RefreshDataAsync(); }
+        catch (Exception exception) { App.LogStartupException(exception); }
     }
 
     private void CategoryMode_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs e)
@@ -75,35 +82,80 @@ public sealed partial class CategoriesPage : Page
         CategoryGrid.Visibility = showWebsites ? Visibility.Collapsed : Visibility.Visible;
         WebsiteGrid.Visibility = showWebsites ? Visibility.Visible : Visibility.Collapsed;
         CategoryActions.Visibility = showWebsites ? Visibility.Collapsed : Visibility.Visible;
-        CategoryCountText.Text = L.CategoryCount(showWebsites ? WebsiteCategories.Count : Categories.Count, showWebsites);
-        if (showWebsites && IsLoaded) RefreshWebsiteCategories((WebsiteCategoryList.SelectedItem as WebsiteCategoryRow)?.Id ?? 0);
+        CategoryCountText.Text = L.CategoryCount(
+            showWebsites ? Math.Max(0, WebsiteCategories.Count - 1) : Categories.Count, showWebsites);
+        if (showWebsites && IsLoaded && WebsiteCategories.Count > 0)
+            _ = RefreshWebsiteAfterModeChangeAsync();
     }
 
-    private List<CategorySnapshot> BuildCategorySnapshot()
+    private async Task RefreshWebsiteAfterModeChangeAsync()
+    {
+        try { await RefreshWebsiteDataAsync(null, Volatile.Read(ref _refreshGeneration)); }
+        catch (Exception exception) { App.LogStartupException(exception); }
+    }
+
+    private List<CategorySnapshot> BuildAppSnapshot()
     {
         return _categoryService.GetCategories()
             .OrderBy(item => item.Name)
             .Select(category => new CategorySnapshot(
                 category,
-                _appData.GetAppsByCategoryID(category.ID).Count))
+                _appData.GetAppsByCategoryID(category.ID)
+                    .Select(app => new CategoryAppRow(app))
+                    .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase)
+                    .ToArray()))
             .ToList();
     }
 
-    private void RefreshCategories(int selectedId = 0)
+    private List<WebsiteSnapshot> BuildWebsiteSnapshot()
     {
-        ApplyCategorySnapshot(BuildCategorySnapshot(), selectedId);
+        var websites = _webData.GetAllWebSites();
+        var categories = _webData.GetWebSiteCategories().OrderBy(item => item.Name).ToList();
+        var rowsByCategory = websites
+            .GroupBy(site => site.CategoryID)
+            .ToDictionary(group => group.Key, group => group
+                .OrderByDescending(site => site.Duration)
+                .ThenBy(site => site.Domain, StringComparer.OrdinalIgnoreCase)
+                .Select(site => new CategoryWebsiteRow(site)).ToArray());
+        return categories
+            .Select(category => new WebsiteSnapshot(category,
+                rowsByCategory.GetValueOrDefault(category.ID) ?? Array.Empty<CategoryWebsiteRow>()))
+            .Append(new WebsiteSnapshot(null,
+                rowsByCategory.GetValueOrDefault(0) ?? Array.Empty<CategoryWebsiteRow>()))
+            .ToList();
     }
 
-    private void ApplyCategorySnapshot(IReadOnlyList<CategorySnapshot> snapshot, int selectedId = 0)
+    private async Task RefreshDataAsync(int? selectedAppId = null, int? selectedWebsiteId = null)
+    {
+        var generation = Interlocked.Increment(ref _refreshGeneration);
+        var apps = await Task.Run(BuildAppSnapshot);
+        if (!IsLoaded || generation != Volatile.Read(ref _refreshGeneration)) return;
+        ApplyAppSnapshot(apps, selectedAppId ?? (CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+
+        await RefreshWebsiteDataAsync(selectedWebsiteId, generation);
+    }
+
+    private async Task RefreshWebsiteDataAsync(int? selectedId, int pageGeneration)
+    {
+        var websiteGeneration = Interlocked.Increment(ref _websiteRefreshGeneration);
+        var websites = await Task.Run(BuildWebsiteSnapshot);
+        if (!IsLoaded || pageGeneration != Volatile.Read(ref _refreshGeneration)
+            || websiteGeneration != Volatile.Read(ref _websiteRefreshGeneration)) return;
+        ApplyWebsiteSnapshot(websites,
+            selectedId ?? (WebsiteCategoryList.SelectedItem as WebsiteCategoryRow)?.Id ?? 0);
+    }
+
+    private void ApplyAppSnapshot(List<CategorySnapshot> snapshot, int selectedId)
     {
         _refreshingCategories = true;
         try
         {
+            _appsByCategory = snapshot.ToDictionary(item => item.Category.ID, item => item.Apps);
             Categories.Clear();
             CategoryRow? selected = null;
             foreach (var item in snapshot)
             {
-                var row = new CategoryRow(item.Category, item.ItemCount);
+                var row = new CategoryRow(item.Category, item.Apps.Length);
                 Categories.Add(row);
                 if (item.Category.ID == selectedId) selected = row;
             }
@@ -113,13 +165,36 @@ public sealed partial class CategoriesPage : Page
         {
             _refreshingCategories = false;
         }
-        if (CategoryMode.SelectedItem == AppsMode) CategoryCountText.Text = L.CategoryCount(Categories.Count, false);
+        if (CategoryMode.SelectedItem == AppsMode)
+            CategoryCountText.Text = L.CategoryCount(Categories.Count, false);
         EmptyCategoryState.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         RuleSection.Visibility = Categories.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         RefreshSelectedCategoryApps();
     }
 
-    private sealed record CategorySnapshot(CategoryModel Category, int ItemCount);
+    private void ApplyWebsiteSnapshot(List<WebsiteSnapshot> snapshot, int selectedId)
+    {
+        _refreshingCategories = true;
+        try
+        {
+            _websitesByCategory = snapshot.ToDictionary(item => item.Category?.ID ?? 0, item => item.Websites);
+            WebsiteCategories.Clear();
+            foreach (var item in snapshot)
+                WebsiteCategories.Add(new WebsiteCategoryRow(item.Category, item.Websites.Length));
+            WebsiteCategoryList.SelectedItem = WebsiteCategories.FirstOrDefault(item => item.Id == selectedId)
+                ?? WebsiteCategories.FirstOrDefault();
+        }
+        finally
+        {
+            _refreshingCategories = false;
+        }
+        if (CategoryMode.SelectedItem == WebsitesMode)
+            CategoryCountText.Text = L.CategoryCount(WebsiteCategories.Count - 1, true);
+        RefreshSelectedCategoryWebsites();
+    }
+
+    private sealed record CategorySnapshot(CategoryModel Category, CategoryAppRow[] Apps);
+    private sealed record WebsiteSnapshot(WebSiteCategoryModel? Category, CategoryWebsiteRow[] Websites);
 
     private void CategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -129,9 +204,10 @@ public sealed partial class CategoriesPage : Page
 
     private void RefreshSelectedCategoryApps()
     {
-        CategoryApps.Clear();
+        CategoryApps = Array.Empty<CategoryAppRow>();
         if (CategoryList.SelectedItem is not CategoryRow selected)
         {
+            CategoryAppsList.ItemsSource = CategoryApps;
             SelectedCategoryNameText.Text = string.Empty;
             SelectedAppCountText.Text = string.Empty;
             EmptyAppsText.Visibility = Visibility.Collapsed;
@@ -139,45 +215,32 @@ public sealed partial class CategoriesPage : Page
         }
 
         SelectedCategoryNameText.Text = selected.DisplayName;
-        var apps = _appData.GetAppsByCategoryID(selected.Model.ID)
-            .Select(app => new CategoryAppRow(app))
-            .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase);
-        foreach (var app in apps) CategoryApps.Add(app);
+        CategoryApps = _appsByCategory.GetValueOrDefault(selected.Model.ID) ?? Array.Empty<CategoryAppRow>();
+        CategoryAppsList.ItemsSource = CategoryApps;
         SelectedAppCountText.Text = L.Count(CategoryApps.Count, "应用", "app");
         EmptyAppsText.Visibility = CategoryApps.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void RefreshWebsiteCategories(int selectedId)
-    {
-        var categories = _webData.GetWebSiteCategories().OrderBy(item => item.Name).ToList();
-        _websites = _webData.GetAllWebSites();
-        var counts = categories.Select(category => new WebsiteCategoryRow(
-            category, _websites.Count(site => site.CategoryID == category.ID))).ToList();
-        counts.Add(new WebsiteCategoryRow(null, _websites.Count(site => site.CategoryID == 0)));
-        WebsiteCategories.Clear();
-        foreach (var category in counts) WebsiteCategories.Add(category);
-        WebsiteCategoryList.SelectedItem = WebsiteCategories.FirstOrDefault(item => item.Id == selectedId)
-            ?? WebsiteCategories.FirstOrDefault();
-        if (CategoryMode.SelectedItem == WebsitesMode)
-            CategoryCountText.Text = L.CategoryCount(categories.Count, true);
-        RefreshSelectedCategoryWebsites();
-    }
-
     private void WebsiteCategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (CategoryWebsites != null && SelectedWebsiteCategoryNameText != null)
+        if (!_refreshingCategories && SelectedWebsiteCategoryNameText != null)
             RefreshSelectedCategoryWebsites();
     }
 
     private void RefreshSelectedCategoryWebsites()
     {
-        CategoryWebsites.Clear();
-        if (WebsiteCategoryList.SelectedItem is not WebsiteCategoryRow selected) return;
+        CategoryWebsites = Array.Empty<CategoryWebsiteRow>();
+        if (WebsiteCategoryList.SelectedItem is not WebsiteCategoryRow selected)
+        {
+            CategoryWebsitesList.ItemsSource = CategoryWebsites;
+            SelectedWebsiteCategoryNameText.Text = string.Empty;
+            SelectedWebsiteCountText.Text = string.Empty;
+            EmptyWebsitesText.Visibility = Visibility.Collapsed;
+            return;
+        }
         SelectedWebsiteCategoryNameText.Text = selected.DisplayName;
-        var websites = _websites.Where(site => site.CategoryID == selected.Id)
-            .OrderByDescending(site => site.Duration)
-            .ThenBy(site => site.Domain, StringComparer.OrdinalIgnoreCase);
-        foreach (var site in websites) CategoryWebsites.Add(new CategoryWebsiteRow(site));
+        CategoryWebsites = _websitesByCategory.GetValueOrDefault(selected.Id) ?? Array.Empty<CategoryWebsiteRow>();
+        CategoryWebsitesList.ItemsSource = CategoryWebsites;
         SelectedWebsiteCountText.Text = L.Count(CategoryWebsites.Count, "网站", "website");
         EmptyWebsitesText.Visibility = CategoryWebsites.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -198,8 +261,8 @@ public sealed partial class CategoriesPage : Page
             || picker.SelectedItem is not WebsiteCategoryRow selected) return;
         try
         {
-            _webData.UpdateWebSitesCategory(new[] { site.Id }, selected.Id);
-            RefreshWebsiteCategories(selected.Id);
+            await Task.Run(() => _webData.UpdateWebSitesCategory(new[] { site.Id }, selected.Id));
+            await RefreshWebsiteDataAsync(selected.Id, Volatile.Read(ref _refreshGeneration));
         }
         catch (Exception exception)
         {
@@ -215,7 +278,7 @@ public sealed partial class CategoriesPage : Page
         {
             await App.CoreReady;
             var result = await _catalogService.FetchLatestAsync();
-            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+            if (IsLoaded) await RefreshDataAsync();
             if (IsLoaded) await ShowMessageAsync(result.Succeeded ? "分类已更新" : "获取失败", L.CatalogMessage(result.Message));
         }
         catch (Exception exception)
@@ -245,7 +308,7 @@ public sealed partial class CategoriesPage : Page
                 IconFile = string.Empty,
                 Directories = "[]"
             });
-            RefreshCategories(created.ID);
+            await RefreshDataAsync(selectedAppId: created.ID);
         }
         catch (Exception exception)
         {
@@ -266,7 +329,7 @@ public sealed partial class CategoriesPage : Page
         {
             row.Model.Name = name;
             _categoryService.Update(row.Model);
-            RefreshCategories(row.Model.ID);
+            await RefreshDataAsync(selectedAppId: row.Model.ID);
         }
         catch (Exception exception)
         {
@@ -291,7 +354,7 @@ public sealed partial class CategoriesPage : Page
         try
         {
             _catalogService.DeleteCategory(row.Model);
-            RefreshCategories();
+            await RefreshDataAsync();
         }
         catch (Exception exception)
         {

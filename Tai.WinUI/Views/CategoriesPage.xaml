@@ -129,7 +129,7 @@
                             <TextBlock x:Name="SelectedCategoryNameText" Style="{StaticResource TaiSectionTitleStyle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock x:Name="SelectedAppCountText" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
-                        <ListView x:Name="CategoryAppsList" ItemsSource="{x:Bind CategoryApps}" SelectionMode="None" BorderThickness="0" MaxHeight="480">
+                        <ListView x:Name="CategoryAppsList" SelectionMode="None" BorderThickness="0" MaxHeight="480">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
@@ -189,7 +189,7 @@
                             <TextBlock x:Name="SelectedWebsiteCategoryNameText" Style="{StaticResource TaiSectionTitleStyle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock x:Name="SelectedWebsiteCountText" Grid.Column="1" Margin="10,0,0,0" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
-                        <ListView x:Name="CategoryWebsitesList" ItemsSource="{x:Bind CategoryWebsites}" SelectionMode="None" BorderThickness="0" MaxHeight="480">
+                        <ListView x:Name="CategoryWebsitesList" SelectionMode="None" BorderThickness="0" MaxHeight="480">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
