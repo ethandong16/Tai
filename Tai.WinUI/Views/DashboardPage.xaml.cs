@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Tai.WinUI.ViewModels;
 using Core.Servicers.Interfaces;
+using Tai.WinUI.Services;
 
 namespace Tai.WinUI.Views;
 
@@ -39,7 +40,7 @@ public sealed partial class DashboardPage : Page
     private void UsageItem_Click(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is not UsageItem item) return;
-        var row = new DetailRow(item, DateTime.Today.ToString("yyyy年M月d日"));
+        var row = new DetailRow(item, L.Date(DateTime.Today));
         Frame?.Navigate(item.Kind == "网站" ? typeof(WebsiteDetailPage) : typeof(AppDetailPage), row);
     }
 
@@ -57,20 +58,20 @@ public sealed partial class DashboardPage : Page
         WebsiteViewButton.Visibility = hasWebsites ? Visibility.Visible : Visibility.Collapsed;
         if (hasWebsites) return;
 
-        if (_viewModel.LastUpdated.StartsWith("数据读取失败", StringComparison.Ordinal))
+        if (_viewModel.LastUpdated == L.Text("数据读取失败，已保留上次结果"))
         {
-            WebsiteStateTitle.Text = "网站数据暂时无法读取";
-            WebsiteStateDescription.Text = "Tai 已保留上次结果，请稍后刷新；如果问题持续，请检查数据目录。";
-            WebsiteStateAction.Content = "检查设置";
+            WebsiteStateTitle.Text = L.Text("网站数据暂时无法读取");
+            WebsiteStateDescription.Text = L.Text("Tai 已保留上次结果，请稍后刷新；如果问题持续，请检查数据目录。");
+            WebsiteStateAction.Content = L.Text("检查设置");
             return;
         }
 
         var webEnabled = App.Services.GetService<IAppConfig>()?.GetConfig()?.General?.IsWebEnabled == true;
-        WebsiteStateTitle.Text = webEnabled ? "今天还没有网站记录" : "网站统计尚未开启";
+        WebsiteStateTitle.Text = L.Text(webEnabled ? "今天还没有网站记录" : "网站统计尚未开启");
         WebsiteStateDescription.Text = webEnabled
-            ? "如果你刚刚使用过浏览器，请检查 Chrome 或 Edge 插件是否已连接。"
-            : "开启网站统计并连接浏览器插件后，这里会显示今日浏览时长。";
-        WebsiteStateAction.Content = webEnabled ? "检查网站统计设置" : "开启网站统计";
+            ? L.Text("如果你刚刚使用过浏览器，请检查 Chrome 或 Edge 插件是否已连接。")
+            : L.Text("开启网站统计并连接浏览器插件后，这里会显示今日浏览时长。");
+        WebsiteStateAction.Content = L.Text(webEnabled ? "检查网站统计设置" : "开启网站统计");
     }
 
     private void WebsiteSettings_Click(object sender, RoutedEventArgs e)

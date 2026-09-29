@@ -75,7 +75,7 @@ public sealed partial class DetailsPage : Page
         _loadCancellation?.Cancel();
         _loadCancellation?.Dispose();
         var cancellation = _loadCancellation = new CancellationTokenSource();
-        LoadStatusText.Text = "正在读取...";
+        LoadStatusText.Text = L.Text("正在读取...");
 
         try
         {
@@ -83,13 +83,13 @@ public sealed partial class DetailsPage : Page
             if (_provider.TryGetCached(_period, date, take: 0, out var cached))
             {
                 ApplySnapshotRows(cached);
-                LoadStatusText.Text = "已显示缓存，正在更新...";
+                LoadStatusText.Text = L.Text("已显示缓存，正在更新...");
             }
 
             var snapshot = await _provider.GetAsync(_period, date, take: 0, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
             ApplySnapshotRows(snapshot);
-            LoadStatusText.Text = $"{DateTime.Now:HH:mm} 更新";
+            LoadStatusText.Text = L.IsEnglish ? $"Updated {DateTime.Now:HH:mm}" : $"{DateTime.Now:HH:mm} 更新";
         }
         catch (OperationCanceledException)
         {
@@ -97,7 +97,7 @@ public sealed partial class DetailsPage : Page
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            LoadStatusText.Text = "读取失败，已保留上次结果";
+            LoadStatusText.Text = L.Text("读取失败，已保留上次结果");
         }
     }
 
@@ -137,17 +137,20 @@ public sealed partial class DetailsPage : Page
 
     private void ApplyTypeFilter()
     {
-        var selected = (TypeFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
-        var filtered = string.IsNullOrWhiteSpace(selected) || selected == "全部"
-            ? _allRows
-            : _allRows.Where(row => row.Kind == selected).ToList();
+        var filtered = TypeFilter.SelectedIndex switch
+        {
+            1 => _allRows.Where(row => row.Kind == "应用").ToList(),
+            2 => _allRows.Where(row => row.Kind == "网站").ToList(),
+            _ => _allRows
+        };
 
         Rows.Clear();
         var search = SearchBox.Text.Trim();
         foreach (var row in filtered.Where(row => string.IsNullOrEmpty(search)
                      || row.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
                      || row.Category.Contains(search, StringComparison.OrdinalIgnoreCase))) Rows.Add(row);
-        ResultCountText.Text = Rows.Count == 0 ? "此时间范围内暂无记录" : $"共 {Rows.Count} 条记录";
+        ResultCountText.Text = Rows.Count == 0 ? L.Text("此时间范围内暂无记录")
+            : L.IsEnglish ? $"{Rows.Count} records" : $"共 {Rows.Count} 条记录";
     }
 
     private void ApplySnapshotRows(UsageSnapshot snapshot)
@@ -207,7 +210,7 @@ public sealed class DetailRow
         AccentBrush = new SolidColorBrush(ParseColor(accent));
         Category = category;
         Kind = kind;
-        RangeText = rangeText;
+        RangeText = L.Text(rangeText);
     }
 
     public int Id { get; }
@@ -221,6 +224,7 @@ public sealed class DetailRow
     public SolidColorBrush AccentBrush { get; }
     public string Category { get; }
     public string Kind { get; }
+    public string KindDisplay => L.Text(Kind);
     public string RangeText { get; }
     public ImageSource Icon => new BitmapImage(new Uri(IconPath, UriKind.Absolute));
 

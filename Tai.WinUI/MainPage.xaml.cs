@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 using Core.Servicers.Interfaces;
 using Tai.WinUI.Views;
+using Tai.WinUI.Services;
 
 namespace Tai.WinUI;
 
@@ -53,7 +54,7 @@ public sealed partial class MainPage : Page
             App.LogStartupException(exception);
             ContentFrame.Content = new TextBlock
             {
-                Text = "概览页面加载失败，请查看 Log/startup.log。",
+                Text = L.Text("概览页面加载失败，请查看 Log/startup.log。"),
                 Margin = new Thickness(32),
                 FontSize = 16
             };
@@ -94,7 +95,7 @@ public sealed partial class MainPage : Page
     {
         if (args.SelectedItem is NavigationViewItem item && item.Tag is string route && _routes.TryGetValue(route, out var page))
         {
-            PageTitle.Text = page.Title;
+            PageTitle.Text = L.Text(page.Title);
             if (!_synchronizingNavigation && ContentFrame.CurrentSourcePageType != page.Page)
             {
                 ContentFrame.Navigate(page.Page, null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
@@ -119,7 +120,7 @@ public sealed partial class MainPage : Page
             try { RootNavigation.SelectedItem = item; }
             finally { _synchronizingNavigation = false; }
         }
-        PageTitle.Text = e.SourcePageType == typeof(AppDetailPage) || e.SourcePageType == typeof(WebsiteDetailPage)
-            ? "使用详情" : _routes[route].Title;
+        PageTitle.Text = L.Text(e.SourcePageType == typeof(AppDetailPage) || e.SourcePageType == typeof(WebsiteDetailPage)
+            ? "使用详情" : _routes[route].Title);
     }
 }

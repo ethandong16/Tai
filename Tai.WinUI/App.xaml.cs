@@ -4,6 +4,9 @@ using Core.Librarys.SQLite;
 using Core.Servicers.Instances;
 using Core.Servicers.Interfaces;
 using System.IO;
+using System.Globalization;
+using System.Text.Json;
+using Microsoft.Windows.Globalization;
 
 namespace Tai.WinUI;
 
@@ -17,6 +20,7 @@ public partial class App : Application
 
     public App()
     {
+        ConfigureLanguage();
         UnhandledException += App_UnhandledException;
         InitializeComponent();
 
@@ -39,6 +43,37 @@ public partial class App : Application
         serviceCollection.AddSingleton<IWebFilter, WebFilter>();
         serviceCollection.AddSingleton<Tai.WinUI.Services.IUsageDataProvider, Tai.WinUI.Services.CoreUsageDataProvider>();
         Services = serviceCollection.BuildServiceProvider();
+    }
+
+    private static void ConfigureLanguage()
+    {
+        var selected = "auto";
+        try
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Data", "AppConfig.json");
+            if (File.Exists(path))
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(path));
+                if (document.RootElement.TryGetProperty("General", out var general)
+                    && general.TryGetProperty("Language", out var language))
+                    selected = language.GetString() ?? "auto";
+            }
+        }
+        catch (Exception)
+        {
+            selected = "auto";
+        }
+
+        var languageTag = selected switch
+        {
+            "zh-CN" => "zh-CN",
+            "en-US" => "en-US",
+            _ => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "zh" ? "zh-CN" : "en-US"
+        };
+        ApplicationLanguages.PrimaryLanguageOverride = languageTag;
+        var culture = CultureInfo.GetCultureInfo(languageTag);
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
     }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)

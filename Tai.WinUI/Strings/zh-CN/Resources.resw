@@ -1,0 +1,531 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="MainPage_001.Content" xml:space="preserve">
+    <value>概览</value>
+  </data>
+  <data name="MainPage_002.Content" xml:space="preserve">
+    <value>统计</value>
+  </data>
+  <data name="MainPage_003.Content" xml:space="preserve">
+    <value>详细记录</value>
+  </data>
+  <data name="MainPage_004.Content" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="MainPage_005.Content" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="MainPage_006.Text" xml:space="preserve">
+    <value>概览</value>
+  </data>
+  <data name="MainWindow_001.Text" xml:space="preserve">
+    <value>时间统计</value>
+  </data>
+  <data name="MainWindow_002.Title" xml:space="preserve">
+    <value>统计服务启动失败</value>
+  </data>
+  <data name="MainWindow_002.Message" xml:space="preserve">
+    <value>暂时无法记录使用时间。请查看 Log/startup.log 中的错误详情。</value>
+  </data>
+  <data name="AppDetailPage_001.Text" xml:space="preserve">
+    <value>应用详情</value>
+  </data>
+  <data name="AppDetailPage_002.Text" xml:space="preserve">
+    <value>所选统计范围内的应用使用信息。</value>
+  </data>
+  <data name="AppDetailPage_003.Text" xml:space="preserve">
+    <value>应用 ·</value>
+  </data>
+  <data name="AppDetailPage_004.Text" xml:space="preserve">
+    <value>使用概览</value>
+  </data>
+  <data name="AppDetailPage_005.Content" xml:space="preserve">
+    <value>管理分类</value>
+  </data>
+  <data name="AppDetailPage_006.Text" xml:space="preserve">
+    <value>所属分类</value>
+  </data>
+  <data name="AppDetailPage_007.Text" xml:space="preserve">
+    <value>应用时长占比</value>
+  </data>
+  <data name="CategoriesPage_001.Text" xml:space="preserve">
+    <value>获取最新分类</value>
+  </data>
+  <data name="CategoriesPage_002.Text" xml:space="preserve">
+    <value>新建分类</value>
+  </data>
+  <data name="CategoriesPage_003.Text" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="CategoriesPage_004.Text" xml:space="preserve">
+    <value>网站</value>
+  </data>
+  <data name="CategoriesPage_005.Text" xml:space="preserve">
+    <value>应用分类</value>
+  </data>
+  <data name="CategoriesPage_006.Text" xml:space="preserve">
+    <value>建立第一个分类</value>
+  </data>
+  <data name="CategoriesPage_007.Text" xml:space="preserve">
+    <value>可以从工作、学习或娱乐开始，名称之后仍可修改。</value>
+  </data>
+  <data name="CategoriesPage_008.Content" xml:space="preserve">
+    <value>新建分类</value>
+  </data>
+  <data name="CategoriesPage_009.Text" xml:space="preserve">
+    <value>此分类暂无应用</value>
+  </data>
+  <data name="CategoriesPage_010.Text" xml:space="preserve">
+    <value>自动分类</value>
+  </data>
+  <data name="CategoriesPage_011.Text" xml:space="preserve">
+    <value>常见应用会自动归类；你也可以为未分类应用设置目录匹配规则。</value>
+  </data>
+  <data name="CategoriesPage_012.Text" xml:space="preserve">
+    <value>管理匹配规则</value>
+  </data>
+  <data name="CategoriesPage_013.Text" xml:space="preserve">
+    <value>网站分类</value>
+  </data>
+  <data name="CategoriesPage_014.Text" xml:space="preserve">
+    <value>此分类暂无网站</value>
+  </data>
+  <data name="DashboardPage_001.Text" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="DashboardPage_002.Text" xml:space="preserve">
+    <value>今日应用使用</value>
+  </data>
+  <data name="DashboardPage_003.Text" xml:space="preserve">
+    <value>仅统计前台应用，网站时长不重复计入</value>
+  </data>
+  <data name="DashboardPage_004.Text" xml:space="preserve">
+    <value>使用的应用</value>
+  </data>
+  <data name="DashboardPage_005.Text" xml:space="preserve">
+    <value>浏览的网站</value>
+  </data>
+  <data name="DashboardPage_006.Text" xml:space="preserve">
+    <value>陪伴你最久</value>
+  </data>
+  <data name="DashboardPage_007.Text" xml:space="preserve">
+    <value>本周趋势</value>
+  </data>
+  <data name="DashboardPage_008.Content" xml:space="preserve">
+    <value>查看统计 ›</value>
+  </data>
+  <data name="DashboardPage_009.Text" xml:space="preserve">
+    <value>时间分布</value>
+  </data>
+  <data name="DashboardPage_010.Text" xml:space="preserve">
+    <value>应用与网站合计 · 分类占比</value>
+  </data>
+  <data name="DashboardPage_011.Text" xml:space="preserve">
+    <value>常用应用</value>
+  </data>
+  <data name="DashboardPage_012.Content" xml:space="preserve">
+    <value>查看全部 ›</value>
+  </data>
+  <data name="DashboardPage_013.Text" xml:space="preserve">
+    <value>浏览足迹</value>
+  </data>
+  <data name="DashboardPage_014.Content" xml:space="preserve">
+    <value>查看全部 ›</value>
+  </data>
+  <data name="DetailsPage_001.PlaceholderText" xml:space="preserve">
+    <value>选择日期</value>
+  </data>
+  <data name="DetailsPage_002.PlaceholderText" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="DetailsPage_003.Content" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="DetailsPage_004.Content" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="DetailsPage_005.Content" xml:space="preserve">
+    <value>网站</value>
+  </data>
+  <data name="DetailsPage_006.Content" xml:space="preserve">
+    <value>按天</value>
+  </data>
+  <data name="DetailsPage_007.Content" xml:space="preserve">
+    <value>按周</value>
+  </data>
+  <data name="DetailsPage_008.Content" xml:space="preserve">
+    <value>按月</value>
+  </data>
+  <data name="DetailsPage_009.Content" xml:space="preserve">
+    <value>按年</value>
+  </data>
+  <data name="DetailsPage_010.PlaceholderText" xml:space="preserve">
+    <value>搜索应用、网站或分类…</value>
+  </data>
+  <data name="DetailsPage_011.Text" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="DetailsPage_012.Text" xml:space="preserve">
+    <value>来源与分类</value>
+  </data>
+  <data name="DetailsPage_013.Text" xml:space="preserve">
+    <value>使用时长</value>
+  </data>
+  <data name="DetailsPage_014.Text" xml:space="preserve">
+    <value>同类时长占比</value>
+  </data>
+  <data name="SettingsPage_001.Text" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="SettingsPage_002.Text" xml:space="preserve">
+    <value>进程合并</value>
+  </data>
+  <data name="SettingsPage_003.Text" xml:space="preserve">
+    <value>记录规则</value>
+  </data>
+  <data name="SettingsPage_004.Text" xml:space="preserve">
+    <value>数据</value>
+  </data>
+  <data name="SettingsPage_005.Text" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="SettingsPage_006.Text" xml:space="preserve">
+    <value>基础</value>
+  </data>
+  <data name="SettingsPage_007.Text" xml:space="preserve">
+    <value>开机自启动</value>
+  </data>
+  <data name="SettingsPage_008.Text" xml:space="preserve">
+    <value>登录 Windows 后自动启动 Tai</value>
+  </data>
+  <data name="SettingsPage_009.Text" xml:space="preserve">
+    <value>启动时显示窗口</value>
+  </data>
+  <data name="SettingsPage_010.Text" xml:space="preserve">
+    <value>打开 Tai 时同时显示主界面</value>
+  </data>
+  <data name="SettingsPage_011.Text" xml:space="preserve">
+    <value>启动页</value>
+  </data>
+  <data name="SettingsPage_012.Text" xml:space="preserve">
+    <value>设置打开主界面时显示的页面</value>
+  </data>
+  <data name="SettingsPage_013.Content" xml:space="preserve">
+    <value>概览</value>
+  </data>
+  <data name="SettingsPage_014.Content" xml:space="preserve">
+    <value>统计</value>
+  </data>
+  <data name="SettingsPage_015.Content" xml:space="preserve">
+    <value>详细</value>
+  </data>
+  <data name="SettingsPage_016.Content" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="SettingsPage_017.Text" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="SettingsPage_018.Text" xml:space="preserve">
+    <value>主题模式</value>
+  </data>
+  <data name="SettingsPage_019.Text" xml:space="preserve">
+    <value>跟随 Windows 或手动选择显示模式</value>
+  </data>
+  <data name="SettingsPage_020.Content" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="SettingsPage_021.Content" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="SettingsPage_022.Content" xml:space="preserve">
+    <value>跟随 Windows</value>
+  </data>
+  <data name="SettingsPage_023.Text" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="SettingsPage_024.Text" xml:space="preserve">
+    <value>跟随系统语言或手动选择</value>
+  </data>
+  <data name="SettingsPage_025.Content" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="SettingsPage_026.Content" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="SettingsPage_027.Text" xml:space="preserve">
+    <value>记住窗口大小</value>
+  </data>
+  <data name="SettingsPage_028.Text" xml:space="preserve">
+    <value>下次打开时恢复当前窗口尺寸</value>
+  </data>
+  <data name="SettingsPage_029.Text" xml:space="preserve">
+    <value>概览页</value>
+  </data>
+  <data name="SettingsPage_030.Text" xml:space="preserve">
+    <value>首页常用排行条数</value>
+  </data>
+  <data name="SettingsPage_031.Text" xml:space="preserve">
+    <value>控制概览页展示的应用和网站数量</value>
+  </data>
+  <data name="SettingsPage_032.Text" xml:space="preserve">
+    <value>应用分类</value>
+  </data>
+  <data name="SettingsPage_033.Text" xml:space="preserve">
+    <value>自动获取间隔</value>
+  </data>
+  <data name="SettingsPage_034.Text" xml:space="preserve">
+    <value>从 GitHub 获取默认应用分类</value>
+  </data>
+  <data name="SettingsPage_035.Content" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="SettingsPage_036.Content" xml:space="preserve">
+    <value>每 6 小时</value>
+  </data>
+  <data name="SettingsPage_037.Content" xml:space="preserve">
+    <value>每 12 小时</value>
+  </data>
+  <data name="SettingsPage_038.Content" xml:space="preserve">
+    <value>每天</value>
+  </data>
+  <data name="SettingsPage_039.Content" xml:space="preserve">
+    <value>每 3 天</value>
+  </data>
+  <data name="SettingsPage_040.Content" xml:space="preserve">
+    <value>每周</value>
+  </data>
+  <data name="SettingsPage_041.Text" xml:space="preserve">
+    <value>功能</value>
+  </data>
+  <data name="SettingsPage_042.Text" xml:space="preserve">
+    <value>网站浏览统计</value>
+  </data>
+  <data name="SettingsPage_043.Text" xml:space="preserve">
+    <value>需要安装并连接 Chrome 或 Edge 浏览器插件</value>
+  </data>
+  <data name="SettingsPage_044.Text" xml:space="preserve">
+    <value>安装网站统计扩展</value>
+  </data>
+  <data name="SettingsPage_045.Text" xml:space="preserve">
+    <value>安装 Tai Sentry 后开启网站浏览统计。</value>
+  </data>
+  <data name="SettingsPage_046.Content" xml:space="preserve">
+    <value>打开 Chrome 网上应用店安装 Tai Sentry</value>
+  </data>
+  <data name="SettingsPage_047.Text" xml:space="preserve">
+    <value>将多个进程关联为一个统计项目，任意一个进程运行时都会同步记录。</value>
+  </data>
+  <data name="SettingsPage_048.Content" xml:space="preserve">
+    <value>新建关联</value>
+  </data>
+  <data name="SettingsPage_049.Text" xml:space="preserve">
+    <value>偏好</value>
+  </data>
+  <data name="SettingsPage_050.Header" xml:space="preserve">
+    <value>睡眠监测</value>
+  </data>
+  <data name="SettingsPage_051.Text" xml:space="preserve">
+    <value>离开电脑时自动停止统计，重启软件生效。</value>
+  </data>
+  <data name="SettingsPage_052.Text" xml:space="preserve">
+    <value>忽略应用</value>
+  </data>
+  <data name="SettingsPage_053.Text" xml:space="preserve">
+    <value>通过进程名称或正则表达式过滤不需要统计的应用。</value>
+  </data>
+  <data name="SettingsPage_054.PlaceholderText" xml:space="preserve">
+    <value>进程名称，不需要输入 .exe</value>
+  </data>
+  <data name="SettingsPage_055.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="SettingsPage_056.Content" xml:space="preserve">
+    <value>移除选中</value>
+  </data>
+  <data name="SettingsPage_057.Content" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="SettingsPage_058.Content" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="SettingsPage_059.Text" xml:space="preserve">
+    <value>忽略 URL</value>
+  </data>
+  <data name="SettingsPage_060.Text" xml:space="preserve">
+    <value>过滤不需要统计的网站或链接，支持正则表达式。</value>
+  </data>
+  <data name="SettingsPage_061.PlaceholderText" xml:space="preserve">
+    <value>URL 支持正则表达式</value>
+  </data>
+  <data name="SettingsPage_062.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="SettingsPage_063.Content" xml:space="preserve">
+    <value>移除选中</value>
+  </data>
+  <data name="SettingsPage_064.Content" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="SettingsPage_065.Content" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="SettingsPage_066.Header" xml:space="preserve">
+    <value>应用白名单</value>
+  </data>
+  <data name="SettingsPage_067.Text" xml:space="preserve">
+    <value>启用后仅统计白名单内的应用。</value>
+  </data>
+  <data name="SettingsPage_068.PlaceholderText" xml:space="preserve">
+    <value>进程名称，不需要输入 .exe</value>
+  </data>
+  <data name="SettingsPage_069.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="SettingsPage_070.Content" xml:space="preserve">
+    <value>移除选中</value>
+  </data>
+  <data name="SettingsPage_071.Content" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="SettingsPage_072.Content" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="SettingsPage_073.Text" xml:space="preserve">
+    <value>删除数据</value>
+  </data>
+  <data name="SettingsPage_074.Text" xml:space="preserve">
+    <value>删除所选月份范围内的应用和网站统计数据，此操作不可恢复。</value>
+  </data>
+  <data name="SettingsPage_075.PlaceholderText" xml:space="preserve">
+    <value>开始月份</value>
+  </data>
+  <data name="SettingsPage_076.PlaceholderText" xml:space="preserve">
+    <value>结束月份</value>
+  </data>
+  <data name="SettingsPage_077.Content" xml:space="preserve">
+    <value>执行删除</value>
+  </data>
+  <data name="SettingsPage_078.Text" xml:space="preserve">
+    <value>导出数据</value>
+  </data>
+  <data name="SettingsPage_079.Text" xml:space="preserve">
+    <value>导出为 xlsx 和 csv 格式。</value>
+  </data>
+  <data name="SettingsPage_080.PlaceholderText" xml:space="preserve">
+    <value>开始月份</value>
+  </data>
+  <data name="SettingsPage_081.PlaceholderText" xml:space="preserve">
+    <value>结束月份</value>
+  </data>
+  <data name="SettingsPage_082.Content" xml:space="preserve">
+    <value>导出数据</value>
+  </data>
+  <data name="SettingsPage_083.Text" xml:space="preserve">
+    <value>导入数据</value>
+  </data>
+  <data name="SettingsPage_084.Text" xml:space="preserve">
+    <value>导入 Tai 的 SQLite 数据库文件。导入前会自动备份当前数据库。</value>
+  </data>
+  <data name="SettingsPage_085.Content" xml:space="preserve">
+    <value>导入数据库</value>
+  </data>
+  <data name="SettingsPage_086.Content" xml:space="preserve">
+    <value>导出配置</value>
+  </data>
+  <data name="SettingsPage_087.Content" xml:space="preserve">
+    <value>导入配置</value>
+  </data>
+  <data name="SettingsPage_088.Text" xml:space="preserve">
+    <value>Tai 时间统计</value>
+  </data>
+  <data name="SettingsPage_089.Content" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="SettingsPage_090.Content" xml:space="preserve">
+    <value>Chrome 网上应用店：Tai Sentry</value>
+  </data>
+  <data name="SettingsPage_091.Content" xml:space="preserve">
+    <value>开源项目：github.com/ethandong16/Tai.WinUI</value>
+  </data>
+  <data name="SettingsPage_092.Content" xml:space="preserve">
+    <value>讨论区：github.com/ethandong16/Tai.WinUI/discussions</value>
+  </data>
+  <data name="SettingsPage_093.Text" xml:space="preserve">
+    <value>Icon 来自微软 Emoji</value>
+  </data>
+  <data name="StatisticsPage_001.PlaceholderText" xml:space="preserve">
+    <value>选择日期</value>
+  </data>
+  <data name="StatisticsPage_002.Content" xml:space="preserve">
+    <value>按天</value>
+  </data>
+  <data name="StatisticsPage_003.Content" xml:space="preserve">
+    <value>按周</value>
+  </data>
+  <data name="StatisticsPage_004.Content" xml:space="preserve">
+    <value>按月</value>
+  </data>
+  <data name="StatisticsPage_005.Content" xml:space="preserve">
+    <value>按年</value>
+  </data>
+  <data name="StatisticsPage_006.Text" xml:space="preserve">
+    <value>应用使用</value>
+  </data>
+  <data name="StatisticsPage_007.Text" xml:space="preserve">
+    <value>网站浏览</value>
+  </data>
+  <data name="StatisticsPage_008.Text" xml:space="preserve">
+    <value>使用峰值</value>
+  </data>
+  <data name="StatisticsPage_009.Text" xml:space="preserve">
+    <value>使用趋势</value>
+  </data>
+  <data name="StatisticsPage_010.Text" xml:space="preserve">
+    <value>选择柱状条查看时长</value>
+  </data>
+  <data name="StatisticsPage_011.Text" xml:space="preserve">
+    <value>应用排名</value>
+  </data>
+  <data name="StatisticsPage_012.Text" xml:space="preserve">
+    <value>按使用时长</value>
+  </data>
+  <data name="StatisticsPage_013.Text" xml:space="preserve">
+    <value>分类占比</value>
+  </data>
+  <data name="StatisticsPage_014.Text" xml:space="preserve">
+    <value>应用与网站合计</value>
+  </data>
+  <data name="WebsiteDetailPage_001.Text" xml:space="preserve">
+    <value>网站详情</value>
+  </data>
+  <data name="WebsiteDetailPage_002.Text" xml:space="preserve">
+    <value>所选统计范围内的网站浏览信息。</value>
+  </data>
+  <data name="WebsiteDetailPage_003.Text" xml:space="preserve">
+    <value>网站 ·</value>
+  </data>
+  <data name="WebsiteDetailPage_004.Text" xml:space="preserve">
+    <value>浏览概览</value>
+  </data>
+  <data name="WebsiteDetailPage_005.Content" xml:space="preserve">
+    <value>管理分类</value>
+  </data>
+  <data name="WebsiteDetailPage_006.Text" xml:space="preserve">
+    <value>所属分类</value>
+  </data>
+  <data name="WebsiteDetailPage_007.Text" xml:space="preserve">
+    <value>网站时长占比</value>
+  </data>
+</root>

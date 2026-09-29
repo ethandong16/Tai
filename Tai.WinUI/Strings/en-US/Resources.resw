@@ -1,0 +1,531 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="MainPage_001.Content" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="MainPage_002.Content" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="MainPage_003.Content" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="MainPage_004.Content" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="MainPage_005.Content" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="MainPage_006.Text" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="MainWindow_001.Text" xml:space="preserve">
+    <value>Time tracking</value>
+  </data>
+  <data name="MainWindow_002.Title" xml:space="preserve">
+    <value>Statistics service failed to start</value>
+  </data>
+  <data name="MainWindow_002.Message" xml:space="preserve">
+    <value>Usage time cannot be recorded at the moment. Please review the error details in Log/startup.log.</value>
+  </data>
+  <data name="AppDetailPage_001.Text" xml:space="preserve">
+    <value>Application details</value>
+  </data>
+  <data name="AppDetailPage_002.Text" xml:space="preserve">
+    <value>App usage information within the selected statistics range.</value>
+  </data>
+  <data name="AppDetailPage_003.Text" xml:space="preserve">
+    <value>App ·</value>
+  </data>
+  <data name="AppDetailPage_004.Text" xml:space="preserve">
+    <value>Usage overview</value>
+  </data>
+  <data name="AppDetailPage_005.Content" xml:space="preserve">
+    <value>Manage categories</value>
+  </data>
+  <data name="AppDetailPage_006.Text" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="AppDetailPage_007.Text" xml:space="preserve">
+    <value>App time ratio</value>
+  </data>
+  <data name="CategoriesPage_001.Text" xml:space="preserve">
+    <value>Update categories</value>
+  </data>
+  <data name="CategoriesPage_002.Text" xml:space="preserve">
+    <value>New category</value>
+  </data>
+  <data name="CategoriesPage_003.Text" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="CategoriesPage_004.Text" xml:space="preserve">
+    <value>Websites</value>
+  </data>
+  <data name="CategoriesPage_005.Text" xml:space="preserve">
+    <value>App categories</value>
+  </data>
+  <data name="CategoriesPage_006.Text" xml:space="preserve">
+    <value>Create first category</value>
+  </data>
+  <data name="CategoriesPage_007.Text" xml:space="preserve">
+    <value>Create a category for your apps. You can rename it later.</value>
+  </data>
+  <data name="CategoriesPage_008.Content" xml:space="preserve">
+    <value>New category</value>
+  </data>
+  <data name="CategoriesPage_009.Text" xml:space="preserve">
+    <value>No apps in this category</value>
+  </data>
+  <data name="CategoriesPage_010.Text" xml:space="preserve">
+    <value>Automatic categories</value>
+  </data>
+  <data name="CategoriesPage_011.Text" xml:space="preserve">
+    <value>Common applications are automatically categorized; you can also set directory matching rules for uncategorized applications.</value>
+  </data>
+  <data name="CategoriesPage_012.Text" xml:space="preserve">
+    <value>Manage matching rules</value>
+  </data>
+  <data name="CategoriesPage_013.Text" xml:space="preserve">
+    <value>Website categories</value>
+  </data>
+  <data name="CategoriesPage_014.Text" xml:space="preserve">
+    <value>No websites in this category</value>
+  </data>
+  <data name="DashboardPage_001.Text" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="DashboardPage_002.Text" xml:space="preserve">
+    <value>App usage today</value>
+  </data>
+  <data name="DashboardPage_003.Text" xml:space="preserve">
+    <value>Only foreground app time is counted. Website time is not added twice.</value>
+  </data>
+  <data name="DashboardPage_004.Text" xml:space="preserve">
+    <value>Applications used</value>
+  </data>
+  <data name="DashboardPage_005.Text" xml:space="preserve">
+    <value>Websites viewed</value>
+  </data>
+  <data name="DashboardPage_006.Text" xml:space="preserve">
+    <value>Most used app</value>
+  </data>
+  <data name="DashboardPage_007.Text" xml:space="preserve">
+    <value>Trending this week</value>
+  </data>
+  <data name="DashboardPage_008.Content" xml:space="preserve">
+    <value>View statistics ›</value>
+  </data>
+  <data name="DashboardPage_009.Text" xml:space="preserve">
+    <value>Time breakdown</value>
+  </data>
+  <data name="DashboardPage_010.Text" xml:space="preserve">
+    <value>Apps and websites · category breakdown</value>
+  </data>
+  <data name="DashboardPage_011.Text" xml:space="preserve">
+    <value>Frequently used apps</value>
+  </data>
+  <data name="DashboardPage_012.Content" xml:space="preserve">
+    <value>View all ›</value>
+  </data>
+  <data name="DashboardPage_013.Text" xml:space="preserve">
+    <value>Web activity</value>
+  </data>
+  <data name="DashboardPage_014.Content" xml:space="preserve">
+    <value>View all ›</value>
+  </data>
+  <data name="DetailsPage_001.PlaceholderText" xml:space="preserve">
+    <value>Select date</value>
+  </data>
+  <data name="DetailsPage_002.PlaceholderText" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="DetailsPage_003.Content" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="DetailsPage_004.Content" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="DetailsPage_005.Content" xml:space="preserve">
+    <value>Websites</value>
+  </data>
+  <data name="DetailsPage_006.Content" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="DetailsPage_007.Content" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="DetailsPage_008.Content" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="DetailsPage_009.Content" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="DetailsPage_010.PlaceholderText" xml:space="preserve">
+    <value>Search apps, sites or categories…</value>
+  </data>
+  <data name="DetailsPage_011.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="DetailsPage_012.Text" xml:space="preserve">
+    <value>Source and category</value>
+  </data>
+  <data name="DetailsPage_013.Text" xml:space="preserve">
+    <value>Usage time</value>
+  </data>
+  <data name="DetailsPage_014.Text" xml:space="preserve">
+    <value>Share of category time</value>
+  </data>
+  <data name="SettingsPage_001.Text" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="SettingsPage_002.Text" xml:space="preserve">
+    <value>Process merging</value>
+  </data>
+  <data name="SettingsPage_003.Text" xml:space="preserve">
+    <value>Record rules</value>
+  </data>
+  <data name="SettingsPage_004.Text" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="SettingsPage_005.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="SettingsPage_006.Text" xml:space="preserve">
+    <value>Basics</value>
+  </data>
+  <data name="SettingsPage_007.Text" xml:space="preserve">
+    <value>Start automatically at boot</value>
+  </data>
+  <data name="SettingsPage_008.Text" xml:space="preserve">
+    <value>Automatically start Tai after logging into Windows</value>
+  </data>
+  <data name="SettingsPage_009.Text" xml:space="preserve">
+    <value>Show window on startup</value>
+  </data>
+  <data name="SettingsPage_010.Text" xml:space="preserve">
+    <value>Show the main window when Tai starts</value>
+  </data>
+  <data name="SettingsPage_011.Text" xml:space="preserve">
+    <value>Start page</value>
+  </data>
+  <data name="SettingsPage_012.Text" xml:space="preserve">
+    <value>Choose the page shown when Tai opens</value>
+  </data>
+  <data name="SettingsPage_013.Content" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="SettingsPage_014.Content" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="SettingsPage_015.Content" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="SettingsPage_016.Content" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="SettingsPage_017.Text" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="SettingsPage_018.Text" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="SettingsPage_019.Text" xml:space="preserve">
+    <value>Follow Windows or select display mode manually</value>
+  </data>
+  <data name="SettingsPage_020.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="SettingsPage_021.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="SettingsPage_022.Content" xml:space="preserve">
+    <value>Follow Windows</value>
+  </data>
+  <data name="SettingsPage_023.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="SettingsPage_024.Text" xml:space="preserve">
+    <value>Follow system language or select manually</value>
+  </data>
+  <data name="SettingsPage_025.Content" xml:space="preserve">
+    <value>Follow system</value>
+  </data>
+  <data name="SettingsPage_026.Content" xml:space="preserve">
+    <value>Simplified Chinese</value>
+  </data>
+  <data name="SettingsPage_027.Text" xml:space="preserve">
+    <value>Remember window size</value>
+  </data>
+  <data name="SettingsPage_028.Text" xml:space="preserve">
+    <value>Restore current window size the next time you open it</value>
+  </data>
+  <data name="SettingsPage_029.Text" xml:space="preserve">
+    <value>Overview page</value>
+  </data>
+  <data name="SettingsPage_030.Text" xml:space="preserve">
+    <value>Frequently used items</value>
+  </data>
+  <data name="SettingsPage_031.Text" xml:space="preserve">
+    <value>Number of apps and websites shown on Overview</value>
+  </data>
+  <data name="SettingsPage_032.Text" xml:space="preserve">
+    <value>App categories</value>
+  </data>
+  <data name="SettingsPage_033.Text" xml:space="preserve">
+    <value>Update interval</value>
+  </data>
+  <data name="SettingsPage_034.Text" xml:space="preserve">
+    <value>Download default app categories from GitHub</value>
+  </data>
+  <data name="SettingsPage_035.Content" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="SettingsPage_036.Content" xml:space="preserve">
+    <value>Every 6 hours</value>
+  </data>
+  <data name="SettingsPage_037.Content" xml:space="preserve">
+    <value>Every 12 hours</value>
+  </data>
+  <data name="SettingsPage_038.Content" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="SettingsPage_039.Content" xml:space="preserve">
+    <value>Every 3 days</value>
+  </data>
+  <data name="SettingsPage_040.Content" xml:space="preserve">
+    <value>Every week</value>
+  </data>
+  <data name="SettingsPage_041.Text" xml:space="preserve">
+    <value>Features</value>
+  </data>
+  <data name="SettingsPage_042.Text" xml:space="preserve">
+    <value>Website tracking</value>
+  </data>
+  <data name="SettingsPage_043.Text" xml:space="preserve">
+    <value>Requires Chrome or Edge browser plug-in to be installed and connected</value>
+  </data>
+  <data name="SettingsPage_044.Text" xml:space="preserve">
+    <value>Install the website statistics extension</value>
+  </data>
+  <data name="SettingsPage_045.Text" xml:space="preserve">
+    <value>After installing Tai Sentry, enable website browsing statistics.</value>
+  </data>
+  <data name="SettingsPage_046.Content" xml:space="preserve">
+    <value>Open the Chrome Web Store to install Tai Sentry</value>
+  </data>
+  <data name="SettingsPage_047.Text" xml:space="preserve">
+    <value>Group several processes into one tracked item.</value>
+  </data>
+  <data name="SettingsPage_048.Content" xml:space="preserve">
+    <value>New association</value>
+  </data>
+  <data name="SettingsPage_049.Text" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="SettingsPage_050.Header" xml:space="preserve">
+    <value>Sleep monitoring</value>
+  </data>
+  <data name="SettingsPage_051.Text" xml:space="preserve">
+    <value>Pause tracking when you leave your computer. Takes effect after restart.</value>
+  </data>
+  <data name="SettingsPage_052.Text" xml:space="preserve">
+    <value>Ignore apps</value>
+  </data>
+  <data name="SettingsPage_053.Text" xml:space="preserve">
+    <value>Exclude apps by process name or regular expression.</value>
+  </data>
+  <data name="SettingsPage_054.PlaceholderText" xml:space="preserve">
+    <value>Process name, no need to enter .exe</value>
+  </data>
+  <data name="SettingsPage_055.Content" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="SettingsPage_056.Content" xml:space="preserve">
+    <value>Remove selection</value>
+  </data>
+  <data name="SettingsPage_057.Content" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="SettingsPage_058.Content" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="SettingsPage_059.Text" xml:space="preserve">
+    <value>Ignore URL</value>
+  </data>
+  <data name="SettingsPage_060.Text" xml:space="preserve">
+    <value>Exclude websites or URLs. Regular expressions are supported.</value>
+  </data>
+  <data name="SettingsPage_061.PlaceholderText" xml:space="preserve">
+    <value>URL supports regular expressions</value>
+  </data>
+  <data name="SettingsPage_062.Content" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="SettingsPage_063.Content" xml:space="preserve">
+    <value>Remove selection</value>
+  </data>
+  <data name="SettingsPage_064.Content" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="SettingsPage_065.Content" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="SettingsPage_066.Header" xml:space="preserve">
+    <value>Application whitelist</value>
+  </data>
+  <data name="SettingsPage_067.Text" xml:space="preserve">
+    <value>When enabled, only applications in the whitelist will be counted.</value>
+  </data>
+  <data name="SettingsPage_068.PlaceholderText" xml:space="preserve">
+    <value>Process name, no need to enter .exe</value>
+  </data>
+  <data name="SettingsPage_069.Content" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="SettingsPage_070.Content" xml:space="preserve">
+    <value>Remove selection</value>
+  </data>
+  <data name="SettingsPage_071.Content" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="SettingsPage_072.Content" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="SettingsPage_073.Text" xml:space="preserve">
+    <value>Delete data</value>
+  </data>
+  <data name="SettingsPage_074.Text" xml:space="preserve">
+    <value>Deletes app and website statistics for the selected month range. This action is irreversible.</value>
+  </data>
+  <data name="SettingsPage_075.PlaceholderText" xml:space="preserve">
+    <value>Start month</value>
+  </data>
+  <data name="SettingsPage_076.PlaceholderText" xml:space="preserve">
+    <value>End month</value>
+  </data>
+  <data name="SettingsPage_077.Content" xml:space="preserve">
+    <value>Delete data</value>
+  </data>
+  <data name="SettingsPage_078.Text" xml:space="preserve">
+    <value>Export data</value>
+  </data>
+  <data name="SettingsPage_079.Text" xml:space="preserve">
+    <value>Export to xlsx and csv formats.</value>
+  </data>
+  <data name="SettingsPage_080.PlaceholderText" xml:space="preserve">
+    <value>Start month</value>
+  </data>
+  <data name="SettingsPage_081.PlaceholderText" xml:space="preserve">
+    <value>End month</value>
+  </data>
+  <data name="SettingsPage_082.Content" xml:space="preserve">
+    <value>Export data</value>
+  </data>
+  <data name="SettingsPage_083.Text" xml:space="preserve">
+    <value>Import data</value>
+  </data>
+  <data name="SettingsPage_084.Text" xml:space="preserve">
+    <value>Import a Tai SQLite database. Your current database will be backed up first.</value>
+  </data>
+  <data name="SettingsPage_085.Content" xml:space="preserve">
+    <value>Import database</value>
+  </data>
+  <data name="SettingsPage_086.Content" xml:space="preserve">
+    <value>Export settings</value>
+  </data>
+  <data name="SettingsPage_087.Content" xml:space="preserve">
+    <value>Import settings</value>
+  </data>
+  <data name="SettingsPage_088.Text" xml:space="preserve">
+    <value>Tai time tracking</value>
+  </data>
+  <data name="SettingsPage_089.Content" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="SettingsPage_090.Content" xml:space="preserve">
+    <value>Chrome Web Store: Tai Sentry</value>
+  </data>
+  <data name="SettingsPage_091.Content" xml:space="preserve">
+    <value>Open source project: github.com/ethandong16/Tai.WinUI</value>
+  </data>
+  <data name="SettingsPage_092.Content" xml:space="preserve">
+    <value>Discussion area: github.com/ethandong16/Tai.WinUI/discussions</value>
+  </data>
+  <data name="SettingsPage_093.Text" xml:space="preserve">
+    <value>Icon from Microsoft Emoji</value>
+  </data>
+  <data name="StatisticsPage_001.PlaceholderText" xml:space="preserve">
+    <value>Select date</value>
+  </data>
+  <data name="StatisticsPage_002.Content" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="StatisticsPage_003.Content" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="StatisticsPage_004.Content" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="StatisticsPage_005.Content" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="StatisticsPage_006.Text" xml:space="preserve">
+    <value>Application usage</value>
+  </data>
+  <data name="StatisticsPage_007.Text" xml:space="preserve">
+    <value>Website activity</value>
+  </data>
+  <data name="StatisticsPage_008.Text" xml:space="preserve">
+    <value>Peak usage</value>
+  </data>
+  <data name="StatisticsPage_009.Text" xml:space="preserve">
+    <value>Usage trends</value>
+  </data>
+  <data name="StatisticsPage_010.Text" xml:space="preserve">
+    <value>Select a bar to view usage time</value>
+  </data>
+  <data name="StatisticsPage_011.Text" xml:space="preserve">
+    <value>Application ranking</value>
+  </data>
+  <data name="StatisticsPage_012.Text" xml:space="preserve">
+    <value>By usage time</value>
+  </data>
+  <data name="StatisticsPage_013.Text" xml:space="preserve">
+    <value>Category breakdown</value>
+  </data>
+  <data name="StatisticsPage_014.Text" xml:space="preserve">
+    <value>Total apps and websites</value>
+  </data>
+  <data name="WebsiteDetailPage_001.Text" xml:space="preserve">
+    <value>Website details</value>
+  </data>
+  <data name="WebsiteDetailPage_002.Text" xml:space="preserve">
+    <value>Website browsing information within the selected statistics range.</value>
+  </data>
+  <data name="WebsiteDetailPage_003.Text" xml:space="preserve">
+    <value>Website ·</value>
+  </data>
+  <data name="WebsiteDetailPage_004.Text" xml:space="preserve">
+    <value>View overview</value>
+  </data>
+  <data name="WebsiteDetailPage_005.Content" xml:space="preserve">
+    <value>Manage categories</value>
+  </data>
+  <data name="WebsiteDetailPage_006.Text" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="WebsiteDetailPage_007.Text" xml:space="preserve">
+    <value>Website duration ratio</value>
+  </data>
+</root>

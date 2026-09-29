@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using Core.Models;
+using Core.Models.Db;
 using Core.Servicers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
@@ -18,18 +19,24 @@ public sealed partial class CategoriesPage : Page
     private readonly ICategorys _categoryService;
     private readonly ICategoryCatalogService _catalogService;
     private readonly IAppData _appData;
+    private readonly IWebData _webData;
     private readonly DispatcherQueue _dispatcherQueue;
+    private List<WebSiteModel> _websites = new();
     private bool _refreshingCategories;
 
     public ObservableCollection<CategoryRow> Categories { get; } = new();
     public ObservableCollection<CategoryAppRow> CategoryApps { get; } = new();
+    public ObservableCollection<WebsiteCategoryRow> WebsiteCategories { get; } = new();
+    public ObservableCollection<CategoryWebsiteRow> CategoryWebsites { get; } = new();
 
     public CategoriesPage()
     {
         _categoryService = App.Services.GetRequiredService<ICategorys>();
         _catalogService = App.Services.GetRequiredService<ICategoryCatalogService>();
         _appData = App.Services.GetRequiredService<IAppData>();
+        _webData = App.Services.GetRequiredService<IWebData>();
         InitializeComponent();
+        CategoryMode.SelectedItem = AppsMode;
         _dispatcherQueue = DispatcherQueue;
         NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         Loaded += CategoriesPage_Loaded;
@@ -41,7 +48,11 @@ public sealed partial class CategoriesPage : Page
         try
         {
             await App.CoreReady;
-            if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+            if (IsLoaded)
+            {
+                RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
+                RefreshWebsiteCategories((WebsiteCategoryList.SelectedItem as WebsiteCategoryRow)?.Id ?? 0);
+            }
         }
         catch (Exception exception)
         {
@@ -55,6 +66,17 @@ public sealed partial class CategoriesPage : Page
         {
             if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
         });
+    }
+
+    private void CategoryMode_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs e)
+    {
+        if (CategoryGrid == null || WebsiteGrid == null) return;
+        var showWebsites = sender.SelectedItem == WebsitesMode;
+        CategoryGrid.Visibility = showWebsites ? Visibility.Collapsed : Visibility.Visible;
+        WebsiteGrid.Visibility = showWebsites ? Visibility.Visible : Visibility.Collapsed;
+        CategoryActions.Visibility = showWebsites ? Visibility.Collapsed : Visibility.Visible;
+        CategoryCountText.Text = L.CategoryCount(showWebsites ? WebsiteCategories.Count : Categories.Count, showWebsites);
+        if (showWebsites && IsLoaded) RefreshWebsiteCategories((WebsiteCategoryList.SelectedItem as WebsiteCategoryRow)?.Id ?? 0);
     }
 
     private List<CategorySnapshot> BuildCategorySnapshot()
@@ -91,7 +113,7 @@ public sealed partial class CategoriesPage : Page
         {
             _refreshingCategories = false;
         }
-        CategoryCountText.Text = $"{Categories.Count} 个分类";
+        if (CategoryMode.SelectedItem == AppsMode) CategoryCountText.Text = L.CategoryCount(Categories.Count, false);
         EmptyCategoryState.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         RuleSection.Visibility = Categories.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         RefreshSelectedCategoryApps();
@@ -116,13 +138,74 @@ public sealed partial class CategoriesPage : Page
             return;
         }
 
-        SelectedCategoryNameText.Text = selected.Name;
+        SelectedCategoryNameText.Text = selected.DisplayName;
         var apps = _appData.GetAppsByCategoryID(selected.Model.ID)
             .Select(app => new CategoryAppRow(app))
             .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase);
         foreach (var app in apps) CategoryApps.Add(app);
-        SelectedAppCountText.Text = $"{CategoryApps.Count} 个应用";
+        SelectedAppCountText.Text = L.Count(CategoryApps.Count, "应用", "app");
         EmptyAppsText.Visibility = CategoryApps.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void RefreshWebsiteCategories(int selectedId)
+    {
+        var categories = _webData.GetWebSiteCategories().OrderBy(item => item.Name).ToList();
+        _websites = _webData.GetAllWebSites();
+        var counts = categories.Select(category => new WebsiteCategoryRow(
+            category, _websites.Count(site => site.CategoryID == category.ID))).ToList();
+        counts.Add(new WebsiteCategoryRow(null, _websites.Count(site => site.CategoryID == 0)));
+        WebsiteCategories.Clear();
+        foreach (var category in counts) WebsiteCategories.Add(category);
+        WebsiteCategoryList.SelectedItem = WebsiteCategories.FirstOrDefault(item => item.Id == selectedId)
+            ?? WebsiteCategories.FirstOrDefault();
+        if (CategoryMode.SelectedItem == WebsitesMode)
+            CategoryCountText.Text = L.CategoryCount(categories.Count, true);
+        RefreshSelectedCategoryWebsites();
+    }
+
+    private void WebsiteCategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (CategoryWebsites != null && SelectedWebsiteCategoryNameText != null)
+            RefreshSelectedCategoryWebsites();
+    }
+
+    private void RefreshSelectedCategoryWebsites()
+    {
+        CategoryWebsites.Clear();
+        if (WebsiteCategoryList.SelectedItem is not WebsiteCategoryRow selected) return;
+        SelectedWebsiteCategoryNameText.Text = selected.DisplayName;
+        var websites = _websites.Where(site => site.CategoryID == selected.Id)
+            .OrderByDescending(site => site.Duration)
+            .ThenBy(site => site.Domain, StringComparer.OrdinalIgnoreCase);
+        foreach (var site in websites) CategoryWebsites.Add(new CategoryWebsiteRow(site));
+        SelectedWebsiteCountText.Text = L.Count(CategoryWebsites.Count, "网站", "website");
+        EmptyWebsitesText.Visibility = CategoryWebsites.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private async void ChangeWebsiteCategory_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: CategoryWebsiteRow site }) return;
+        var choices = WebsiteCategories.ToList();
+        var picker = new ComboBox
+        {
+            Header = L.Text("网站分类"),
+            ItemsSource = choices,
+            DisplayMemberPath = nameof(WebsiteCategoryRow.DisplayName),
+            SelectedItem = choices.FirstOrDefault(item => item.Id == site.CategoryId),
+            MinWidth = 220
+        };
+        if (await CreateDialog(site.Name, picker, "保存").ShowAsync() != ContentDialogResult.Primary
+            || picker.SelectedItem is not WebsiteCategoryRow selected) return;
+        try
+        {
+            _webData.UpdateWebSitesCategory(new[] { site.Id }, selected.Id);
+            RefreshWebsiteCategories(selected.Id);
+        }
+        catch (Exception exception)
+        {
+            App.LogStartupException(exception);
+            await ShowMessageAsync("保存失败", "无法更新网站分类。");
+        }
     }
 
     private async void FetchCategoriesButton_Click(object sender, RoutedEventArgs e)
@@ -133,7 +216,7 @@ public sealed partial class CategoriesPage : Page
             await App.CoreReady;
             var result = await _catalogService.FetchLatestAsync();
             if (IsLoaded) RefreshCategories((CategoryList.SelectedItem as CategoryRow)?.Model.ID ?? 0);
-            if (IsLoaded) await ShowMessageAsync(result.Succeeded ? "分类已更新" : "获取失败", result.Message);
+            if (IsLoaded) await ShowMessageAsync(result.Succeeded ? "分类已更新" : "获取失败", L.CatalogMessage(result.Message));
         }
         catch (Exception exception)
         {
@@ -148,7 +231,7 @@ public sealed partial class CategoriesPage : Page
 
     private async void CreateButton_Click(object sender, RoutedEventArgs e)
     {
-        var nameBox = new TextBox { Header = "分类名称", PlaceholderText = "例如：开发" };
+        var nameBox = new TextBox { Header = L.Text("分类名称"), PlaceholderText = L.Text("例如：开发") };
         var dialog = CreateDialog("新建分类", nameBox, "创建");
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
         var name = nameBox.Text.Trim();
@@ -174,7 +257,7 @@ public sealed partial class CategoriesPage : Page
     private async void RenameCategory_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { DataContext: CategoryRow row }) return;
-        var nameBox = new TextBox { Header = "分类名称", Text = row.Name };
+        var nameBox = new TextBox { Header = L.Text("分类名称"), Text = row.Name };
         var dialog = CreateDialog("重命名分类", nameBox, "保存");
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
         var name = nameBox.Text.Trim();
@@ -197,10 +280,10 @@ public sealed partial class CategoriesPage : Page
         if (sender is not Button { DataContext: CategoryRow row }) return;
         var dialog = new ContentDialog
         {
-            Title = "删除分类",
-            Content = $"确定删除“{row.Name}”吗？分类中的应用不会被删除。",
-            PrimaryButtonText = "删除",
-            CloseButtonText = "取消",
+            Title = L.Text("删除分类"),
+            Content = L.IsEnglish ? $"Delete '{row.DisplayName}'? Apps in this category will remain." : $"确定删除“{row.Name}”吗？分类中的应用不会被删除。",
+            PrimaryButtonText = L.Text("删除"),
+            CloseButtonText = L.Text("取消"),
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot
         };
@@ -225,11 +308,15 @@ public sealed partial class CategoriesPage : Page
             return;
         }
 
-        var enabled = new ToggleSwitch { Header = "启用目录匹配", IsOn = row.Model.IsDirectoryMath };
+        var enabled = new ToggleSwitch
+        {
+            Header = L.Text("启用目录匹配"), IsOn = row.Model.IsDirectoryMath,
+            OnContent = L.IsEnglish ? "On" : "开启", OffContent = L.IsEnglish ? "Off" : "关闭"
+        };
         var paths = new TextBox
         {
-            Header = "匹配目录",
-            PlaceholderText = "每行输入一个目录",
+            Header = L.Text("匹配目录"),
+            PlaceholderText = L.Text("每行输入一个目录"),
             Text = string.Join(Environment.NewLine, ReadDirectories(row.Model.Directories)),
             AcceptsReturn = true,
             TextWrapping = TextWrapping.Wrap,
@@ -238,7 +325,7 @@ public sealed partial class CategoriesPage : Page
         var content = new StackPanel { Spacing = 12 };
         content.Children.Add(enabled);
         content.Children.Add(paths);
-        var dialog = CreateDialog($"{row.Name} · 匹配规则", content, "保存");
+        var dialog = CreateDialog(L.IsEnglish ? $"{row.DisplayName} · Matching rules" : $"{row.Name} · 匹配规则", content, "保存");
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
         try
@@ -260,10 +347,10 @@ public sealed partial class CategoriesPage : Page
 
     private ContentDialog CreateDialog(string title, object content, string primaryText) => new()
     {
-        Title = title,
+        Title = L.Text(title),
         Content = content,
-        PrimaryButtonText = primaryText,
-        CloseButtonText = "取消",
+        PrimaryButtonText = L.Text(primaryText),
+        CloseButtonText = L.Text("取消"),
         DefaultButton = ContentDialogButton.Primary,
         XamlRoot = XamlRoot
     };
@@ -275,9 +362,9 @@ public sealed partial class CategoriesPage : Page
         {
             await new ContentDialog
             {
-                Title = title,
-                Content = message,
-                CloseButtonText = "确定",
+                Title = L.Text(title),
+                Content = L.Text(message),
+                CloseButtonText = L.Text("确定"),
                 XamlRoot = XamlRoot
             }.ShowAsync();
         }
@@ -314,12 +401,13 @@ public sealed class CategoryRow
 
     public CategoryModel Model { get; }
     public string Name => Model.Name;
+    public string DisplayName => L.Text(Name);
     public int ItemCount { get; }
-    public string ItemCountText => $"{ItemCount} 个应用";
+    public string ItemCountText => L.Count(ItemCount, "应用", "app");
     public SolidColorBrush AccentBrush { get; }
     public SolidColorBrush SoftBrush { get; }
 
-    private static Windows.UI.Color ParseColor(string? value)
+    internal static Windows.UI.Color ParseColor(string? value)
     {
         var hex = (value ?? string.Empty).TrimStart('#');
         if (hex.Length == 6
@@ -329,6 +417,47 @@ public sealed class CategoryRow
             return ColorHelper.FromArgb(255, r, g, b);
         return ColorHelper.FromArgb(255, 73, 105, 216);
     }
+}
+
+public sealed class WebsiteCategoryRow
+{
+    public WebsiteCategoryRow(WebSiteCategoryModel? model, int count)
+    {
+        Model = model;
+        Count = count;
+        var color = CategoryRow.ParseColor(model?.Color);
+        AccentBrush = new SolidColorBrush(color);
+        SoftBrush = new SolidColorBrush(ColorHelper.FromArgb(32, color.R, color.G, color.B));
+    }
+
+    public WebSiteCategoryModel? Model { get; }
+    public int Id => Model?.ID ?? 0;
+    public string Name => Model?.Name ?? "未分类";
+    public string DisplayName => L.Text(Name);
+    public int Count { get; }
+    public string CountText => L.Count(Count, "网站", "website");
+    public SolidColorBrush AccentBrush { get; }
+    public SolidColorBrush SoftBrush { get; }
+}
+
+public sealed class CategoryWebsiteRow
+{
+    public CategoryWebsiteRow(WebSiteModel site)
+    {
+        Id = site.ID;
+        CategoryId = site.CategoryID;
+        Name = !string.IsNullOrWhiteSpace(site.Alias) ? site.Alias
+            : !string.IsNullOrWhiteSpace(site.Title) ? site.Title : site.Domain;
+        Domain = site.Domain;
+        IconPath = AppIconResolver.Resolve(site.IconFile);
+    }
+
+    public int Id { get; }
+    public int CategoryId { get; }
+    public string Name { get; }
+    public string Domain { get; }
+    public string IconPath { get; }
+    public ImageSource Icon => new BitmapImage(new Uri(IconPath, UriKind.Absolute));
 }
 
 public sealed class CategoryAppRow

@@ -184,6 +184,7 @@ namespace Core.Servicers.Instances
             await Task.Run(() =>
             {
                 categoryCatalog.Initialize();
+                _webData.EnsureDefaultWebSiteCategories();
                 AssignUncategorizedApps();
             });
             AppState.IsLoading = false;

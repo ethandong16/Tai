@@ -8,6 +8,7 @@ using Core.Servicers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Tai.WinUI.Services;
 
 namespace Tai.WinUI.Views;
 
@@ -70,12 +71,19 @@ public sealed partial class SettingsPage : Page
         try
         {
             var general = _config.General;
+            foreach (var toggle in new[] { StartAtBootToggle, StartupShowToggle, SaveWindowSizeToggle,
+                         WebEnabledToggle, SleepWatchToggle, WhiteListToggle })
+            {
+                toggle.OnContent = L.IsEnglish ? "On" : "开启";
+                toggle.OffContent = L.IsEnglish ? "Off" : "关闭";
+            }
             StartAtBootToggle.IsOn = general.IsStartatboot;
             StartupShowToggle.IsOn = general.IsStartupShowMainWindow;
             SaveWindowSizeToggle.IsOn = general.IsSaveWindowSize;
             WebEnabledToggle.IsOn = general.IsWebEnabled;
             StartPagePicker.SelectedIndex = Math.Clamp(general.StartPage, 0, 3);
             ThemePicker.SelectedIndex = Math.Clamp(general.Theme, 0, 2);
+            LanguagePicker.SelectedIndex = general.Language switch { "zh-CN" => 1, "en-US" => 2, _ => 0 };
             while (CategoryIntervalPicker.Items.Count > CategoryIntervals.Length)
                 CategoryIntervalPicker.Items.RemoveAt(CategoryIntervalPicker.Items.Count - 1);
             var displayedInterval = Math.Clamp(general.CategoryUpdateIntervalHours, 0, 720);
@@ -85,7 +93,7 @@ public sealed partial class SettingsPage : Page
                 _customCategoryIntervalHours = displayedInterval;
                 CategoryIntervalPicker.Items.Add(new ComboBoxItem
                 {
-                    Content = $"每 {_customCategoryIntervalHours} 小时"
+                    Content = L.IsEnglish ? $"Every {_customCategoryIntervalHours} hours" : $"每 {_customCategoryIntervalHours} 小时"
                 });
                 categoryIntervalIndex = CategoryIntervals.Length;
             }
@@ -105,7 +113,9 @@ public sealed partial class SettingsPage : Page
             DeleteEndPicker.Date ??= now;
             ExportStartPicker.Date ??= now;
             ExportEndPicker.Date ??= now;
-            VersionText.Text = $"Tai 版本号 {Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.1.0"}";
+            VersionText.Text = L.IsEnglish
+                ? $"Tai version {Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.1.0"}"
+                : $"Tai 版本号 {Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.1.0"}";
         }
         finally
         {
@@ -144,6 +154,24 @@ public sealed partial class SettingsPage : Page
         else if (ReferenceEquals(sender, FrequentCountPicker)) general.IndexPageFrequentUseNum = FrequentCountPicker.SelectedIndex + 1;
         SaveConfig();
         if (ReferenceEquals(sender, ThemePicker)) App.MainWindowInstance?.ApplyAppearance();
+    }
+
+    private async void LanguagePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isLoading || _config == null || LanguagePicker.SelectedIndex < 0) return;
+        var language = LanguagePicker.SelectedIndex switch { 1 => "zh-CN", 2 => "en-US", _ => "auto" };
+        if (_config.General.Language == language) return;
+        _config.General.Language = language;
+        SaveConfig();
+        if (await ConfirmAsync("语言设置", "重新启动 Tai 以应用所选语言。现在重启吗？"))
+        {
+            try { RestartApplication(); }
+            catch (Exception exception)
+            {
+                App.LogStartupException(exception);
+                await ShowMessageAsync("需要手动重启", "请关闭并重新打开 Tai 以应用所选语言。");
+            }
+        }
     }
 
     private void BehaviorSetting_Toggled(object sender, RoutedEventArgs e)
@@ -217,8 +245,8 @@ public sealed partial class SettingsPage : Page
         if (sender is not Button { Tag: string key }) return;
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "选择文件",
-            Filter = "JSON 配置 (*.json)|*.json|所有文件 (*.*)|*.*",
+            Title = L.Text("选择文件"),
+            Filter = L.IsEnglish ? "JSON settings (*.json)|*.json|All files (*.*)|*.*" : "JSON 配置 (*.json)|*.json|所有文件 (*.*)|*.*",
             FileName = key
         };
         if (dialog.ShowDialog() != true) return;
@@ -233,7 +261,7 @@ public sealed partial class SettingsPage : Page
             target.AddRange(imported.Where(item => !string.IsNullOrWhiteSpace(item)).Select(item => item.Trim()).Distinct(StringComparer.OrdinalIgnoreCase));
             RenderList(GetListView(key), target);
             SaveConfig();
-            await ShowMessageAsync("导入完成", $"已导入 {target.Count} 项配置。");
+            await ShowMessageAsync("导入完成", L.IsEnglish ? $"Imported {target.Count} settings." : $"已导入 {target.Count} 项配置。");
         }
         catch (Exception exception)
         {
@@ -247,9 +275,9 @@ public sealed partial class SettingsPage : Page
         if (sender is not Button { Tag: string key }) return;
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
-            Title = "选择文件",
-            Filter = "JSON 配置 (*.json)|*.json",
-            FileName = $"{key}导出配置.json"
+            Title = L.Text("选择文件"),
+            Filter = L.IsEnglish ? "JSON settings (*.json)|*.json" : "JSON 配置 (*.json)|*.json",
+            FileName = L.IsEnglish ? $"{key}-settings.json" : $"{key}导出配置.json"
         };
         if (dialog.ShowDialog() != true) return;
 
@@ -278,17 +306,17 @@ public sealed partial class SettingsPage : Page
         LinksPanel.Children.Clear();
         foreach (var link in _config.Links.ToList())
         {
-            var nameBox = new TextBox { Header = "名称", Text = link.Name, MinWidth = 180 };
+            var nameBox = new TextBox { Header = L.Text("名称"), Text = link.Name, MinWidth = 180 };
             var processBox = new TextBox
             {
-                Header = "关联进程",
+                Header = L.Text("关联进程"),
                 Text = string.Join(Environment.NewLine, link.ProcessList ?? new List<string>()),
-                PlaceholderText = "每行输入一个进程名称，不带 .exe",
+                PlaceholderText = L.Text("每行输入一个进程名称，不带 .exe"),
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 68
             };
-            var saveButton = new Button { Content = "保存关联", Style = (Style)Application.Current.Resources["TaiSubtleButtonStyle"] };
+            var saveButton = new Button { Content = L.Text("保存关联"), Style = (Style)Application.Current.Resources["TaiSubtleButtonStyle"] };
             saveButton.Click += (_, _) =>
             {
                 link.Name = string.IsNullOrWhiteSpace(nameBox.Text) ? "新的关联" : nameBox.Text.Trim();
@@ -297,7 +325,7 @@ public sealed partial class SettingsPage : Page
                 SaveConfig();
                 RenderLinks();
             };
-            var removeButton = new Button { Content = "删除关联", Style = (Style)Application.Current.Resources["TaiSubtleButtonStyle"] };
+            var removeButton = new Button { Content = L.Text("删除关联"), Style = (Style)Application.Current.Resources["TaiSubtleButtonStyle"] };
             removeButton.Click += (_, _) =>
             {
                 _config.Links.Remove(link);
@@ -327,7 +355,9 @@ public sealed partial class SettingsPage : Page
             await ShowMessageAsync("时间范围错误", "请选择有效的开始和结束月份。");
             return;
         }
-        if (!await ConfirmAsync("删除确认", $"将删除 {start:yyyy年MM月} 至 {end:yyyy年MM月} 的所有统计数据，此操作不可恢复。")) return;
+        if (!await ConfirmAsync("删除确认", L.IsEnglish
+            ? $"Delete all statistics from {L.Month(start)} through {L.Month(end)}? This cannot be undone."
+            : $"将删除 {start:yyyy年MM月} 至 {end:yyyy年MM月} 的所有统计数据，此操作不可恢复。")) return;
         try
         {
             _data.ClearRange(start, end);
@@ -348,7 +378,7 @@ public sealed partial class SettingsPage : Page
             await ShowMessageAsync("时间范围错误", "请选择有效的开始和结束月份。");
             return;
         }
-        using var folder = new System.Windows.Forms.FolderBrowserDialog { Description = "请选择导出位置" };
+        using var folder = new System.Windows.Forms.FolderBrowserDialog { Description = L.Text("请选择导出位置") };
         if (folder.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
         try
         {
@@ -367,8 +397,8 @@ public sealed partial class SettingsPage : Page
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "选择 Tai 数据库",
-            Filter = "SQLite 数据库 (*.db)|*.db|所有文件 (*.*)|*.*"
+            Title = L.Text("选择 Tai 数据库"),
+            Filter = L.IsEnglish ? "SQLite database (*.db)|*.db|All files (*.*)|*.*" : "SQLite 数据库 (*.db)|*.db|所有文件 (*.*)|*.*"
         };
         if (dialog.ShowDialog() != true) return;
         var source = Path.GetFullPath(dialog.FileName);
@@ -388,6 +418,7 @@ public sealed partial class SettingsPage : Page
             var databaseReplaced = false;
             Dictionary<string, int>? previousCategoryIds = null;
             var previousCategoriesInitialized = false;
+            var previousWebsiteCategoriesInitialized = false;
 
             try
             {
@@ -406,11 +437,13 @@ public sealed partial class SettingsPage : Page
                 var general = _appConfig.GetConfig().General;
                 previousCategoryIds = new Dictionary<string, int>(general.DefaultCategoryIds ?? new());
                 previousCategoriesInitialized = general.DefaultCategoriesInitialized;
+                previousWebsiteCategoriesInitialized = general.DefaultWebsiteCategoriesInitialized;
                 categoryMappingResetAttempted = true;
                 if (!_appConfig.UpdateAndSave(current =>
                     {
                         current.General.DefaultCategoryIds = new Dictionary<string, int>();
                         current.General.DefaultCategoriesInitialized = false;
+                        current.General.DefaultWebsiteCategoriesInitialized = false;
                         return true;
                     }))
                     throw new IOException("Unable to invalidate category IDs before database import.");
@@ -438,6 +471,7 @@ public sealed partial class SettingsPage : Page
                     {
                         current.General.DefaultCategoryIds = previousCategoryIds ?? new Dictionary<string, int>();
                         current.General.DefaultCategoriesInitialized = previousCategoriesInitialized;
+                        current.General.DefaultWebsiteCategoriesInitialized = previousWebsiteCategoriesInitialized;
                         return categoryMappingCleared;
                     });
                 }
@@ -471,7 +505,7 @@ public sealed partial class SettingsPage : Page
 
     private async void ExportConfig_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.SaveFileDialog { Title = "导出 Tai 配置", Filter = "JSON 配置 (*.json)|*.json", FileName = "Tai配置.json" };
+        var dialog = new Microsoft.Win32.SaveFileDialog { Title = L.Text("导出 Tai 配置"), Filter = L.IsEnglish ? "JSON settings (*.json)|*.json" : "JSON 配置 (*.json)|*.json", FileName = L.IsEnglish ? "Tai-settings.json" : "Tai配置.json" };
         if (dialog.ShowDialog() != true) return;
         try
         {
@@ -487,7 +521,7 @@ public sealed partial class SettingsPage : Page
 
     private async void ImportConfig_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.OpenFileDialog { Title = "导入 Tai 配置", Filter = "JSON 配置 (*.json)|*.json" };
+        var dialog = new Microsoft.Win32.OpenFileDialog { Title = L.Text("导入 Tai 配置"), Filter = L.IsEnglish ? "JSON settings (*.json)|*.json" : "JSON 配置 (*.json)|*.json" };
         if (dialog.ShowDialog() != true || !await ConfirmAsync("导入配置", "导入会覆盖当前 Tai 配置，确定继续吗？")) return;
         if (!await ImportOperationGate.WaitAsync(0)) return;
         var catalogPaused = false;
@@ -510,6 +544,7 @@ public sealed partial class SettingsPage : Page
                     imported.General.DefaultCategoryIds = new Dictionary<string, int>(
                         localGeneral.DefaultCategoryIds ?? new Dictionary<string, int>());
                     imported.General.DefaultCategoriesInitialized = localGeneral.DefaultCategoriesInitialized;
+                    imported.General.DefaultWebsiteCategoriesInitialized = localGeneral.DefaultWebsiteCategoriesInitialized;
                     imported.General.LastCategoryCatalogUpdateUtc = localGeneral.LastCategoryCatalogUpdateUtc;
                     current.General = imported.General;
                     current.Behavior = imported.Behavior;
@@ -639,10 +674,10 @@ public sealed partial class SettingsPage : Page
     {
         var dialog = new ContentDialog
         {
-            Title = title,
-            Content = message,
-            PrimaryButtonText = "确定",
-            CloseButtonText = "取消",
+            Title = L.Text(title),
+            Content = L.Text(message),
+            PrimaryButtonText = L.Text("确定"),
+            CloseButtonText = L.Text("取消"),
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot
         };
@@ -653,9 +688,9 @@ public sealed partial class SettingsPage : Page
     {
         var dialog = new ContentDialog
         {
-            Title = title,
-            Content = message,
-            CloseButtonText = "确定",
+            Title = L.Text(title),
+            Content = L.Text(message),
+            CloseButtonText = L.Text("确定"),
             XamlRoot = XamlRoot
         };
         await dialog.ShowAsync();

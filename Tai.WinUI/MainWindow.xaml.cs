@@ -94,7 +94,11 @@ public sealed partial class MainWindow : Window
 
             foreach (var page in pages)
             {
-                if (page == typeof(Views.CategoriesPage)) SeedCategorySmokeApp();
+                if (page == typeof(Views.CategoriesPage))
+                {
+                    SeedCategorySmokeApp();
+                    await SeedCategorySmokeWebsiteAsync();
+                }
                 if (!RootFrame.Navigate(page)) throw new InvalidOperationException($"Cannot navigate to {page.Name}");
                 // Allow adaptive states, bindings and layout to settle before checking the next page.
                 await Task.Delay(250);
@@ -137,7 +141,8 @@ public sealed partial class MainWindow : Window
         if (frame.Content is not Views.DetailsPage details
             || details.FindName("TypeFilter") is not ComboBox { SelectedIndex: 2 })
             throw new InvalidOperationException("Website view-all did not preserve its source filter.");
-        if (shell.FindName("PageTitle") is not TextBlock { Text: "详细记录" })
+        if (shell.FindName("PageTitle") is not TextBlock pageTitle ||
+            pageTitle.Text != Services.L.Text("详细记录"))
             throw new InvalidOperationException("Returning from a detail page did not restore the page title.");
         frame.Navigate(typeof(Views.DashboardPage));
     }
@@ -362,6 +367,9 @@ public sealed partial class MainWindow : Window
         {
             throw new InvalidOperationException($"Navigation layout mismatch at {shell.ActualWidth:F0} effective pixels: expected {expectedMode}, actual {navigation.PaneDisplayMode}.");
         }
+        if (navigation.MenuItems[0] is not NavigationViewItem firstItem ||
+            firstItem.Content?.ToString() != Services.L.Text("概览"))
+            throw new InvalidOperationException("Navigation labels did not use the selected language.");
     }
 
     private static void ValidatePageLayout(FrameworkElement page)
@@ -421,6 +429,14 @@ public sealed partial class MainWindow : Window
             Grid.GetRow(categoryIntervalPicker) != expectedRow ||
             Grid.GetColumn(categoryIntervalPicker) != expectedColumn)
             throw new InvalidOperationException("The category update interval control was not laid out correctly.");
+        if (page.FindName("LanguagePicker") is not ComboBox languagePicker ||
+            Grid.GetRow(languagePicker) != expectedRow ||
+            Grid.GetColumn(languagePicker) != expectedColumn ||
+            languagePicker.SelectedIndex != (App.Services.GetRequiredService<IAppConfig>().GetConfig().General.Language switch
+            {
+                "zh-CN" => 1, "en-US" => 2, _ => 0
+            }))
+            throw new InvalidOperationException("The language setting did not load or reflow correctly.");
     }
 
     private static void SeedCategorySmokeApp()
@@ -437,6 +453,27 @@ public sealed partial class MainWindow : Window
             IconFile = string.Empty,
             Description = "分类测试应用"
         });
+    }
+
+    private static async Task SeedCategorySmokeWebsiteAsync()
+    {
+        var webData = App.Services.GetRequiredService<IWebData>();
+        const string domain = "tai-smoke.github.com";
+        if (webData.GetWebSite(domain) == null)
+            webData.AddUrlBrowseTime(new Core.Models.WebPage.Site
+            {
+                Title = "分类测试网站",
+                Url = "https://tai-smoke.github.com/"
+            }, 60);
+
+        for (var attempt = 0; attempt < 30; attempt++)
+        {
+            var site = webData.GetWebSite(domain);
+            var category = site == null ? null : webData.GetWebSiteCategory(site.CategoryID);
+            if (category?.Name == "开发技术") return;
+            await Task.Delay(100);
+        }
+        throw new InvalidOperationException("A known website was not classified when first recorded.");
     }
 
     private static void ValidateCategoriesPage(Views.CategoriesPage page)
@@ -457,6 +494,21 @@ public sealed partial class MainWindow : Window
         categoryList.SelectedItem = target;
         if (!page.CategoryApps.Any(app => app.ProcessName == "TaiCategorySmokeTest"))
             throw new InvalidOperationException("Selecting a category did not display its applications.");
+
+        if (page.FindName("CategoryMode") is not SelectorBar mode ||
+            page.FindName("WebsitesMode") is not SelectorBarItem websitesMode ||
+            page.FindName("WebsiteCategoryList") is not ListView websiteCategoryList ||
+            page.FindName("WebsiteDetailSection") is not StackPanel websiteDetail)
+            throw new InvalidOperationException("The website category view was not created.");
+        mode.SelectedItem = websitesMode;
+        var websiteCategory = page.WebsiteCategories.FirstOrDefault(item => item.Name == "开发技术");
+        if (websiteCategory == null)
+            throw new InvalidOperationException("Default website categories were not loaded.");
+        websiteCategoryList.SelectedItem = websiteCategory;
+        if (!page.CategoryWebsites.Any(site => site.Domain == "tai-smoke.github.com"))
+            throw new InvalidOperationException("Selecting a website category did not display its websites.");
+        if (Grid.GetRow(websiteDetail) != expectedRow)
+            throw new InvalidOperationException("Website categories did not reflow with the window.");
     }
 
     private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth, string? name = null)

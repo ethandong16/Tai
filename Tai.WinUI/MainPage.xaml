@@ -1,10 +1,4 @@
-<Page
-    x:Class="Tai.WinUI.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-    xmlns:views="using:Tai.WinUI.Views"
-    Background="{StaticResource TaiPageBackgroundBrush}">
+<Page x:Class="Tai.WinUI.MainPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:views="using:Tai.WinUI.Views" Background="{StaticResource TaiPageBackgroundBrush}">
     <Grid x:Name="LayoutRoot">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
@@ -40,18 +34,7 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <controls:NavigationView
-            x:Name="RootNavigation"
-            IsBackButtonVisible="Collapsed"
-            IsSettingsVisible="False"
-            IsTitleBarAutoPaddingEnabled="False"
-            IsPaneOpen="False"
-            OpenPaneLength="216"
-            CompactPaneLength="56"
-            PaneDisplayMode="LeftMinimal"
-            IsPaneToggleButtonVisible="True"
-            SelectionChanged="RootNavigation_SelectionChanged"
-            Background="Transparent">
+        <controls:NavigationView x:Name="RootNavigation" IsBackButtonVisible="Collapsed" IsSettingsVisible="False" IsTitleBarAutoPaddingEnabled="False" IsPaneOpen="False" OpenPaneLength="216" CompactPaneLength="56" PaneDisplayMode="LeftMinimal" IsPaneToggleButtonVisible="True" SelectionChanged="RootNavigation_SelectionChanged" Background="Transparent">
             <controls:NavigationView.Resources>
                 <StaticResource x:Key="NavigationViewContentBackground" ResourceKey="TaiPageBackgroundBrush" />
                 <StaticResource x:Key="NavigationViewDefaultPaneBackground" ResourceKey="TaiSidebarMaterial" />
@@ -77,21 +60,21 @@
                 </Style>
             </controls:NavigationView.MenuItemContainerStyle>
             <controls:NavigationView.MenuItems>
-                <controls:NavigationViewItem Content="概览" Tag="Dashboard">
+                <controls:NavigationViewItem Content="概览" Tag="Dashboard" x:Uid="MainPage_001">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="Home" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="统计" Tag="Statistics">
+                <controls:NavigationViewItem Content="统计" Tag="Statistics" x:Uid="MainPage_002">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="FourBars" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="详细记录" Tag="Details">
+                <controls:NavigationViewItem Content="详细记录" Tag="Details" x:Uid="MainPage_003">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="Calendar" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="分类" Tag="Categories">
+                <controls:NavigationViewItem Content="分类" Tag="Categories" x:Uid="MainPage_004">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="AllApps" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
             </controls:NavigationView.MenuItems>
             <controls:NavigationView.FooterMenuItems>
-                <controls:NavigationViewItem Content="设置" Tag="Settings">
+                <controls:NavigationViewItem Content="设置" Tag="Settings" x:Uid="MainPage_005">
                     <controls:NavigationViewItem.Icon><SymbolIcon Symbol="Setting" /></controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
             </controls:NavigationView.FooterMenuItems>
@@ -102,7 +85,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Border x:Name="PageHeader" Grid.Row="0" Margin="12,12,12,4" Padding="44,0,0,0">
-                    <TextBlock x:Name="PageTitle" Text="概览" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                    <TextBlock x:Name="PageTitle" Text="概览" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" x:Uid="MainPage_006" />
                 </Border>
                 <Frame x:Name="ContentFrame" Grid.Row="1" Navigated="ContentFrame_Navigated" />
             </Grid>

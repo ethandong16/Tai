@@ -32,35 +32,35 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<CategoryUsage> Categories { get; } = new();
     public RelayCommand RefreshCommand { get; }
 
-    private string _appUsage = "0分钟";
+    private string _appUsage = L.Duration(0);
     public string AppUsage { get => _appUsage; private set => SetField(ref _appUsage, value); }
     public string TodayUsage => AppUsage;
 
-    private string _websiteUsage = "0分钟";
+    private string _websiteUsage = L.Duration(0);
     public string WebsiteUsage { get => _websiteUsage; private set => SetField(ref _websiteUsage, value); }
 
-    private string _appCountText = "0 个";
+    private string _appCountText = L.Count(0, "应用", "app");
     public string AppCountText { get => _appCountText; private set => SetField(ref _appCountText, value); }
 
-    private string _websiteCountText = "0 个";
+    private string _websiteCountText = L.Count(0, "网站", "website");
     public string WebsiteCountText { get => _websiteCountText; private set => SetField(ref _websiteCountText, value); }
 
-    private string _longestAppName = "暂无数据";
+    private string _longestAppName = L.Text("暂无数据");
     public string LongestAppName { get => _longestAppName; private set => SetField(ref _longestAppName, value); }
 
-    private string _longestAppDuration = "0分钟";
+    private string _longestAppDuration = L.Duration(0);
     public string LongestAppDuration { get => _longestAppDuration; private set => SetField(ref _longestAppDuration, value); }
 
     private string _rangeText = string.Empty;
     public string RangeText { get => _rangeText; private set => SetField(ref _rangeText, value); }
 
-    private string _peakLabel = "暂无数据";
+    private string _peakLabel = L.Text("暂无数据");
     public string PeakLabel { get => _peakLabel; private set => SetField(ref _peakLabel, value); }
 
-    private string _peakDuration = "0分钟";
+    private string _peakDuration = L.Duration(0);
     public string PeakDuration { get => _peakDuration; private set => SetField(ref _peakDuration, value); }
 
-    private string _lastUpdated = "等待更新";
+    private string _lastUpdated = L.Text("等待更新");
     public string LastUpdated { get => _lastUpdated; private set => SetField(ref _lastUpdated, value); }
 
     private bool _isLoading;
@@ -95,7 +95,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             ApplySnapshot(today, includeTrend: false, appsTake: _dashboardTake);
             Replace(Trend, week.Trend);
             RangeText = week.RangeText;
-            LastUpdated = $"{DateTime.Now:HH:mm} 更新";
+            LastUpdated = L.IsEnglish ? $"Updated {DateTime.Now:HH:mm}" : $"{DateTime.Now:HH:mm} 更新";
         }
         catch (OperationCanceledException)
         {
@@ -103,7 +103,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            LastUpdated = "数据读取失败，已保留上次结果";
+            LastUpdated = L.Text("数据读取失败，已保留上次结果");
         }
         finally
         {
@@ -125,7 +125,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             var snapshot = await _dataProvider.GetAsync(period, anchorDate, 8, cancellation.Token);
             cancellation.Token.ThrowIfCancellationRequested();
             ApplySnapshot(snapshot, includeTrend: true);
-            LastUpdated = $"{DateTime.Now:HH:mm} 更新";
+            LastUpdated = L.IsEnglish ? $"Updated {DateTime.Now:HH:mm}" : $"{DateTime.Now:HH:mm} 更新";
         }
         catch (OperationCanceledException)
         {
@@ -133,7 +133,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         catch (Exception exception)
         {
             App.LogStartupException(exception);
-            LastUpdated = "数据读取失败，已保留上次结果";
+            LastUpdated = L.Text("数据读取失败，已保留上次结果");
         }
         finally
         {
@@ -169,8 +169,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         AppUsage = Format(snapshot.TotalAppSeconds);
         OnPropertyChanged(nameof(TodayUsage));
         WebsiteUsage = Format(snapshot.TotalWebSeconds);
-        AppCountText = $"{snapshot.AppCount} 个";
-        WebsiteCountText = $"{snapshot.WebsiteCount} 个";
+        AppCountText = L.Count(snapshot.AppCount, "应用", "app");
+        WebsiteCountText = L.Count(snapshot.WebsiteCount, "网站", "website");
         LongestAppName = snapshot.LongestAppName;
         LongestAppDuration = snapshot.LongestAppDuration;
         RangeText = snapshot.RangeText;
@@ -179,7 +179,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         HasData = snapshot.TotalAppSeconds + snapshot.TotalWebSeconds > 0;
     }
 
-    private static string Format(int seconds) => seconds > 0 ? Core.Librarys.Time.ToString(seconds) : "0分钟";
+    private static string Format(int seconds) => L.Duration(seconds);
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
     {

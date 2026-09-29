@@ -87,8 +87,10 @@ public sealed class CategoryRingChart : UserControl
         }
         var largest = values.MaxBy(item => item.Percent);
         _value.Text = largest?.PercentText ?? "—";
-        _label.Text = largest?.Name ?? "暂无记录";
-        AutomationProperties.SetName(this, values.Count == 0 ? "分类占比：暂无记录" : "分类占比：" + string.Join("，", values.Select(item => $"{item.Name} {item.PercentText}")));
+        _label.Text = largest == null ? Tai.WinUI.Services.L.Text("暂无记录") : Tai.WinUI.Services.L.Text(largest.Name);
+        AutomationProperties.SetName(this, values.Count == 0 ? Tai.WinUI.Services.L.Text("分类占比：暂无记录")
+            : (Tai.WinUI.Services.L.IsEnglish ? "Category breakdown: " : "分类占比：")
+              + string.Join(Tai.WinUI.Services.L.IsEnglish ? ", " : "，", values.Select(item => $"{Tai.WinUI.Services.L.Text(item.Name)} {item.PercentText}")));
     }
 
     private static Brush Resource(string key) => (Brush)Application.Current.Resources[key];

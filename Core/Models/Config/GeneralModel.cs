@@ -12,6 +12,8 @@ namespace Core.Models.Config
     public class GeneralModel
     {
         public bool DefaultCategoriesInitialized { get; set; }
+        public bool DefaultWebsiteCategoriesInitialized { get; set; }
+        public string Language { get; set; } = "auto";
         public Dictionary<string, int> DefaultCategoryIds { get; set; } = new Dictionary<string, int>();
         /// <summary>
         /// 自动获取 GitHub 分类目录的间隔，单位为小时；0 表示仅手动获取。

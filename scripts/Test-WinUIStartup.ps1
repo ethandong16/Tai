@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$PublishDirectory
+    [string]$PublishDirectory,
+    [ValidateSet('auto', 'zh-CN', 'en-US')]
+    [string]$Language = 'auto'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,7 +16,7 @@ $builtInKeys = @(
     'browsing', 'office', 'development', 'communication', 'design',
     'learning', 'media', 'gaming', 'utilities'
 )
-$catalog = Get-Content -LiteralPath (Join-Path $publishPath 'default-categories.json') -Raw | ConvertFrom-Json
+$catalog = Get-Content -LiteralPath (Join-Path $publishPath 'default-categories.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 if ($catalog.version -ne 1 -or -not $catalog.categories) {
     throw 'Published default-categories.json has an invalid catalog structure.'
 }
@@ -31,6 +33,13 @@ New-Item -ItemType Directory -Path $testPath | Out-Null
 Get-ChildItem -LiteralPath $publishPath | Where-Object {
     $_.Name -notin @('Data', 'Log', 'startup-smoke.ok')
 } | Copy-Item -Destination $testPath -Recurse
+if ($Language -ne 'auto') {
+    $dataPath = Join-Path $testPath 'Data'
+    New-Item -ItemType Directory -Path $dataPath | Out-Null
+    $configJson = @{ General = @{ Language = $Language }; Behavior = @{}; Links = @() } | ConvertTo-Json -Depth 5
+    [IO.File]::WriteAllText((Join-Path $dataPath 'AppConfig.json'), $configJson,
+        [Text.UTF8Encoding]::new($false))
+}
 
 $process = Start-Process -FilePath (Join-Path $testPath 'Tai.WinUI.exe') `
     -ArgumentList '--smoke-test' -WorkingDirectory $testPath -WindowStyle Hidden -PassThru
@@ -44,7 +53,7 @@ if ($process.ExitCode -ne 0 -or -not (Test-Path (Join-Path $testPath 'startup-sm
     (Test-Path -LiteralPath $logPath)) {
     throw "Startup test failed (exit $($process.ExitCode)). Diagnostics retained in $testPath"
 }
-$config = Get-Content -LiteralPath (Join-Path $testPath 'Data/AppConfig.json') -Raw | ConvertFrom-Json
+$config = Get-Content -LiteralPath (Join-Path $testPath 'Data/AppConfig.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 foreach ($key in $builtInKeys) {
     $mapping = $config.General.DefaultCategoryIds.PSObject.Properties[$key]
     if ($null -eq $mapping -or [int]$mapping.Value -le 0) {

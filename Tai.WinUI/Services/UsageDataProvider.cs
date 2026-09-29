@@ -16,20 +16,19 @@ public enum UsagePeriod
 public readonly record struct UsageDateRange(DateTime Start, DateTime End)
 {
     public string DisplayText => Start.Date == End.Date
-        ? Start.ToString("yyyy年M月d日")
+        ? L.Date(Start)
         : Start.Year == End.Year
-            ? $"{Start:yyyy年M月d日} - {End:M月d日}"
-            : $"{Start:yyyy年M月d日} - {End:yyyy年M月d日}";
+            ? L.IsEnglish ? $"{L.Date(Start)} - {End:MMM d}" : $"{Start:yyyy年M月d日} - {End:M月d日}"
+            : $"{L.Date(Start)} - {L.Date(End)}";
 }
 
 public sealed record TrendPoint(string Label, double Seconds, bool IsFuture = false)
 {
-    public string Duration => IsFuture ? "尚未发生" : FormatDuration(Seconds);
+    public string Duration => IsFuture ? L.Text("尚未发生") : FormatDuration(Seconds);
 
     internal static string FormatDuration(double seconds)
     {
-        if (seconds <= 0) return "0分钟";
-        return Time.ToString((int)Math.Round(seconds));
+        return L.Duration((int)Math.Round(seconds));
     }
 }
 
@@ -69,10 +68,10 @@ public sealed class UsageSnapshot
     public int TotalWebSeconds { get; init; }
     public int AppCount { get; init; }
     public int WebsiteCount { get; init; }
-    public string LongestAppName { get; init; } = "暂无数据";
-    public string LongestAppDuration { get; init; } = "0分钟";
-    public string PeakLabel { get; init; } = "暂无数据";
-    public string PeakDuration { get; init; } = "0分钟";
+    public string LongestAppName { get; init; } = L.Text("暂无数据");
+    public string LongestAppDuration { get; init; } = L.Duration(0);
+    public string PeakLabel { get; init; } = L.Text("暂无数据");
+    public string PeakDuration { get; init; } = L.Duration(0);
 }
 
 public sealed class CoreUsageDataProvider : IUsageDataProvider
@@ -182,10 +181,10 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
             TotalWebSeconds = allSiteLogs.Sum(item => item.Duration),
             AppCount = _data.GetDateRangeAppCount(range.Start, queryEnd),
             WebsiteCount = _webData.GetBrowseSitesTotal(range.Start, queryEnd),
-            LongestAppName = longest == null ? "暂无数据" : longestName,
-            LongestAppDuration = longest == null ? "0分钟" : Time.ToString(longest.Time),
-            PeakLabel = peak == null || peak.Seconds <= 0 ? "暂无数据" : peak.Label,
-            PeakDuration = peak == null ? "0分钟" : peak.Duration
+            LongestAppName = longest == null ? L.Text("暂无数据") : longestName,
+            LongestAppDuration = longest == null ? L.Duration(0) : L.Duration(longest.Time),
+            PeakLabel = peak == null || peak.Seconds <= 0 ? L.Text("暂无数据") : peak.Label,
+            PeakDuration = peak == null ? L.Duration(0) : peak.Duration
         };
     }
 
@@ -232,12 +231,12 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
             return new Tai.WinUI.ViewModels.UsageItem(
                 app?.ID ?? 0,
                 GetAppDisplayName(app),
-                Time.ToString(item.Time),
+                L.Duration(item.Time),
                 item.Time,
                 CalculateSharePercent(item.Time, total),
                 AppIconResolver.Resolve(app?.IconFile, app?.File, app?.Name, app?.Description),
                 accent,
-                category?.Name ?? "未分类",
+                L.Text(category?.Name ?? "未分类"),
                 "应用");
         }).ToList();
     }
@@ -254,13 +253,13 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
             categories.TryGetValue(item.CategoryID, out var category);
             return new Tai.WinUI.ViewModels.UsageItem(
                 item.ID,
-                string.IsNullOrWhiteSpace(item.Alias) ? (item.Title ?? item.Domain ?? "未知网站") : item.Alias,
-                Time.ToString(item.Duration),
+                string.IsNullOrWhiteSpace(item.Alias) ? (item.Title ?? item.Domain ?? L.Text("未知网站")) : item.Alias,
+                L.Duration(item.Duration),
                 item.Duration,
                 CalculateSharePercent(item.Duration, total),
                 AppIconResolver.Resolve(item.IconFile),
                 NormalizeColor(category?.Color, "#12966F"),
-                category?.Name ?? "未分类",
+                L.Text(category?.Name ?? "未分类"),
                 "网站");
         }).ToList();
     }
@@ -322,7 +321,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
             .OrderByDescending(item => item.Value.Seconds)
             .Take(6)
             .Select(item => new Tai.WinUI.ViewModels.CategoryUsage(
-                item.Key,
+                L.Text(item.Key),
                 TrendPoint.FormatDuration(item.Value.Seconds),
                 grandTotal <= 0 ? 0 : (int)Math.Round(item.Value.Seconds * 100 / grandTotal),
                 item.Value.Color))
@@ -377,7 +376,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         UsagePeriod.Day => $"{index:00}:00",
         UsagePeriod.Week => start.AddDays(index).ToString("ddd M/d"),
         UsagePeriod.Month => start.AddDays(index).ToString("M/d"),
-        UsagePeriod.Year => $"{index + 1}月",
+        UsagePeriod.Year => L.IsEnglish ? start.AddMonths(index).ToString("MMM") : $"{index + 1}月",
         _ => string.Empty
     };
 
@@ -386,7 +385,7 @@ public sealed class CoreUsageDataProvider : IUsageDataProvider
         if (!string.IsNullOrWhiteSpace(app?.Alias)) return app.Alias;
         if (!string.IsNullOrWhiteSpace(app?.Description)) return app.Description;
         if (!string.IsNullOrWhiteSpace(app?.Name)) return app.Name;
-        return "未知应用";
+        return L.Text("未知应用");
     }
 
     private static string NormalizeColor(string? color, string fallback)

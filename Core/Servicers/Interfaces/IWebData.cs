@@ -39,6 +39,8 @@ namespace Core.Servicers.Interfaces
         /// </summary>
         /// <returns></returns>
         List<WebSiteCategoryModel> GetWebSiteCategories();
+        List<WebSiteModel> GetAllWebSites();
+        void EnsureDefaultWebSiteCategories();
         /// <summary>
         /// 创建网站分类
         /// </summary>

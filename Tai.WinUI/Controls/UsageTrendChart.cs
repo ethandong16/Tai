@@ -63,7 +63,7 @@ public sealed class UsageTrendChart : UserControl
         var points = (Items as IEnumerable<TrendPoint>)?.ToList() ?? new List<TrendPoint>();
         if (points.Count == 0)
         {
-            AddEmptyMessage("此时间范围内暂无趋势数据");
+            AddEmptyMessage(Tai.WinUI.Services.L.Text("此时间范围内暂无趋势数据"));
             return;
         }
 
@@ -123,7 +123,7 @@ public sealed class UsageTrendChart : UserControl
             _canvas.Children.Add(label);
         }
         if (actualPoints.All(point => point.Seconds <= 0))
-            AddEmptyMessage("这个时间范围内还没有使用记录", top + plotHeight / 2 - 12);
+            AddEmptyMessage(Tai.WinUI.Services.L.Text("这个时间范围内还没有使用记录"), top + plotHeight / 2 - 12);
     }
 
     private void DrawGrid(double width, double top, double plotBottom, double plotHeight, double maximum, double left, double right)
@@ -181,8 +181,10 @@ public sealed class UsageTrendChart : UserControl
     private static string FormatAxisValue(double seconds)
     {
         if (seconds <= 0) return "0";
-        if (seconds < 60 * 60) return $"{Math.Round(seconds / 60):0}分";
+        if (seconds < 60 * 60) return Tai.WinUI.Services.L.IsEnglish
+            ? $"{Math.Round(seconds / 60):0} min" : $"{Math.Round(seconds / 60):0}分";
         var hours = seconds / 3600;
+        if (Tai.WinUI.Services.L.IsEnglish) return $"{hours:0.#} hr";
         return Math.Abs(hours - Math.Round(hours)) < 0.01
             ? $"{hours:0}小时"
             : $"{hours:0.#}小时";

@@ -26,10 +26,12 @@ namespace Core.Servicers.Instances
     public class WebData : IWebData
     {
         private readonly IDatabase _database;
+        private readonly IAppConfig _appConfig;
         private readonly object _createUrlLocker = new object();
-        public WebData(IDatabase database)
+        public WebData(IDatabase database, IAppConfig appConfig)
         {
             _database = database;
+            _appConfig = appConfig;
         }
 
         #region AddUrlBrowseTime
@@ -87,6 +89,7 @@ namespace Core.Servicers.Instances
                             {
                                 Title = UrlHelper.GetName(site_.Url),
                                 Domain = domain,
+                                CategoryID = GetDefaultCategoryId(db, domain),
                             });
 
                             db.SaveChanges();
@@ -216,6 +219,7 @@ namespace Core.Servicers.Instances
                 {
                     Title = UrlHelper.GetName(url_),
                     Domain = domain,
+                    CategoryID = GetDefaultCategoryId(db, domain),
                 });
                 db.SaveChanges();
             }
@@ -323,6 +327,58 @@ namespace Core.Servicers.Instances
         #endregion
 
         #region GetWebSiteCategories
+        public void EnsureDefaultWebSiteCategories()
+        {
+            using (var db = _database.GetWriterContext())
+            {
+                try
+                {
+                    var categories = db.WebSiteCategories.ToList();
+                    foreach (var definition in DefaultWebSiteCategories.All)
+                    {
+                        if (categories.Any(item => item.Name == definition.Name)) continue;
+                        var category = db.WebSiteCategories.Add(new WebSiteCategoryModel
+                        {
+                            Name = definition.Name,
+                            Color = definition.Color,
+                            IconFile = string.Empty
+                        });
+                        categories.Add(category);
+                    }
+                    db.SaveChanges();
+
+                    if (!_appConfig.GetConfig().General.DefaultWebsiteCategoriesInitialized)
+                    {
+                        var idsByName = categories.GroupBy(item => item.Name)
+                            .ToDictionary(group => group.Key, group => group.First().ID);
+                        foreach (var site in db.WebSites.Where(item => item.CategoryID == 0).ToList())
+                        {
+                            var name = DefaultWebSiteCategories.Match(site.Domain);
+                            if (name != null && idsByName.TryGetValue(name, out var id)) site.CategoryID = id;
+                        }
+                        db.SaveChanges();
+                        if (!_appConfig.UpdateAndSave(config =>
+                            {
+                                config.General.DefaultWebsiteCategoriesInitialized = true;
+                                return true;
+                            }))
+                            throw new IOException("Unable to save website category initialization state.");
+                    }
+                }
+                finally
+                {
+                    _database.CloseWriter();
+                }
+            }
+        }
+
+        private static int GetDefaultCategoryId(TaiDbContext db, string domain)
+        {
+            var name = DefaultWebSiteCategories.Match(domain);
+            return name == null ? 0 : db.WebSiteCategories.Where(item => item.Name == name)
+                .Select(item => item.ID).FirstOrDefault();
+        }
+
         public List<WebSiteCategoryModel> GetWebSiteCategories()
         {
             using (var db = _database.GetReaderContext())
@@ -423,16 +479,26 @@ namespace Core.Servicers.Instances
 
         public void UpdateWebSitesCategory(int[] siteIds_, int categoryId_)
         {
-            Task.Run(() =>
+            if (siteIds_ == null || siteIds_.Length == 0) return;
+            using (var db = _database.GetWriterContext())
             {
-                using (var db = _database.GetWriterContext())
+                try
                 {
-                    string sql = $"update WebSiteModels set CategoryID={categoryId_} where ID in ({string.Join(",", siteIds_)})";
-                    db.Database.ExecuteSqlCommand(sql);
+                    var sites = db.WebSites.Where(site => siteIds_.Contains(site.ID)).ToList();
+                    foreach (var site in sites) site.CategoryID = categoryId_;
                     db.SaveChanges();
+                }
+                finally
+                {
                     _database.CloseWriter();
                 }
-            });
+            }
+        }
+
+        public List<WebSiteModel> GetAllWebSites()
+        {
+            using (var db = _database.GetReaderContext())
+                return db.WebSites.ToList();
         }
 
         public List<CommonDataModel> GetCategoriesStatistics(DateTime start_, DateTime end_)

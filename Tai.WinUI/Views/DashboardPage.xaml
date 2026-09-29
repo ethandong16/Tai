@@ -1,21 +1,18 @@
-<Page x:Class="Tai.WinUI.Views.DashboardPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:widgets="using:Tai.WinUI.Controls" Background="Transparent">
+<Page x:Class="Tai.WinUI.Views.DashboardPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:widgets="using:Tai.WinUI.Controls" Background="Transparent">
     <Page.Resources>
         <DataTemplate x:Key="UsageItemTemplate">
             <Grid MinHeight="64" Padding="0,12" ColumnSpacing="12" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="36"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="36" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                 <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource TaiCardMutedBrush}">
-                    <Image Source="{Binding Icon}" Width="26" Height="26" Stretch="Uniform"/>
+                    <Image Source="{Binding Icon}" Width="26" Height="26" Stretch="Uniform" />
                 </Border>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}"/>
+                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="7">
-                    <TextBlock Text="{Binding Duration}" FontSize="12" Foreground="{StaticResource TaiPrimaryTextBrush}" HorizontalAlignment="Right"/>
-                    <ProgressBar Value="{Binding Percent}" Maximum="100" Width="72" Height="3" Foreground="{StaticResource TaiChartBrush}" Background="{StaticResource TaiCardMutedBrush}"/>
+                    <TextBlock Text="{Binding Duration}" FontSize="12" Foreground="{StaticResource TaiPrimaryTextBrush}" HorizontalAlignment="Right" />
+                    <ProgressBar Value="{Binding Percent}" Maximum="100" Width="72" Height="3" Foreground="{StaticResource TaiChartBrush}" Background="{StaticResource TaiCardMutedBrush}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -23,98 +20,98 @@
     <Grid>
         <VisualStateManager.VisualStateGroups><VisualStateGroup>
             <VisualState x:Name="WideLayout">
-                <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820"/></VisualState.StateTriggers>
+                <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="820" /></VisualState.StateTriggers>
                 <VisualState.Setters>
-                    <Setter Target="PageStack.Margin" Value="24,8,28,32"/>
-                    <Setter Target="HeroSecondColumn.Width" Value="*"/>
-                    <Setter Target="HeroFacts.(Grid.Column)" Value="1"/>
-                    <Setter Target="HeroFacts.(Grid.Row)" Value="0"/>
-                    <Setter Target="HeroFacts.Margin" Value="24,0,0,0"/>
-                    <Setter Target="MiddleSecondColumn.Width" Value="*"/>
-                    <Setter Target="CategoryCard.(Grid.Column)" Value="1"/>
-                    <Setter Target="CategoryCard.(Grid.Row)" Value="0"/>
-                    <Setter Target="CategoryCard.Margin" Value="20,0,0,0"/>
-                    <Setter Target="UsageSecondColumn.Width" Value="*"/>
-                    <Setter Target="WebsiteSection.(Grid.Column)" Value="1"/>
-                    <Setter Target="WebsiteSection.(Grid.Row)" Value="0"/>
-                    <Setter Target="WebsiteSection.Margin" Value="20,0,0,0"/>
+                    <Setter Target="PageStack.Margin" Value="24,8,28,32" />
+                    <Setter Target="HeroSecondColumn.Width" Value="*" />
+                    <Setter Target="HeroFacts.(Grid.Column)" Value="1" />
+                    <Setter Target="HeroFacts.(Grid.Row)" Value="0" />
+                    <Setter Target="HeroFacts.Margin" Value="24,0,0,0" />
+                    <Setter Target="MiddleSecondColumn.Width" Value="*" />
+                    <Setter Target="CategoryCard.(Grid.Column)" Value="1" />
+                    <Setter Target="CategoryCard.(Grid.Row)" Value="0" />
+                    <Setter Target="CategoryCard.Margin" Value="20,0,0,0" />
+                    <Setter Target="UsageSecondColumn.Width" Value="*" />
+                    <Setter Target="WebsiteSection.(Grid.Column)" Value="1" />
+                    <Setter Target="WebsiteSection.(Grid.Row)" Value="0" />
+                    <Setter Target="WebsiteSection.Margin" Value="20,0,0,0" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="NarrowLayout">
-                <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0"/></VisualState.StateTriggers>
+                <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
                 <VisualState.Setters>
-                    <Setter Target="PageStack.Margin" Value="12,8,12,24"/>
-                    <Setter Target="HeroSecondColumn.Width" Value="0"/>
-                    <Setter Target="HeroFacts.(Grid.Column)" Value="0"/>
-                    <Setter Target="HeroFacts.(Grid.Row)" Value="1"/>
-                    <Setter Target="HeroFacts.Margin" Value="0,24,0,0"/>
-                    <Setter Target="MiddleSecondColumn.Width" Value="0"/>
-                    <Setter Target="CategoryCard.(Grid.Column)" Value="0"/>
-                    <Setter Target="CategoryCard.(Grid.Row)" Value="1"/>
-                    <Setter Target="CategoryCard.Margin" Value="0,20,0,0"/>
-                    <Setter Target="UsageSecondColumn.Width" Value="0"/>
-                    <Setter Target="WebsiteSection.(Grid.Column)" Value="0"/>
-                    <Setter Target="WebsiteSection.(Grid.Row)" Value="1"/>
-                    <Setter Target="WebsiteSection.Margin" Value="0,20,0,0"/>
+                    <Setter Target="PageStack.Margin" Value="12,8,12,24" />
+                    <Setter Target="HeroSecondColumn.Width" Value="0" />
+                    <Setter Target="HeroFacts.(Grid.Column)" Value="0" />
+                    <Setter Target="HeroFacts.(Grid.Row)" Value="1" />
+                    <Setter Target="HeroFacts.Margin" Value="0,24,0,0" />
+                    <Setter Target="MiddleSecondColumn.Width" Value="0" />
+                    <Setter Target="CategoryCard.(Grid.Column)" Value="0" />
+                    <Setter Target="CategoryCard.(Grid.Row)" Value="1" />
+                    <Setter Target="CategoryCard.Margin" Value="0,20,0,0" />
+                    <Setter Target="UsageSecondColumn.Width" Value="0" />
+                    <Setter Target="WebsiteSection.(Grid.Column)" Value="0" />
+                    <Setter Target="WebsiteSection.(Grid.Row)" Value="1" />
+                    <Setter Target="WebsiteSection.Margin" Value="0,20,0,0" />
                 </VisualState.Setters>
             </VisualState>
         </VisualStateGroup></VisualStateManager.VisualStateGroups>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="20">
                 <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <Button x:Name="RefreshButton" Grid.Column="1" Click="RefreshButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" AutomationProperties.Name="刷新概览数据" ToolTipService.ToolTip="刷新概览数据">
-                        <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE72C;" FontSize="14"/><TextBlock Text="刷新"/></StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="" FontSize="14" /><TextBlock Text="刷新" x:Uid="DashboardPage_001" /></StackPanel>
                     </Button>
                 </Grid>
                 <Border Style="{StaticResource TaiCardStyle}" Padding="28">
                     <Grid>
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="1.15*"/><ColumnDefinition x:Name="HeroSecondColumn" Width="*"/></Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="1.15*" /><ColumnDefinition x:Name="HeroSecondColumn" Width="*" /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                         <StackPanel Spacing="10">
-                            <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE917;" FontSize="15" Foreground="{StaticResource TaiSecondaryTextBrush}"/><TextBlock Text="今日应用使用" Style="{StaticResource TaiCaptionStyle}"/></StackPanel>
-                            <TextBlock Text="{Binding TodayUsage}" FontSize="40" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}"/>
-                            <TextBlock Text="仅统计前台应用，网站时长不重复计入" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource TaiSecondaryTextBrush}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="" FontSize="15" Foreground="{StaticResource TaiSecondaryTextBrush}" /><TextBlock Text="今日应用使用" Style="{StaticResource TaiCaptionStyle}" x:Uid="DashboardPage_002" /></StackPanel>
+                            <TextBlock Text="{Binding TodayUsage}" FontSize="40" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                            <TextBlock Text="仅统计前台应用，网站时长不重复计入" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource TaiSecondaryTextBrush}" x:Uid="DashboardPage_003" />
                         </StackPanel>
                         <Grid x:Name="HeroFacts" Grid.Column="1" Margin="24,0,0,0" ColumnSpacing="20" RowSpacing="20" VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                            <StackPanel Spacing="5"><TextBlock Text="使用的应用" Style="{StaticResource TaiCaptionStyle}"/><TextBlock Text="{Binding AppCountText}" Style="{StaticResource TaiStatValueStyle}"/></StackPanel>
-                            <StackPanel Grid.Column="1" Spacing="5"><TextBlock Text="浏览的网站" Style="{StaticResource TaiCaptionStyle}"/><TextBlock Text="{Binding WebsiteCountText}" Style="{StaticResource TaiStatValueStyle}"/></StackPanel>
-                            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="4"><TextBlock Text="陪伴你最久" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}"/><TextBlock Text="{Binding LongestAppName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding LongestAppDuration}" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}"/></StackPanel>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <StackPanel Spacing="5"><TextBlock Text="使用的应用" Style="{StaticResource TaiCaptionStyle}" x:Uid="DashboardPage_004" /><TextBlock Text="{Binding AppCountText}" Style="{StaticResource TaiStatValueStyle}" /></StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5"><TextBlock Text="浏览的网站" Style="{StaticResource TaiCaptionStyle}" x:Uid="DashboardPage_005" /><TextBlock Text="{Binding WebsiteCountText}" Style="{StaticResource TaiStatValueStyle}" /></StackPanel>
+                            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="4"><TextBlock Text="陪伴你最久" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" x:Uid="DashboardPage_006" /><TextBlock Text="{Binding LongestAppName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding LongestAppDuration}" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" /></StackPanel>
                         </Grid>
                     </Grid>
                 </Border>
                 <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.6*"/><ColumnDefinition x:Name="MiddleSecondColumn" Width="*"/></Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.6*" /><ColumnDefinition x:Name="MiddleSecondColumn" Width="*" /></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
-                        <Grid ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel Spacing="5"><TextBlock Text="本周趋势" Style="{StaticResource TaiSectionTitleStyle}"/><TextBlock Text="{Binding RangeText}" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource TaiSecondaryTextBrush}"/></StackPanel><Button Grid.Column="1" Content="查看统计 ›" Click="Statistics_Click" Style="{StaticResource TaiSubtleButtonStyle}"/></Grid>
-                        <widgets:UsageTrendChart Items="{Binding Trend}" Height="220" AutomationProperties.Name="本周应用使用趋势，未来时段不计为零"/>
+                        <Grid ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><StackPanel Spacing="5"><TextBlock Text="本周趋势" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="DashboardPage_007" /><TextBlock Text="{Binding RangeText}" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource TaiSecondaryTextBrush}" /></StackPanel><Button Grid.Column="1" Content="查看统计 ›" Click="Statistics_Click" Style="{StaticResource TaiSubtleButtonStyle}" x:Uid="DashboardPage_008" /></Grid>
+                        <widgets:UsageTrendChart Items="{Binding Trend}" Height="220" AutomationProperties.Name="本周应用使用趋势，未来时段不计为零" />
                     </StackPanel>
                     <StackPanel x:Name="CategoryCard" Grid.Column="1" Margin="20,0,0,0" Style="{StaticResource TaiSurfacePanelStyle}">
-                        <TextBlock Text="时间分布" Style="{StaticResource TaiSectionTitleStyle}"/>
-                        <TextBlock Text="应用与网站合计 · 分类占比" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" TextWrapping="Wrap"/>
-                        <widgets:CategoryRingChart Items="{Binding Categories}" Height="132" HorizontalAlignment="Center" Width="132"/>
+                        <TextBlock Text="时间分布" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="DashboardPage_009" />
+                        <TextBlock Text="应用与网站合计 · 分类占比" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" TextWrapping="Wrap" x:Uid="DashboardPage_010" />
+                        <widgets:CategoryRingChart Items="{Binding Categories}" Height="132" HorizontalAlignment="Center" Width="132" />
                         <ItemsControl ItemsSource="{Binding Categories}"><ItemsControl.ItemTemplate><DataTemplate>
-                            <Grid Padding="0,4" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="8"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><Ellipse Width="7" Height="7" Fill="{Binding Accent}"/><TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis"/><TextBlock Grid.Column="2" Text="{Binding PercentText}" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}"/></Grid>
+                            <Grid Padding="0,4" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><Ellipse Width="7" Height="7" Fill="{Binding Accent}" /><TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" /><TextBlock Grid.Column="2" Text="{Binding PercentText}" FontSize="12" Foreground="{StaticResource TaiSecondaryTextBrush}" /></Grid>
                         </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
                     </StackPanel>
                 </Grid>
                 <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition x:Name="UsageSecondColumn" Width="*"/></Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition x:Name="UsageSecondColumn" Width="*" /></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
-                        <Grid><TextBlock Text="常用应用" VerticalAlignment="Center" Style="{StaticResource TaiSectionTitleStyle}"/><Button x:Name="AppViewButton" HorizontalAlignment="Right" Content="查看全部 ›" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}"/></Grid>
-                        <ListView ItemsSource="{Binding Apps}" ItemTemplate="{StaticResource UsageItemTemplate}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="UsageItem_Click" Padding="0" BorderThickness="0"/>
+                        <Grid><TextBlock Text="常用应用" VerticalAlignment="Center" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="DashboardPage_011" /><Button x:Name="AppViewButton" HorizontalAlignment="Right" Content="查看全部 ›" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" x:Uid="DashboardPage_012" /></Grid>
+                        <ListView ItemsSource="{Binding Apps}" ItemTemplate="{StaticResource UsageItemTemplate}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="UsageItem_Click" Padding="0" BorderThickness="0" />
                     </StackPanel>
                     <StackPanel x:Name="WebsiteSection" Grid.Column="1" Margin="20,0,0,0" Style="{StaticResource TaiSurfacePanelStyle}">
-                        <Grid><TextBlock Text="浏览足迹" VerticalAlignment="Center" Style="{StaticResource TaiSectionTitleStyle}"/><Button x:Name="WebsiteViewButton" HorizontalAlignment="Right" Content="查看全部 ›" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}"/></Grid>
-                        <ListView x:Name="WebsiteList" ItemsSource="{Binding Websites}" ItemTemplate="{StaticResource UsageItemTemplate}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="UsageItem_Click" Padding="0" BorderThickness="0"/>
-                        <Border x:Name="WebsiteEmptyState" Padding="16" CornerRadius="12" Background="{StaticResource TaiCardMutedBrush}" Visibility="Collapsed"><StackPanel Spacing="8"><TextBlock x:Name="WebsiteStateTitle" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}"/><TextBlock x:Name="WebsiteStateDescription" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}"/><Button x:Name="WebsiteStateAction" HorizontalAlignment="Left" Click="WebsiteSettings_Click" Style="{StaticResource TaiSubtleButtonStyle}"/></StackPanel></Border>
+                        <Grid><TextBlock Text="浏览足迹" VerticalAlignment="Center" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="DashboardPage_013" /><Button x:Name="WebsiteViewButton" HorizontalAlignment="Right" Content="查看全部 ›" Click="ViewAll_Click" Style="{StaticResource TaiSubtleButtonStyle}" x:Uid="DashboardPage_014" /></Grid>
+                        <ListView x:Name="WebsiteList" ItemsSource="{Binding Websites}" ItemTemplate="{StaticResource UsageItemTemplate}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="UsageItem_Click" Padding="0" BorderThickness="0" />
+                        <Border x:Name="WebsiteEmptyState" Padding="16" CornerRadius="12" Background="{StaticResource TaiCardMutedBrush}" Visibility="Collapsed"><StackPanel Spacing="8"><TextBlock x:Name="WebsiteStateTitle" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TaiPrimaryTextBrush}" /><TextBlock x:Name="WebsiteStateDescription" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" /><Button x:Name="WebsiteStateAction" HorizontalAlignment="Left" Click="WebsiteSettings_Click" Style="{StaticResource TaiSubtleButtonStyle}" /></StackPanel></Border>
                     </StackPanel>
                 </Grid>
-                <TextBlock Text="{Binding LastUpdated}" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}"/>
+                <TextBlock Text="{Binding LastUpdated}" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource TaiSecondaryTextBrush}" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
