@@ -393,7 +393,11 @@ public sealed partial class SettingsPage : Page
             {
                 await App.CoreReady;
                 Directory.CreateDirectory(dataDirectory);
-                await Task.Run(() => CreateDatabaseSnapshot(source, staged));
+                await Task.Run(() => RetryTransientDatabaseOperationAsync(() =>
+                {
+                    TryDeleteFile(staged);
+                    CreateDatabaseSnapshot(source, staged);
+                }));
                 ValidateDatabaseFile(staged);
 
                 _main.Stop();
@@ -412,16 +416,16 @@ public sealed partial class SettingsPage : Page
                     throw new IOException("Unable to invalidate category IDs before database import.");
                 categoryMappingCleared = true;
                 _database.CloseWriter();
-                DeleteDatabaseSidecar(destination + "-wal");
-                DeleteDatabaseSidecar(destination + "-shm");
-                if (File.Exists(destination))
+                await RetryTransientDatabaseOperationAsync(() =>
                 {
-                    File.Replace(staged, destination, backup, true);
-                }
-                else
-                {
-                    File.Move(staged, destination);
-                }
+                    SQLiteConnection.ClearAllPools();
+                    DeleteDatabaseSidecar(destination + "-wal");
+                    DeleteDatabaseSidecar(destination + "-shm");
+                    if (File.Exists(destination))
+                        File.Replace(staged, destination, backup, true);
+                    else
+                        File.Move(staged, destination);
+                });
                 databaseReplaced = true;
             }
             catch (Exception exception)
@@ -585,6 +589,29 @@ public sealed partial class SettingsPage : Page
     {
         if (File.Exists(path)) File.Delete(path);
     }
+
+    private static async Task RetryTransientDatabaseOperationAsync(Action operation)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                operation();
+                return;
+            }
+            catch (Exception exception) when (attempt < 7 && IsTransientDatabaseConflict(exception))
+            {
+                await Task.Delay(200 * (attempt + 1));
+            }
+        }
+    }
+
+    private static bool IsTransientDatabaseConflict(Exception exception) => exception switch
+    {
+        SQLiteException sqlite => sqlite.ResultCode is SQLiteErrorCode.Busy or SQLiteErrorCode.Locked,
+        IOException io => io.HResult is unchecked((int)0x80070020) or unchecked((int)0x80070021),
+        _ => false
+    };
 
     private static void TryDeleteFile(string path)
     {

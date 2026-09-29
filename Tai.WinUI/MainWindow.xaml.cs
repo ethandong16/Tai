@@ -94,12 +94,19 @@ public sealed partial class MainWindow : Window
 
             foreach (var page in pages)
             {
+                if (page == typeof(Views.CategoriesPage)) SeedCategorySmokeApp();
                 if (!RootFrame.Navigate(page)) throw new InvalidOperationException($"Cannot navigate to {page.Name}");
                 // Allow adaptive states, bindings and layout to settle before checking the next page.
                 await Task.Delay(250);
                 RootFrame.UpdateLayout();
                 if (RootFrame.Content is not FrameworkElement content) throw new InvalidOperationException($"{page.Name} did not load");
                 ValidatePageLayout(content);
+                if (content is Views.CategoriesPage categoriesPage)
+                {
+                    ValidateCategoriesPage(categoriesPage);
+                    await Task.Delay(80);
+                    RootFrame.UpdateLayout();
+                }
                 if ((windowSize.Width == 1240 || (windowSize.Width == 480 &&
                     (page == typeof(Views.SettingsPage) || page == typeof(Views.CategoriesPage))))
                     && Content is FrameworkElement screenshotRoot)
@@ -110,8 +117,6 @@ public sealed partial class MainWindow : Window
                     ValidateDetailsPage(detailsPage);
                 if (content is Views.SettingsPage settingsPage)
                     ValidateSettingsPage(settingsPage);
-                if (content is Views.CategoriesPage categoriesPage)
-                    ValidateCategoriesPage(categoriesPage);
             }
         }
 
@@ -418,15 +423,40 @@ public sealed partial class MainWindow : Window
             throw new InvalidOperationException("The category update interval control was not laid out correctly.");
     }
 
+    private static void SeedCategorySmokeApp()
+    {
+        var appData = App.Services.GetRequiredService<IAppData>();
+        if (appData.GetApp("TaiCategorySmokeTest") != null) return;
+        var category = App.Services.GetRequiredService<ICategorys>().GetCategories()
+            .OrderBy(item => item.Name).First();
+        appData.AddApp(new Core.Models.AppModel
+        {
+            Name = "TaiCategorySmokeTest",
+            CategoryID = category.ID,
+            File = string.Empty,
+            IconFile = string.Empty,
+            Description = "分类测试应用"
+        });
+    }
+
     private static void ValidateCategoriesPage(Views.CategoriesPage page)
     {
         if (page.FindName("FetchCategoriesButton") is not Button ||
-            page.FindName("CategoryActions") is not StackPanel actions)
+            page.FindName("CategoryActions") is not StackPanel actions ||
+            page.FindName("CategoryList") is not ListView categoryList)
             throw new InvalidOperationException("The category update action was not created.");
 
         var expectedRow = page.ActualWidth < 820 ? 1 : 0;
         if (Grid.GetRow(actions) != expectedRow)
             throw new InvalidOperationException("Category actions did not reflow with the window.");
+
+        if (page.Categories.Count < 2)
+            throw new InvalidOperationException("The category list did not load.");
+        var target = page.Categories[0];
+        categoryList.SelectedItem = page.Categories[1];
+        categoryList.SelectedItem = target;
+        if (!page.CategoryApps.Any(app => app.ProcessName == "TaiCategorySmokeTest"))
+            throw new InvalidOperationException("Selecting a category did not display its applications.");
     }
 
     private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth, string? name = null)

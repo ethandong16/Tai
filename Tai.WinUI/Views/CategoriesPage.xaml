@@ -74,9 +74,8 @@
                     <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
                             <TextBlock Text="应用分类" Style="{StaticResource TaiSectionTitleStyle}" />
-                            <TextBlock Text="选择一项以管理规则" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
-                        <ListView x:Name="CategoryList" ItemsSource="{x:Bind Categories}" SelectionMode="Single" BorderThickness="0">
+                        <ListView x:Name="CategoryList" ItemsSource="{x:Bind Categories}" SelectionMode="Single" SelectionChanged="CategoryList_SelectionChanged" BorderThickness="0">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid MinHeight="62" Padding="0,8" ColumnSpacing="10">
@@ -111,6 +110,28 @@
 
                     <StackPanel x:Name="RuleSection" Grid.Column="1" Style="{StaticResource TaiSurfacePanelStyle}">
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock x:Name="SelectedCategoryNameText" Style="{StaticResource TaiSectionTitleStyle}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="SelectedAppCountText" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
+                        </Grid>
+                        <ListView x:Name="CategoryAppsList" ItemsSource="{x:Bind CategoryApps}" SelectionMode="None" BorderThickness="0" MaxHeight="480">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                                            <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding ProcessName}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock x:Name="EmptyAppsText" Text="此分类暂无应用" Visibility="Collapsed" Style="{StaticResource TaiCaptionStyle}" />
+                        <Grid Margin="0,12,0,0" Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" />
                         </Grid>
                         <TextBlock Text="常见应用会自动归类；你也可以为未分类应用设置目录匹配规则。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" />

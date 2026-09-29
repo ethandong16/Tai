@@ -8,6 +8,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Tai.WinUI.Services;
 
 namespace Tai.WinUI.Views;
 
@@ -17,8 +19,10 @@ public sealed partial class CategoriesPage : Page
     private readonly ICategoryCatalogService _catalogService;
     private readonly IAppData _appData;
     private readonly DispatcherQueue _dispatcherQueue;
+    private bool _refreshingCategories;
 
     public ObservableCollection<CategoryRow> Categories { get; } = new();
+    public ObservableCollection<CategoryAppRow> CategoryApps { get; } = new();
 
     public CategoriesPage()
     {
@@ -70,21 +74,56 @@ public sealed partial class CategoriesPage : Page
 
     private void ApplyCategorySnapshot(IReadOnlyList<CategorySnapshot> snapshot, int selectedId = 0)
     {
-        Categories.Clear();
-        foreach (var item in snapshot)
+        _refreshingCategories = true;
+        try
         {
-            var row = new CategoryRow(item.Category, item.ItemCount);
-            Categories.Add(row);
-            if (item.Category.ID == selectedId) CategoryList.SelectedItem = row;
+            Categories.Clear();
+            CategoryRow? selected = null;
+            foreach (var item in snapshot)
+            {
+                var row = new CategoryRow(item.Category, item.ItemCount);
+                Categories.Add(row);
+                if (item.Category.ID == selectedId) selected = row;
+            }
+            CategoryList.SelectedItem = selected ?? Categories.FirstOrDefault();
+        }
+        finally
+        {
+            _refreshingCategories = false;
         }
         CategoryCountText.Text = $"{Categories.Count} 个分类";
         EmptyCategoryState.Visibility = Categories.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         RuleSection.Visibility = Categories.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        if (Categories.Count > 0 && CategoryList.SelectedItem == null)
-            CategoryList.SelectedIndex = 0;
+        RefreshSelectedCategoryApps();
     }
 
     private sealed record CategorySnapshot(CategoryModel Category, int ItemCount);
+
+    private void CategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_refreshingCategories && SelectedCategoryNameText != null)
+            RefreshSelectedCategoryApps();
+    }
+
+    private void RefreshSelectedCategoryApps()
+    {
+        CategoryApps.Clear();
+        if (CategoryList.SelectedItem is not CategoryRow selected)
+        {
+            SelectedCategoryNameText.Text = string.Empty;
+            SelectedAppCountText.Text = string.Empty;
+            EmptyAppsText.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        SelectedCategoryNameText.Text = selected.Name;
+        var apps = _appData.GetAppsByCategoryID(selected.Model.ID)
+            .Select(app => new CategoryAppRow(app))
+            .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase);
+        foreach (var app in apps) CategoryApps.Add(app);
+        SelectedAppCountText.Text = $"{CategoryApps.Count} 个应用";
+        EmptyAppsText.Visibility = CategoryApps.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private async void FetchCategoriesButton_Click(object sender, RoutedEventArgs e)
     {
@@ -290,4 +329,21 @@ public sealed class CategoryRow
             return ColorHelper.FromArgb(255, r, g, b);
         return ColorHelper.FromArgb(255, 73, 105, 216);
     }
+}
+
+public sealed class CategoryAppRow
+{
+    public CategoryAppRow(AppModel app)
+    {
+        Name = !string.IsNullOrWhiteSpace(app.Alias) ? app.Alias
+            : !string.IsNullOrWhiteSpace(app.Description) ? app.Description
+            : app.Name;
+        ProcessName = app.Name;
+        IconPath = AppIconResolver.Resolve(app.IconFile, app.File, app.Name, app.Description);
+    }
+
+    public string Name { get; }
+    public string ProcessName { get; }
+    public string IconPath { get; }
+    public ImageSource Icon => new BitmapImage(new Uri(IconPath, UriKind.Absolute));
 }
