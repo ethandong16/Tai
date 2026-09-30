@@ -74,10 +74,10 @@
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
                     <StackPanel x:Name="PeriodSelector" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="3" Background="{StaticResource TaiCardMutedBrush}" Padding="4" CornerRadius="10">
-                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" MinWidth="72" Click="PeriodButton_Click" x:Uid="StatisticsPage_002" />
-                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="WeekButton" Content="按周" Tag="Week" MinWidth="72" Click="PeriodButton_Click" x:Uid="StatisticsPage_003" />
-                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="MonthButton" Content="按月" Tag="Month" MinWidth="72" Click="PeriodButton_Click" x:Uid="StatisticsPage_004" />
-                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="YearButton" Content="按年" Tag="Year" MinWidth="72" Click="PeriodButton_Click" x:Uid="StatisticsPage_005" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="DayButton" Content="按天" Tag="Day" IsChecked="True" Click="PeriodButton_Click" x:Uid="StatisticsPage_002" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="WeekButton" Content="按周" Tag="Week" Click="PeriodButton_Click" x:Uid="StatisticsPage_003" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="MonthButton" Content="按月" Tag="Month" Click="PeriodButton_Click" x:Uid="StatisticsPage_004" />
+                        <ToggleButton Style="{StaticResource TaiPeriodButtonStyle}" x:Name="YearButton" Content="按年" Tag="Year" Click="PeriodButton_Click" x:Uid="StatisticsPage_005" />
                     </StackPanel>
                 </ScrollViewer>
 

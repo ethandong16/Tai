@@ -411,7 +411,7 @@ public sealed partial class SettingsPage : Page
         {
             var dataDirectory = Path.GetDirectoryName(destination)!;
             var staged = Path.Combine(dataDirectory, $"data.import-{Guid.NewGuid():N}.db");
-            var backup = Path.Combine(dataDirectory, $"data.before-import-{DateTime.Now:yyyyMMddHHmmss}.db");
+            var backup = Path.Combine(dataDirectory, $"data.before-import-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid():N}.db");
             var trackingStopped = false;
             var categoryMappingResetAttempted = false;
             var categoryMappingCleared = false;
@@ -429,7 +429,11 @@ public sealed partial class SettingsPage : Page
                     TryDeleteFile(staged);
                     CreateDatabaseSnapshot(source, staged);
                 }));
-                ValidateDatabaseFile(staged);
+                await Task.Run(() =>
+                {
+                    MigrateLegacyDatabase(staged);
+                    ValidateDatabaseFile(staged);
+                });
 
                 _main.Stop();
                 trackingStopped = true;
@@ -454,6 +458,8 @@ public sealed partial class SettingsPage : Page
                     SQLiteConnection.ClearAllPools();
                     DeleteDatabaseSidecar(destination + "-wal");
                     DeleteDatabaseSidecar(destination + "-shm");
+                    DeleteDatabaseSidecar(destination + "-journal");
+                    TryDeleteFile(destination + ".version");
                     if (File.Exists(destination))
                         File.Replace(staged, destination, backup, true);
                     else
@@ -597,11 +603,241 @@ public sealed partial class SettingsPage : Page
 
     private static void CreateDatabaseSnapshot(string source, string destination)
     {
-        using var sourceConnection = new SQLiteConnection($"Data Source={source};Read Only=True;FailIfMissing=True;");
-        using var destinationConnection = new SQLiteConnection($"Data Source={destination};");
+        using var sourceConnection = new SQLiteConnection($"Data Source={source};Read Only=True;FailIfMissing=True;BusyTimeout=60000;");
+        using var destinationConnection = new SQLiteConnection($"Data Source={destination};BusyTimeout=60000;");
         sourceConnection.Open();
         destinationConnection.Open();
         sourceConnection.BackupDatabase(destinationConnection, "main", "main", -1, null, 0);
+    }
+
+    // Pre-1.0.0.3 databases stored process fields directly on the log tables.
+    private static void MigrateLegacyDatabase(string path)
+    {
+        using var connection = new SQLiteConnection($"Data Source={path};BusyTimeout=60000;");
+        connection.Open();
+
+        var tables = GetTableNames(connection);
+        if (!tables.Contains("DailyLogModels") && !tables.Contains("HoursLogModels") && !tables.Contains("AppModels")) return;
+
+        var dailyColumns = GetColumnNames(connection, "DailyLogModels");
+        var hoursColumns = GetColumnNames(connection, "HoursLogModels");
+
+        using var transaction = connection.BeginTransaction();
+        EnsureCurrentLogTable(connection, transaction, tables, "DailyLogModels", "[Date] datetime, [Time] int NULL DEFAULT 0, [AppModelID] int NULL DEFAULT 0");
+        EnsureCurrentLogTable(connection, transaction, tables, "HoursLogModels", "[DataTime] datetime, [Time] int NULL DEFAULT 0, [AppModelID] int NULL DEFAULT 0");
+        dailyColumns = GetColumnNames(connection, "DailyLogModels", transaction);
+        hoursColumns = GetColumnNames(connection, "HoursLogModels", transaction);
+        EnsureCurrentAppTable(connection, transaction, tables);
+        var appColumns = GetColumnNames(connection, "AppModels", transaction);
+        if (!appColumns.Contains("ID"))
+            throw new InvalidDataException("Tai AppModels table is missing ID.");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "Name", "nvarchar NULL DEFAULT ''");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "Alias", "nvarchar NULL DEFAULT ''");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "Description", "nvarchar NULL DEFAULT ''");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "File", "nvarchar NULL DEFAULT ''");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "CategoryID", "int NULL DEFAULT 0");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "IconFile", "nvarchar NULL DEFAULT ''");
+        EnsureColumn(connection, transaction, "AppModels", appColumns, "TotalTime", "int NULL DEFAULT 0");
+
+        if (!dailyColumns.Contains("Date") || !dailyColumns.Contains("Time"))
+            throw new InvalidDataException("Tai DailyLogModels table is missing Date or Time.");
+        if (!hoursColumns.Contains("DataTime") || !hoursColumns.Contains("Time"))
+            throw new InvalidDataException("Tai HoursLogModels table is missing DataTime or Time.");
+
+        AddAppModelIdColumn(connection, transaction, "DailyLogModels", dailyColumns);
+        AddAppModelIdColumn(connection, transaction, "HoursLogModels", hoursColumns);
+        dailyColumns = GetColumnNames(connection, "DailyLogModels", transaction);
+        hoursColumns = GetColumnNames(connection, "HoursLogModels", transaction);
+
+        var sources = new List<string>();
+        var hasDailyLegacyLogs = dailyColumns.Contains("ProcessName");
+        if (hasDailyLegacyLogs)
+        {
+            var description = dailyColumns.Contains("ProcessDescription") ? "ProcessDescription" : "''";
+            var file = dailyColumns.Contains("File") ? "File" : "''";
+            sources.Add($"SELECT ProcessName AS Name, {description} AS Description, {file} AS File, Time AS TotalTime FROM DailyLogModels");
+        }
+        if (hoursColumns.Contains("ProcessName"))
+        {
+            var file = hoursColumns.Contains("File") ? "File" : "''";
+            var totalTime = hasDailyLegacyLogs ? "0" : "Time";
+            sources.Add($"SELECT ProcessName AS Name, '' AS Description, {file} AS File, {totalTime} AS TotalTime FROM HoursLogModels");
+        }
+
+        if (sources.Count > 0)
+        {
+            using var insertApps = connection.CreateCommand();
+            insertApps.Transaction = transaction;
+            insertApps.CommandText = $"""
+                    INSERT INTO AppModels (Name, Description, File, TotalTime)
+                    SELECT source.Name, MAX(source.Description), MAX(source.File), COALESCE(SUM(source.TotalTime), 0)
+                    FROM ({string.Join(" UNION ALL ", sources)}) AS source
+                    WHERE source.Name IS NOT NULL AND TRIM(source.Name) <> ''
+                      AND NOT EXISTS (SELECT 1 FROM AppModels existing WHERE existing.Name = source.Name)
+                    GROUP BY source.Name
+                    """;
+            insertApps.ExecuteNonQuery();
+        }
+
+        UpdateLegacyLogAppIds(connection, transaction, "DailyLogModels", dailyColumns);
+        UpdateLegacyLogAppIds(connection, transaction, "HoursLogModels", hoursColumns);
+        RebuildLegacyLogTable(connection, transaction, "DailyLogModels", dailyColumns, "Date");
+        RebuildLegacyLogTable(connection, transaction, "HoursLogModels", hoursColumns, "DataTime");
+        transaction.Commit();
+    }
+
+    private static void RebuildLegacyLogTable(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        string tableName,
+        HashSet<string> columns,
+        string timeColumn)
+    {
+        var hasLegacyColumns = columns.Contains("ProcessName")
+            || columns.Contains("ProcessDescription")
+            || columns.Contains("File");
+        if (!hasLegacyColumns && columns.Contains("ID") && columns.Contains(timeColumn)
+            && columns.Contains("Time") && columns.Contains("AppModelID")) return;
+
+        if (!columns.Contains(timeColumn) || !columns.Contains("Time"))
+            throw new InvalidDataException($"Tai {tableName} table is missing {timeColumn} or Time.");
+
+        var temporaryName = $"{tableName}_import_{Guid.NewGuid():N}";
+        var idExpression = columns.Contains("ID") ? "[ID]" : "rowid";
+        var appIdExpression = columns.Contains("AppModelID") ? "COALESCE([AppModelID], 0)" : "0";
+
+        using (var create = connection.CreateCommand())
+        {
+            create.Transaction = transaction;
+            create.CommandText = $"CREATE TABLE [{temporaryName}] ([ID] INTEGER PRIMARY KEY, [{timeColumn}] datetime, [Time] int NULL DEFAULT 0, [AppModelID] int NULL DEFAULT 0)";
+            create.ExecuteNonQuery();
+        }
+
+        using (var copy = connection.CreateCommand())
+        {
+            copy.Transaction = transaction;
+            copy.CommandText = $"INSERT INTO [{temporaryName}] ([ID], [{timeColumn}], [Time], [AppModelID]) SELECT {idExpression}, [{timeColumn}], COALESCE([Time], 0), {appIdExpression} FROM [{tableName}]";
+            copy.ExecuteNonQuery();
+        }
+
+        using (var replace = connection.CreateCommand())
+        {
+            replace.Transaction = transaction;
+            replace.CommandText = $"DROP TABLE [{tableName}]; ALTER TABLE [{temporaryName}] RENAME TO [{tableName}]";
+            replace.ExecuteNonQuery();
+        }
+    }
+
+    private static void EnsureCurrentLogTable(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        HashSet<string> tables,
+        string tableName,
+        string columns)
+    {
+        if (tables.Contains(tableName)) return;
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = $"CREATE TABLE [{tableName}] ([ID] INTEGER PRIMARY KEY, {columns})";
+        command.ExecuteNonQuery();
+        tables.Add(tableName);
+    }
+
+    private static void EnsureCurrentAppTable(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        HashSet<string> tables)
+    {
+        if (tables.Contains("AppModels")) return;
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            CREATE TABLE [AppModels] (
+                [ID] INTEGER PRIMARY KEY,
+                [Name] nvarchar NULL DEFAULT '',
+                [Alias] nvarchar NULL DEFAULT '',
+                [Description] nvarchar NULL DEFAULT '',
+                [File] nvarchar NULL DEFAULT '',
+                [CategoryID] int NULL DEFAULT 0,
+                [IconFile] nvarchar NULL DEFAULT '',
+                [TotalTime] int NULL DEFAULT 0
+            )
+            """;
+        command.ExecuteNonQuery();
+        tables.Add("AppModels");
+    }
+
+    private static void EnsureColumn(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        string tableName,
+        HashSet<string> columns,
+        string columnName,
+        string definition)
+    {
+        if (columns.Contains(columnName)) return;
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = $"ALTER TABLE [{tableName}] ADD COLUMN [{columnName}] {definition}";
+        command.ExecuteNonQuery();
+        columns.Add(columnName);
+    }
+
+    private static void AddAppModelIdColumn(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        string tableName,
+        HashSet<string> columns)
+    {
+        if (columns.Count == 0 || columns.Contains("AppModelID")) return;
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = $"ALTER TABLE [{tableName}] ADD COLUMN [AppModelID] INTEGER NOT NULL DEFAULT 0";
+        command.ExecuteNonQuery();
+    }
+
+    private static void UpdateLegacyLogAppIds(
+        SQLiteConnection connection,
+        SQLiteTransaction transaction,
+        string tableName,
+        HashSet<string> columns)
+    {
+        if (!columns.Contains("ProcessName")) return;
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = $"""
+            UPDATE [{tableName}]
+            SET [AppModelID] = COALESCE(
+                (SELECT [ID] FROM [AppModels] WHERE [AppModels].[Name] = [{tableName}].[ProcessName] LIMIT 1),
+                0)
+            """;
+        command.ExecuteNonQuery();
+    }
+
+    private static HashSet<string> GetTableNames(SQLiteConnection connection)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table'";
+        using var reader = command.ExecuteReader();
+        var tables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        while (reader.Read()) tables.Add(reader.GetString(0));
+        return tables;
+    }
+
+    private static HashSet<string> GetColumnNames(
+        SQLiteConnection connection,
+        string tableName,
+        SQLiteTransaction? transaction = null)
+    {
+        var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (transaction == null && !GetTableNames(connection).Contains(tableName)) return columns;
+
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = $"PRAGMA table_info([{tableName}])";
+        using var reader = command.ExecuteReader();
+        while (reader.Read()) columns.Add(reader.GetString(1));
+        return columns;
     }
 
     private static void ValidateDatabaseFile(string path)
@@ -615,7 +851,7 @@ public sealed partial class SettingsPage : Page
             throw new InvalidDataException("SQLite integrity check failed.");
 
         using var schemaCommand = connection.CreateCommand();
-        schemaCommand.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('AppModels','DailyLogModels','HoursLogModels')";
+        schemaCommand.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name COLLATE NOCASE IN ('AppModels','DailyLogModels','HoursLogModels')";
         if (Convert.ToInt32(schemaCommand.ExecuteScalar()) != 3)
             throw new InvalidDataException("Required Tai tables are missing.");
     }

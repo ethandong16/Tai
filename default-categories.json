@@ -5,55 +5,262 @@
       "key": "browsing",
       "name": "浏览器",
       "color": "#328B78",
-      "processes": ["chrome", "msedge", "firefox", "brave", "opera", "vivaldi", "Arc", "360chrome", "360se", "SogouExplorer"]
+      "processes": [
+        "chrome", "msedge", "firefox", "brave", "opera", "vivaldi", "Arc", "360chrome", "360se", "SogouExplorer",
+        "qqbrowser", "chromium", "thorium", "librewolf", "waterfox", "floorp", "zen", "wavebox", "sidekick", "centbrowser",
+        "maxthon", "yandex", "Whale", "CocCoc", "Slimjet", "PaleMoon", "Basilisk", "AvastBrowser", "EpicPrivacyBrowser", "DuckDuckGo"
+      ]
     },
     {
       "key": "office",
       "name": "办公文档",
       "color": "#4969D8",
-      "processes": ["WINWORD", "EXCEL", "POWERPNT", "ONENOTE", "MSPUB", "wps", "et", "wpp", "notepad", "notepad++", "Obsidian", "Typora", "siyuan", "Notion"]
+      "processes": [
+        "WINWORD", "EXCEL", "POWERPNT", "ONENOTE", "MSPUB", "wps", "et", "wpp", "notepad", "notepad++", "Obsidian", "Typora", "siyuan", "Notion",
+        "soffice", "swriter", "scalc", "simpress", "smath", "sdraw", "sbase", "libreoffice", "AbiWord", "WordPad", "Word", "ExcelViewer",
+        "Outlook", "olk", "Access", "visio", "Project", "Publisher", "OneNoteM", "TeamsPersonal", "FoxitPDFEditor", "FoxitPhantom",
+        "PDFXEdit", "PDFXEditor", "PDF24", "NitroPDF", "PDFgear", "Okular", "WordPerfect", "CorelQURO", "Etherpad"
+      ]
     },
     {
       "key": "development",
       "name": "开发工具",
       "color": "#267B92",
-      "processes": ["Code", "Code - Insiders", "devenv", "rider64", "idea64", "pycharm64", "webstorm64", "goland64", "clion64", "datagrip64", "AndroidStudio", "studio64", "eclipse", "git-bash", "GitHubDesktop", "postman", "insomnia", "WindowsTerminal", "wezterm-gui", "cursor", "windsurf"]
+      "processes": [
+        "Code", "Code - Insiders", "devenv", "rider64", "idea64", "pycharm64", "webstorm64", "goland64", "clion64", "datagrip64", "AndroidStudio", "studio64", "eclipse", "git-bash", "GitHubDesktop", "postman", "insomnia", "WindowsTerminal", "wezterm-gui", "cursor", "windsurf",
+        "dotnet", "node", "npm", "npx", "yarn", "pnpm", "bun", "deno", "python", "pythonw", "python3", "ruby", "perl", "php", "java", "javaw", "javac", "kotlin", "kotlinc", "go", "rustc", "cargo", "msbuild", "csc", "vbc",
+        "Xcode", "NetBeans", "JDeveloper", "ZendStudio", "Komodo", "SublimeText", "sublime_text", "TextMate", "Atom", "Brackets", "Emacs", "vim", "nvim", "Neovide", "Kate", "Geany", "Notepad2", "SciTE", "Dev-Cpp", "CodeBlocks", "QtCreator", "QtDesignStudio", "ArduinoIDE", "Processing", "UnityHub"
+      ]
     },
     {
       "key": "communication",
       "name": "沟通协作",
       "color": "#7B65AA",
-      "processes": ["WeChat", "Weixin", "QQ", "WXWork", "DingTalk", "Feishu", "Lark", "Teams", "ms-teams", "Slack", "Discord", "Zoom", "Telegram", "WhatsApp", "Signal"]
+      "processes": [
+        "WeChat", "Weixin", "QQ", "WXWork", "DingTalk", "Feishu", "Lark", "Teams", "ms-teams", "Slack", "Discord", "Zoom", "Telegram", "WhatsApp", "Signal",
+        "Skype", "thunderbird", "Mailbird", "eM Client", "Foxmail", "Mailspring", "Spark", "ProtonMail", "Element", "Riot", "Mattermost", "Rocket.Chat", "Zulip", "TeamSpeak", "Viber", "LINE", "KakaoTalk", "ICQ", "MirandaNG", "Pidgin", "Trillian", "Ferdium", "Rambox", "Franz", "Beeper", "Station", "Chanty", "Fleep", "Mumble", "Guilded", "Tox"
+      ]
     },
     {
       "key": "design",
       "name": "设计创作",
       "color": "#BD675C",
-      "processes": ["Photoshop", "Illustrator", "InDesign", "AfterFX", "Premiere Pro", "Adobe XD", "Figma", "blender", "Canva", "Krita", "GIMP", "AffinityPhoto2", "AffinityDesigner2", "AffinityPublisher2", "DaVinci Resolve"]
+      "processes": [
+        "Photoshop", "Illustrator", "InDesign", "AfterFX", "Premiere Pro", "Adobe XD", "Figma", "blender", "Canva", "Krita", "GIMP", "AffinityPhoto2", "AffinityDesigner2", "AffinityPublisher2", "DaVinci Resolve",
+        "PaintDotNet", "PaintToolSAI", "sai", "MediBangPaintPro", "ClipStudioPaint", "CorelDRAW", "CorelDRW", "CorelPHOTO-PAINT", "Inkscape", "GravitDesigner", "Sketch", "Penpot", "Lunacy", "Vectr", "Mockitt", "AxureRP", "Balsamiq", "Framer", "Origami Studio", "ProtoPie", "Principle", "Marvel", "Justinmind", "Pixso", "MasterGo", "墨刀", "创客贴", "稿定设计", "万兴喵影", "Snagit"
+      ]
     },
     {
       "key": "learning",
       "name": "学习阅读",
       "color": "#6B8D4B",
-      "processes": ["Anki", "Calibre", "SumatraPDF", "AcroRd32", "Acrobat", "Kindle", "Zotero", "JabRef", "FoxitPDFReader"]
+      "processes": [
+        "Anki", "Calibre", "SumatraPDF", "AcroRd32", "Acrobat", "Kindle", "Zotero", "JabRef", "FoxitPDFReader",
+        "Mendeley", "EndNote", "Papers", "Citavi", "Readwise", "LiquidText", "MarginNote", "Bookends", "Coursera", "Duolingo", "edX", "KhanAcademy", "Quizlet", "RosettaStone", "Babbel", "Moodle", "Canvas", "Blackboard", "Sakai", "WolframPlayer", "SageMath", "GeoGebra", "Desmos", "Maple", "Maxima", "OpenBoard", "Xournal", "Xournalpp", "Evince", "DjView", "STDUViewer", "Sumatra", "ReadEra", "Bookworm", "ThoriumReader", "PocketBook", "Noto"
+      ]
     },
     {
       "key": "media",
       "name": "影音娱乐",
       "color": "#BF7C36",
-      "processes": ["Spotify", "cloudmusic", "QQMusic", "KuGou", "PotPlayerMini64", "PotPlayerMini", "vlc", "mpv", "iTunes", "Bilibili"]
+      "processes": [
+        "Spotify", "cloudmusic", "QQMusic", "KuGou", "PotPlayerMini64", "PotPlayerMini", "vlc", "mpv", "iTunes", "Bilibili",
+        "foobar2000", "MusicBee", "Winamp", "AIMP", "MediaMonkey", "JRiver Media Center", "MPC-HC", "MPC-BE", "SMPlayer", "KMPlayer", "GOM", "GOMPlayer", "RealPlayer", "QuickTimePlayer", "WindowsMediaPlayer", "Zune", "Plex", "Plexamp", "Jellyfin", "Kodi", "Emby", "TIDAL", "Deezer", "Amazon Music", "AppleMusic", "YouTubeMusic", "iQIYI", "QiyiPlayer", "Youku", "TencentVideo", "MangoTV", "Viu", "Niconico", "Hulu", "Netflix", "DisneyPlus", "Crunchyroll", "Twitch", "Huya", "Douyu", "NimoTV", "AcFun", "MPC"
+      ]
     },
     {
       "key": "gaming",
       "name": "游戏",
       "color": "#B55878",
-      "processes": ["steam", "EpicGamesLauncher", "GalaxyClient", "Battle.net", "RiotClientServices", "UbisoftConnect", "EADesktop", "WeGame"]
+      "processes": [
+        "steam", "EpicGamesLauncher", "GalaxyClient", "Battle.net", "RiotClientServices", "UbisoftConnect", "EADesktop", "WeGame",
+        "GOGGalaxy", "Origin", "EAApp", "RockstarGamesLauncher", "BethesdaNetLauncher", "Playnite", "itch", "itchio", "Amazon Games", "NVIDIA GeForce NOW", "XboxPcApp", "XboxApp", "GameBar", "RiotClientUx", "SteamWebHelper", "SteamService", "LunarClient", "PrismLauncher", "MultiMC", "CurseForge", "Overwolf", "ModrinthApp", "Heroic", "Playnite.DesktopApp", "LDPlayer"
+      ]
     },
     {
       "key": "utilities",
       "name": "系统工具",
       "color": "#647481",
-      "processes": ["7zFM", "WinRAR", "Everything", "PowerToys", "ShareX", "SnippingTool", "KeePass", "KeePassXC", "Bitwarden", "qBittorrent", "uTorrent", "AnyDesk", "TeamViewer", "rustdesk"]
+      "processes": [
+        "7zFM", "WinRAR", "Everything", "PowerToys", "ShareX", "SnippingTool", "KeePass", "KeePassXC", "Bitwarden", "qBittorrent", "uTorrent", "AnyDesk", "TeamViewer", "rustdesk",
+        "TotalCommander", "TOTALCMD", "DirectoryOpus", "XYplorer", "Q-Dir", "FreeCommander", "DoubleCommander", "Files", "FilesApp", "WizTree", "WinDirStat", "SpaceSniffer", "RevoUninstaller", "GeekUninstaller", "BCUninstaller", "Rufus", "Ventoy", "balenaEtcher", "Etcher", "CrystalDiskInfo", "CrystalDiskMark", "HWiNFO", "CPU-Z", "GPU-Z", "Speccy", "HWMonitor", "OpenRGB", "MSIAfterburner", "FanControl", "ProcessExplorer", "ProcessHacker", "Autoruns", "ProcessMonitor", "Sysinternals", "Taskmgr", "Regedit", "perfmon", "eventvwr", "services", "msconfig", "mmc", "TreeSize", "EverythingToolbar", "Ditto", "CopyQ", "7zip", "PeaZip", "Bandizip", "PowerISO", "AnyBurn", "ImgBurn", "VirtualCloneDrive", "DaemonTools", "WinMerge", "BeyondCompare", "KDiff3", "ChecksumControl", "HashCheck", "RazerCentral", "LogiOptionsPlus", "LogiTune", "SteelSeriesGG", "EarTrumpet"
+      ]
+    },
+    {
+      "key": "terminals",
+      "name": "终端与 Shell",
+      "color": "#3C7A9E",
+      "processes": [
+        "wt", "powershell", "pwsh", "cmd", "bash", "zsh", "fish", "mintty", "conhost", "alacritty", "cmder", "Tabby", "Hyper", "MobaXterm", "Xshell", "SecureCRT", "Console", "Far", "nushell", "nu", "OpenConsole", "WindowsTerminalPreview", "FluentTerminal", "electerm", "Termora", "Rio", "WezTerm", "kitty", "putty", "MSYS2", "Cygwin", "cygwin-terminal", "TeraTerm", "CoolTerm", "Termite", "ConsoleZ", "FireCMD", "TakeCommand", "ConEmu", "PowerShellISE"
+      ]
+    },
+    {
+      "key": "source-control",
+      "name": "版本控制",
+      "color": "#4A8F65",
+      "processes": [
+        "git", "gitkraken", "Sourcetree", "TortoiseGitProc", "TortoiseGitPlink", "TortoiseSVN", "svn", "hg", "mercurial", "Fork", "GitExtensions", "SmartGit", "Tower", "PlasticSCM", "p4v", "Perforce", "lazygit", "tig", "git-cola", "GitAhead", "SmartSVN", "Gittyup", "SublimeMerge", "P4Merge", "AraxisMerge", "ClearCase", "RationalTeamConcert", "gh", "glab", "gitea", "git-lfs", "git-credential-manager"
+      ]
+    },
+    {
+      "key": "databases",
+      "name": "数据库工具",
+      "color": "#3D7E8B",
+      "processes": [
+        "dbeaver", "MySQLWorkbench", "pgAdmin4", "pgadmin", "MongoDBCompass", "mongosh", "Robo3T", "Studio3T", "redisinsight", "AzureDataStudio", "Ssms", "sqlwb", "heidisql", "sqlitebrowser", "SQLiteStudio", "beekeeper-studio", "TablePlus", "Navicat", "navicat64", "dbforge", "Toad", "ToadForOracle", "mysql", "mysqld", "psql", "postgres", "postgresql", "mongod", "redis-server", "Couchbase", "CouchbaseServer", "Cassandra", "neo4j", "Oracle", "ora", "H2", "Firebird", "InterBase", "sqlcmd", "impdp", "expdp", "db2cmd", "db2bp", "SQLyog", "ValentinaStudio", "RazorSQL", "AquaDataStudio", "SQuirreLSQL", "SQLPro", "MySQLShell", "MariaDB", "ClickHouse", "clickhouse-client", "InfluxDB", "arangosh", "cqlsh", "etcdctl", "Adminer", "phpMyAdmin"
+      ]
+    },
+    {
+      "key": "cloud-devops",
+      "name": "云服务与 DevOps",
+      "color": "#567A9C",
+      "processes": [
+        "terraform", "terragrunt", "pulumi", "ansible", "ansible-playbook", "kubectl", "helm", "k9s", "kind", "minikube", "eksctl", "aws", "aws-vault", "sam", "az", "gcloud", "gsutil", "bq", "oci", "doctl", "flyctl", "vercel", "netlify", "wrangler", "sls", "serverless", "jenkins", "TeamCity", "Bamboo", "octopus", "argocd", "flux", "crossplane", "vault", "consul", "nomad", "packer", "vagrant", "Skaffold", "Tilt", "airflow", "Prefect", "dagster", "Tekton", "Drone", "Buildkite", "CircleCI", "GitLabRunner", "AzurePipelines", "CodeDeploy", "CloudFormation", "cdk", "ServerlessFramework", "OpenTofu", "Rancher", "Portainer", "SonarQube", "Nexus", "Artifactory", "Harbor", "Trivy", "Sentry"
+      ]
+    },
+    {
+      "key": "containers",
+      "name": "容器与虚拟化",
+      "color": "#657A83",
+      "processes": [
+        "Docker Desktop", "com.docker.backend", "com.docker.proxy", "docker", "dockerd", "docker-compose", "podman", "podman-machine", "containerd", "nerdctl", "rancher-desktop", "lima", "colima", "vmmem", "vmmemWSL", "wsl", "wslhost", "VirtualBox", "VBoxSVC", "VBoxHeadless", "vmware", "vmware-vmx", "vmware-authd", "vmware-remotemks", "qemu-system-x86_64", "qemu-system-aarch64", "qemu-img", "prl_vm_app", "Parallels", "multipass", "hyperkit", "xhyve", "Hyper-V", "vmconnect", "Sandboxie", "sandboxie-plus", "UTM", "Bochs", "86Box", "PCem", "CitrixWorkspace", "CitrixReceiver", "CitrixHDX", "AmazonWorkSpaces", "Nutanix", "Proxmox", "virt-manager", "libvirt", "WSLService", "LxssManager"
+      ]
+    },
+    {
+      "key": "network-tools",
+      "name": "网络与 API 工具",
+      "color": "#3F8490",
+      "processes": [
+        "curl", "wget", "httpie", "hurl", "wireshark", "tshark", "dumpcap", "Fiddler", "Fiddler.WebUi", "charles", "mitmproxy", "mitmweb", "zenmap", "nmap", "tcpview", "Portmaster", "ngrok", "cloudflared", "frpc", "frps", "FileZilla", "Cyberduck", "iperf3", "Termshark", "DNSBench", "AdGuard", "NetLimiter", "NetSpot", "Advanced IP Scanner", "Angry IP Scanner", "LANSpeedTest", "WiFiAnalyzer", "SoapUI", "ReadyAPI", "Katalon", "JMeter", "Gatling", "CharlesProxy", "Proxifier", "HTTPDebugger", "HTTP Toolkit", "Bruno", "Paw", "RapidAPI", "grpcurl", "websocat"
+      ]
+    },
+    {
+      "key": "cybersecurity",
+      "name": "安全与隐私",
+      "color": "#8A5F6B",
+      "processes": [
+        "1Password", "Dashlane", "LastPass", "NordVPN", "ProtonVPN", "OpenVPN", "WireGuard", "FortiClient", "CiscoSecureClient", "GlobalProtect", "Tailscale", "ZeroTier", "VeraCrypt", "gpg4win", "kleopatra", "GpgEX", "Yubico Authenticator", "YubiKey Manager", "Malwarebytes", "Norton", "Bitdefender", "Kaspersky", "ESET", "Avast", "ClamWin", "BurpSuite", "BurpSuiteCommunity", "ZAP", "OWASP ZAP", "sqlmap", "Metasploit", "msfconsole", "hashcat", "john", "Aircrack-ng", "Nessus", "OpenVAS", "Ghidra", "ida64", "ida", "x64dbg", "x32dbg", "WinDbg", "Procmon", "Sysmon", "SecurityHealthSystray", "KeePass2", "Cryptomator", "MullvadVPN", "Surfshark", "ExpressVPN", "Cloudflare WARP", "RadminVPN", "Lantern", "Tor", "torbrowser", "OnionBrowser", "Orbot", "PrivacyBadger", "uBlock", "AdwCleaner", "RKill", "Autoruns64"
+      ]
+    },
+    {
+      "key": "remote-access",
+      "name": "远程访问",
+      "color": "#6B789A",
+      "processes": [
+        "mstsc", "msrdc", "RemoteDesktop", "RDCMan", "RealVNC", "vncviewer", "winvnc", "TightVNC", "UltraVNC", "NoMachine", "Parsec", "Moonlight", "Sunshine", "Splashtop", "ZohoAssist", "LogMeIn", "GoTo", "ChromeRemoteDesktopHost", "RemoteUtilities", "mRemoteNG", "RoyalTS", "WinSCP", "ssh", "scp", "sftp", "OpenSSH", "Termius", "RemotePC", "DWAgent", "SupRemo", "Ammyy", "ScreenConnect", "ConnectWiseControl", "BeyondTrust", "Bomgar", "JumpDesktop", "Remmina", "X2Go", "Guacamole", "MobaXtermRemote", "AWSClientVPN", "AzureVPN", "VMwareHorizon", "ParallelsClient", "CitrixWorkspaceApp", "Radmin", "RemoteView", "ISLOnline"
+      ]
+    },
+    {
+      "key": "file-storage",
+      "name": "同步与云存储",
+      "color": "#4B8D87",
+      "processes": [
+        "OneDrive", "OneDriveStandaloneUpdater", "Dropbox", "GoogleDriveFS", "iCloudDrive", "iCloud", "Syncthing", "MEGAsync", "pCloud", "Nextcloud", "ownCloud", "Box", "Seafile", "Resilio", "FreeFileSync", "GoodSync", "Duplicati", "Restic", "rclone", "Arq", "Carbonite", "Backblaze", "CrashPlan", "SpiderOak", "Tresorit", "SugarSync", "Jottacloud", "Koofr", "LocalSend", "KDEConnect", "AirDroid", "NearbyShare", "SendAnywhere", "ShareDrop", "SynologyDrive", "Qsync", "CloudDrive", "Alist", "OpenList", "WebDrive", "MountainDuck", "ExpanDrive", "NetDrive", "SyncBack", "Duplicacy", "Borg", "Borgmatic", "Duplicati.GUI.TrayIcon", "SynologyDriveClient", "ResilioSync", "pCloudDrive", "AmazonDrive", "MegaClient"
+      ]
+    },
+    {
+      "key": "project-management",
+      "name": "项目与知识管理",
+      "color": "#7C6D9B",
+      "processes": [
+        "Asana", "Trello", "ClickUp", "Todoist", "TickTick", "Evernote", "Joplin", "Miro", "Linear", "Anytype", "Craft", "Heptabase", "Amplenote", "Workflowy", "OmniFocus", "Things", "Monday", "Wrike", "Basecamp", "MicrosoftPlanner", "Todo", "Height", "Plane", "Redmine", "YouTrack", "GanttProject", "OpenProject", "ProjectLibre", "Taskade", "Quire", "MeisterTask", "MindManager", "XMind", "MindNode", "Freeplane", "FreeMind", "TheBrain", "Logseq", "RoamResearch", "Tana", "Capacities", "Scrintal", "RemNote", "Mem", "Reflect", "StandardNotes", "Simplenote", "Bear", "AnyList", "RememberTheMilk", "Habitica", "Focusmate", "RescueTime", "TogglTrack", "Clockify", "Harvest", "Timely", "Hubstaff", "DeskTime", "ManicTime"
+      ]
+    },
+    {
+      "key": "finance",
+      "name": "财务与交易",
+      "color": "#8A7745",
+      "processes": [
+        "Quicken", "GnuCash", "Moneydance", "MoneyManagerEx", "YNAB", "KMyMoney", "QuickBooks", "Sage", "Xero", "FreshBooks", "Wave", "Odoo", "SAPLogon", "SAP Business Client", "OracleForms", "TradingView", "MetaTrader", "MT5", "thinkorswim", "IBKR", "TWS", "Futu", "TigerTrade", "Bloomberg", "FactSet", "Refinitiv", "SierraChart", "cTrader", "Binance", "Bybit", "OKX", "Coinbase", "Ledger Live", "Electrum", "Exodus", "phantom", "Kraken", "Bitget", "Gate", "KuCoin", "CoinEx", "TrustWallet", "AtomicWallet", "WasabiWallet", "Sparrow", "BlueWallet", "BitPay", "PayPal", "Venmo", "Wise", "Revolut", "Stripe", "Square", "Alipay", "AlipayPC", "WeChatPay", "SAPGui", "Sage50", "Sage100", "MYOB", "ZohoBooks", "ERPNext", "Dolibarr", "InvoicePlane", "Manager", "MoneyWiz", "Banktivity"
+      ]
+    },
+    {
+      "key": "writing-publishing",
+      "name": "写作与出版",
+      "color": "#886E58",
+      "processes": [
+        "Scrivener", "iAWriter", "WriteMonkey", "yWriter", "FinalDraft", "bibisco", "Manuskript", "Jutoh", "Sigil", "pandoc", "texstudio", "texworks", "miktex", "latex", "LyX", "Grammarly", "LanguageTool", "ProWritingAid", "Hemingway", "Ulysses", "Drafts", "DayOne", "Mellel", "BookWright", "Vellum", "Atticus", "Reedsy", "Scribus", "QuarkXPress", "LaTeXiT", "TeXnicCenter", "WinEdt", "TeXmaker", "BibDesk", "MarkdownMonster", "MarkText", "Zettlr", "Ghostwriter", "HedgeDoc", "TyporaPortable", "Wordsmith", "Storyist", "Plottr", "AeonTimeline", "Dabble", "Novlr", "Write!", "FocusWriter", "Q10", "ZenWriter", "BookWrightApp"
+      ]
+    },
+    {
+      "key": "social-creator",
+      "name": "社交与自媒体",
+      "color": "#B6657A",
+      "processes": [
+        "Weibo", "Xiaohongshu", "LittleRedBook", "Douyin", "TikTok", "Kwai", "Instagram", "Facebook", "Reddit", "Pinterest", "Tumblr", "Threads", "Mastodon", "Bluesky", "X", "TikTokLiveStudio", "DouyinLive", "KwaiLive", "BigoLive", "LiveMe", "YY", "Clubhouse", "Lemon8", "Snapchat", "Tango", "Periscope", "Likee", "Vimeo", "Dailymotion", "StreamYard", "Restream", "Ecamm", "BeLive", "Lightstream", "PrismLiveStudio", "NimoStudio", "HuyaLive", "DouyuLive", "BilibiliLive", "YouTubeStudio", "CreatorStudio", "MetaBusinessSuite", "TikTokShop", "CapCutCommerce", "CanvaContentPlanner", "Linktree", "Buffer", "Hootsuite", "SproutSocial", "Later", "Metricool", "Publer", "SocialBee", "TweetDeck", "Typefully", "Pallyy", "Tailwind", "Loomly", "Crowdfire", "FerdiumSocial"
+      ]
+    },
+    {
+      "key": "video-production",
+      "name": "视频制作与直播",
+      "color": "#B7645D",
+      "processes": [
+        "obs64", "obs", "Streamlabs OBS", "Streamlabs", "Wirecast", "vMix", "XSplit", "CamtasiaStudio", "Camtasia", "ScreenToGif", "loom", "Riverside", "EcammLive", "ManyCam", "NVIDIA Broadcast", "Shotcut", "kdenlive", "handbrake", "ffmpeg", "AvidMediaComposer", "vegas", "Vegas Pro", "HitFilm", "Filmora", "CapCut", "CapCutPro", "Lightworks", "OpenShot", "VSDC", "VideoPad", "PinnacleStudio", "PowerDirector", "MagixVideoPro", "Movavi Video Editor", "MovaviScreenRecorder", "CorelVideoStudio", "CyberLinkPowerDirector", "Flixier", "Vrew", "Descript", "OpusClip", "Wisecut", "Runway", "Pika", "Synthesia", "HeyGen", "VEED", "Kapwing", "Bandicam", "Bandicut", "Dxtory", "Fraps", "Action", "MirillisAction", "NvidiaShadowPlay", "OBS Studio", "Aitum", "StreamDeck", "ElgatoStreamDeck", "TouchPortal", "LioranBoard", "Streamer.bot", "SAMMI", "VTubeStudio", "VSeeFace", "Live2D Cubism", "PrprLive", "Animaze", "FaceRig", "Adobe Media Encoder", "AME", "MediaEncoder", "Adobe Character Animator", "Character Animator"
+      ]
+    },
+    {
+      "key": "audio-production",
+      "name": "音频与音乐制作",
+      "color": "#986A46",
+      "processes": [
+        "Ableton Live", "Ableton", "FLStudio", "REAPER", "Cubase", "Nuendo", "Studio One", "Pro Tools", "Audition", "Audacity", "Ocenaudio", "LMMS", "Cakewalk", "Mixcraft", "Bitwig", "Reason", "iZotope RX", "RX", "Kontakt", "Vocaloid", "Synthesizer V", "MuseScore", "Sibelius", "Finale", "AIMP2", "WaveLab", "SoundForge", "GoldWave", "WavePad", "Acoustica", "Soundop", "Wavosaur", "SonicVisualizer", "Praat", "Transcribe", "MuseScore3", "MuseScore4", "Dorico", "GuitarPro", "TuxGuitar", "VSTHost", "Cantabile", "Voicemeeter", "EqualizerAPO", "Peace", "VB-Audio", "RME TotalMix", "Focusrite Control", "Universal Control", "Scarlett MixControl", "Splice", "Loopcloud", "iZotope Product Portal", "SpitfireAudio", "Arturia Software Center", "Serum", "Massive", "Omnisphere", "Keyscape", "HarrisonMixbus", "Mixbus", "MediaMonkeyAudio", "Cakewalk Sonar", "StudioOne", "ProTools", "FL Studio"
+      ]
+    },
+    {
+      "key": "photography",
+      "name": "摄影与图片管理",
+      "color": "#7F705F",
+      "processes": [
+        "Lightroom", "Lightroom Classic", "CaptureOne", "Luminar Neo", "Luminar", "ON1 Photo RAW", "ON1", "PhotoScape", "PhotoScapeX", "IrfanView", "FastStone Image Viewer", "FastStone", "XnView", "XnViewMP", "ImageGlass", "HoneyView", "Nomacs", "ACDSee", "Picasa", "Darktable", "RawTherapee", "DxO", "Topaz Photo AI", "Topaz", "Photo Mechanic", "Exposure X", "Nik Collection", "Silkypix", "Paint.NET", "PhotoDirector", "PhotoImpact", "Zoner Photo Studio", "Photomatix", "Helicon Focus", "Helicon Filter", "PTGui", "Hugin", "PanoramaStudio", "FastRawViewer", "RawDigger", "ExifTool", "ExifPilot", "GeoSetter", "digiKam", "Shotwell", "Mylio", "Adobe Bridge", "Capture NX-D", "Nikon NX Studio", "Canon DPP", "Sony Imaging Edge", "FUJIFILM X RAW STUDIO", "Olympus Workspace", "GoPro Quik", "DJI Fly", "DJI Assistant", "LRTimelapse", "StarStaX", "Sequator", "Siril", "DeepSkyStacker", "PixInsight", "AstroPixelProcessor"
+      ]
+    },
+    {
+      "key": "3d-graphics",
+      "name": "3D 与游戏开发",
+      "color": "#6C6EA4",
+      "processes": [
+        "maya", "3dsmax", "Houdini", "Cinema 4D", "SketchUp", "Rhino", "ZBrush", "Meshmixer", "OpenSCAD", "KeyShot", "Twinmotion", "Lumion", "Enscape", "MarmosetToolbag", "QuixelBridge", "QuixelMixer", "Substance3D", "Substance Painter", "MarvelousDesigner", "WorldMachine", "Terragen", "Vue", "UnrealEditor", "Unity", "Godot", "CryEngine", "GDevelop", "GameMaker", "RPGMaker", "Construct", "Defold", "NomadSculpt", "Sculptris", "MeshLab", "CloudCompare", "Bforartists", "DazStudio", "Poser", "MakeHuman", "CharacterCreator", "iClone", "CLO", "Modo", "LightWave", "Wings3D", "Silo", "Hexagon", "HoudiniFX", "Blackmagic Fusion", "Fusion", "Nuke", "Natron", "Mari", "Mudbox", "V-Ray", "CoronaRenderer", "OctaneRender", "Redshift", "Arnold", "Cycles", "LuxCore", "RenderDoc", "Pixyz", "Uefn", "FortniteEditor", "RobloxStudio", "RobloxPlayerBeta", "CorelCAD", "Shapr3D", "Plasticity", "SculptGL"
+      ]
+    },
+    {
+      "key": "cad-engineering",
+      "name": "CAD 与工程设计",
+      "color": "#557A78",
+      "processes": [
+        "acad", "acadlt", "Revit", "Navisworks", "SolidWorks", "sldworks", "Inventor", "Fusion360", "Creo", "ProENGINEER", "CATIA", "NX", "SiemensNX", "DraftSight", "MicroStation", "ArchiCAD", "Tekla", "Civil3D", "InfraWorks", "ETABS", "SAP2000", "STAAD", "ANSYS", "COMSOL", "MATLAB", "LabVIEW", "FreeCAD", "BricsCAD", "QCAD", "LibreCAD", "SolidEdge", "Onshape", "SpaceClaim", "Alibre", "DesignSpark", "VariCAD", "TurboCAD", "Vectorworks", "ChiefArchitect", "SketchUpPro", "AutoCADMap3D", "AutoCADMechanical", "AutoCADElectrical", "AutoCADArchitecture", "AutoCADCivil3D", "RevitServer", "NavisworksManage", "RobotStructuralAnalysis", "TeklaStructures", "STAAD.Pro", "RISA", "RAMStructuralSystem", "SAFE", "Midas", "PLAXIS", "GeoStudio", "CivilFEM", "HYSYS", "AspenPlus", "AspenHYSYS", "Altair", "HyperMesh", "Abaqus", "MSC Nastran", "Patran", "Adams", "Simulink", "Simscape", "MapleSim", "Mathcad", "OriginPro", "JMP", "AutoTURN", "Bluebeam", "Bluebeam Revu", "BIMcollab", "BIM360", "AutodeskAccess", "AutodeskDesktopApp", "AutodeskIdentityManager", "AutodeskNetworkLicenseManager"
+      ]
+    },
+    {
+      "key": "electronics",
+      "name": "电子与嵌入式",
+      "color": "#4D8875",
+      "processes": [
+        "Keil", "IAR", "MPLABX", "STM32CubeIDE", "STM32CubeProgrammer", "Arduino", "PlatformIO", "esptool", "JLink", "JLinkGDBServer", "OpenOCD", "avrdude", "arm-none-eabi-gdb", "Segger", "Quartus", "Vivado", "Vitis", "ModelSim", "PSoC Programmer", "CCS", "Code Composer Studio", "Renode", "Proteus", "LTspice", "PSpice", "KiCad", "Eeschema", "pcbnew", "Eagle", "Altium", "EasyEDA", "DipTrace", "PADS", "Mentor", "HyperLynx", "Logic", "Saleae Logic", "PulseView", "Sigrok", "JTAGulator", "MbedStudio", "MCUXpresso", "NXPConfigTools", "AtmelStudio", "MicrochipStudio", "MPLAB", "CCStudio", "Energia", "MikroC", "STM32CubeMX", "STM32CubeMonitor", "nrfjprog", "pyOCD", "BlackMagicProbe", "dfu-util", "Bossac", "Teensy", "Teensyduino", "Particle", "ESP-IDF", "idf.py", "Zephyr", "West", "Yocto", "BitBake", "U-Boot", "Logic2", "Saleae", "Digilent", "WaveForms", "VivadoLab", "ISE", "Synplify", "Qucs", "QucsStudio", "Fritzing", "SimulIDE", "Wokwi", "Labcenter", "AltiumDesigner", "OrCAD", "Cadence", "Spectre", "TINA", "Multisim"
+      ]
+    },
+    {
+      "key": "data-ai",
+      "name": "数据分析与 AI",
+      "color": "#5E7897",
+      "processes": [
+        "jupyter", "jupyter-notebook", "jupyter-lab", "RStudio", "Rgui", "Rterm", "spyder", "anaconda", "anaconda-navigator", "miniconda", "conda", "Tableau", "PBIDesktop", "PowerBI", "QGIS", "ArcGIS", "ArcGISPro", "Orange", "RapidMiner", "KNIME", "SAS", "Stata", "SPSS", "Wolfram", "Mathematica", "Databricks", "Snowflake", "SnowSQL", "DuckDB", "ClickHouseLocal", "Polars", "Julia", "juliaup", "Pluto", "Quarto", "RMarkdown", "Positron", "Alteryx", "Dataiku", "Talend", "Pentaho", "QlikSense", "QlikView", "LookerStudio", "MicroStrategy", "Sisense", "Metabase", "Superset", "Grafana", "Kibana", "Prometheus", "OpenRefine", "Gephi", "Cytoscape", "Weka", "H2O", "TensorBoard", "MLflow", "WeightsAndBiases", "LabelStudio", "Roboflow", "CVAT", "ChatGPT", "Claude", "ollama", "Jan", "GPT4All", "LMStudio", "ComfyUI", "StableSwarmUI", "Fooocus", "InvokeAI", "webui", "Automatic1111", "Pinokio", "AnythingLLM", "KoboldCpp", "LocalAI", "OpenWebUI", "text-generation-webui", "Whisper", "WhisperDesktop", "RunwayML", "Midjourney", "LeonardoAI", "ElevenLabs", "PlaygroundAI", "NVIDIAChat", "Copilot", "Perplexity", "Poe", "JanAI", "DiffusionBee", "StableDiffusion", "FooocusAI"
+      ]
+    },
+    {
+      "key": "mobile-development",
+      "name": "移动开发与设备",
+      "color": "#4F8290",
+      "processes": [
+        "flutter", "dart", "gradle", "adb", "fastboot", "emulator", "scrcpy", "Genymotion", "MEmu", "NoxVMHandle", "LdVBoxHeadless", "AndroidEmulator", "Appium", "uiautomatorviewer", "Flipper", "ReactNative", "expo", "metro", "ionic", "cordova", "xamarin", "MAUI", "DeviceMonitor", "Odin", "SPFlashTool", "MiFlash", "HiSuite", "iMazing", "3uTools", "AltServer", "Sideloadly", "WinAppDriver", "AndroidDebugBridge", "AndroidDeviceMonitor", "sdkmanager", "avdmanager", "apkanalyzer", "bundletool", "scrcpy-console", "QtScrcpy", "Vysor", "Kies", "SmartSwitch", "LGBridge", "MotorolaDeviceManager", "XiaomiFlash", "OppoTool", "VivoAssistant", "HuaweiHiSuite", "NoxPlayer", "BlueStacksServices", "MEmuHeadless", "GenymotionPlayer", "Waydroid", "WSAClient", "AmazonAppstore", "WindowsSubsystemForAndroid", "DartCode", "Reactotron", "Detox", "Maestro", "Proxyman", "Firebase", "FirebaseCLI", "AppCenter", "DeviceFarm", "BrowserStack", "SauceLabs", "AppiumInspector", "AndroidStudioProfiler", "Perfetto", "systrace", "scrcpy-noconsole"
+      ]
+    },
+    {
+      "key": "accessibility",
+      "name": "辅助功能与效率",
+      "color": "#6B8468",
+      "processes": [
+        "nvda", "jfw", "Narrator", "ZoomText", "SuperNova", "Window-Eyes", "Dolphin", "VoiceAccess", "SpeechRuntime", "TextAloud", "Balabolka", "ReadAloud", "NaturalReader", "Kurzweil", "ClaroRead", "OpenBook", "SeeingAI", "LightBulb", "f.lux", "TwinkleTray", "ColorVeil", "AutoHotkey", "AutoHotkeyU64", "SharpKeys", "KeyTweak", "Clavier+", "WinHotKey", "DisplayFusion", "WinaeroTweaker", "StartAllBack", "Start11", "ExplorerPatcher", "TranslucentTB", "Rainmeter", "Lively", "WallpaperEngine", "PowerToysRun", "FlowLauncher", "Wox", "ueli", "Launchy", "Keypirinha", "Hain", "ClipboardFusion", "PhraseExpress", "TextExpander", "Espanso", "AutoIt3", "Pulover", "MacroRecorder", "JitbitMacroRecorder", "ShareMouse", "Barrier", "Synergy", "MouseWithoutBorders", "VoiceAttack", "Talon", "Dragon", "DragonBar", "Cortana", "WindowsSpeechRecognition", "Speakonia", "Panopreter", "ReadSpeaker", "VoiceMeeterInput", "Magnifixer", "VirtualMagnifyingGlass", "WinZoom", "NVDAControllerClient"
+      ]
     }
   ]
 }

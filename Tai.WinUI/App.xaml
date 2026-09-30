@@ -83,32 +83,60 @@
                 <Grid>
                     <VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Target="InteractionSurface.Opacity" Value="0" />
+                                </VisualState.Setters>
+                            </VisualState>
                             <VisualState x:Name="PointerOver">
                                 <VisualState.Setters>
-                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
+                                    <Setter Target="InteractionSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
+                                    <Setter Target="InteractionSurface.Opacity" Value="1" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
                                 <VisualState.Setters>
-                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
+                                    <Setter Target="InteractionSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
+                                    <Setter Target="InteractionSurface.Opacity" Value="1" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
                         <VisualStateGroup x:Name="CheckStates">
-                            <VisualState x:Name="Unchecked" />
-                            <VisualState x:Name="Checked">
+                            <VisualState x:Name="Unchecked">
                                 <VisualState.Setters>
-                                    <Setter Target="PeriodSurface.Background" Value="{StaticResource TaiCardBackgroundBrush}" />
+                                    <Setter Target="CheckedSurface.Opacity" Value="0" />
                                 </VisualState.Setters>
                             </VisualState>
-                            <VisualState x:Name="Indeterminate" />
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Target="CheckedSurface.Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Indeterminate">
+                                <VisualState.Setters>
+                                    <Setter Target="CheckedSurface.Opacity" Value="0" />
+                                </VisualState.Setters>
+                            </VisualState>
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>
                     <Border x:Name="PeriodSurface"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                    </Border>
+                    <Border x:Name="CheckedSurface"
+                            Background="{StaticResource TaiCardBackgroundBrush}"
+                            Opacity="0"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}" />
+                    <Border x:Name="InteractionSurface"
+                            Background="{StaticResource TaiButtonHoverBrush}"
+                            Opacity="0"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}" />
+                    <Border Background="Transparent"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter Content="{TemplateBinding Content}"
@@ -132,7 +160,7 @@
                 <Setter Property="CornerRadius" Value="7" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Padding" Value="16,7" />
-                <Setter Property="MinWidth" Value="64" />
+                <Setter Property="MinWidth" Value="72" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
                 <Setter Property="Template" Value="{StaticResource TaiPeriodButtonTemplate}" />
