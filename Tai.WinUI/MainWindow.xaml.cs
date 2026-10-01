@@ -84,7 +84,7 @@ public sealed partial class MainWindow : Window
             // native minimum width while the next viewport is prepared.
             RootFrame.Content = null;
             RootFrame.UpdateLayout();
-            await Task.Delay(100);
+            await Task.Delay(1000);
             ResizeForEffectiveSize(windowSize.Width, windowSize.Height, constrainToWorkArea: false);
             await Task.Delay(250);
             await WaitForSmokeWindowSizeAsync(windowSize.Width);
