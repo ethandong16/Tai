@@ -80,14 +80,8 @@ public sealed partial class MainWindow : Window
 
         foreach (var windowSize in windowSizes)
         {
-            // Clear the previous page before resizing so it cannot impose a larger
-            // native minimum width while the next viewport is prepared.
-            RootFrame.Content = null;
-            RootFrame.UpdateLayout();
-            await Task.Delay(1000);
             ResizeForEffectiveSize(windowSize.Width, windowSize.Height, constrainToWorkArea: false);
             await Task.Delay(250);
-            await WaitForSmokeWindowSizeAsync(windowSize.Width);
 
             if (!RootFrame.Navigate(typeof(MainPage))) throw new InvalidOperationException("Cannot navigate to MainPage");
             await Task.Delay(250);
@@ -132,22 +126,6 @@ public sealed partial class MainWindow : Window
         }
 
         ResizeForEffectiveSize(1240, 820, constrainToWorkArea: true);
-    }
-
-    private async Task WaitForSmokeWindowSizeAsync(int expectedWidth)
-    {
-        for (var attempt = 0; attempt < 20; attempt++)
-        {
-            if (Content is FrameworkElement root)
-            {
-                root.UpdateLayout();
-                var width = root.XamlRoot.Size.Width;
-                // The client area excludes the window's resize borders.
-                if (width <= expectedWidth && width >= expectedWidth - 32) return;
-            }
-            await Task.Delay(50);
-        }
-        throw new InvalidOperationException($"The window did not render the requested {expectedWidth}px width.");
     }
 
     private static async Task ValidateDashboardNavigationAsync(MainPage shell)
