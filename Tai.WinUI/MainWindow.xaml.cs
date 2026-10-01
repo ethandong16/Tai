@@ -82,6 +82,7 @@ public sealed partial class MainWindow : Window
         {
             ResizeForEffectiveSize(windowSize.Width, windowSize.Height, constrainToWorkArea: false);
             await Task.Delay(250);
+            await WaitForSmokeWindowSizeAsync(windowSize.Width);
 
             if (!RootFrame.Navigate(typeof(MainPage))) throw new InvalidOperationException("Cannot navigate to MainPage");
             await Task.Delay(250);
@@ -108,7 +109,7 @@ public sealed partial class MainWindow : Window
                 if (content is Views.CategoriesPage categoriesPage)
                 {
                     await categoriesPage.LoadDataTask;
-                    ValidateCategoriesPage(categoriesPage);
+                    await ValidateCategoriesPageAsync(categoriesPage);
                     await Task.Delay(80);
                     RootFrame.UpdateLayout();
                 }
@@ -126,6 +127,22 @@ public sealed partial class MainWindow : Window
         }
 
         ResizeForEffectiveSize(1240, 820, constrainToWorkArea: true);
+    }
+
+    private async Task WaitForSmokeWindowSizeAsync(int expectedWidth)
+    {
+        for (var attempt = 0; attempt < 20; attempt++)
+        {
+            if (Content is FrameworkElement root)
+            {
+                root.UpdateLayout();
+                var width = root.XamlRoot.Size.Width;
+                // The client area excludes the window's resize borders.
+                if (width <= expectedWidth && width >= expectedWidth - 32) return;
+            }
+            await Task.Delay(50);
+        }
+        throw new InvalidOperationException($"The window did not render the requested {expectedWidth}px width.");
     }
 
     private static async Task ValidateDashboardNavigationAsync(MainPage shell)
@@ -477,12 +494,16 @@ public sealed partial class MainWindow : Window
         throw new InvalidOperationException("A known website was not classified when first recorded.");
     }
 
-    private static void ValidateCategoriesPage(Views.CategoriesPage page)
+    private static async Task ValidateCategoriesPageAsync(Views.CategoriesPage page)
     {
         if (page.FindName("FetchCategoriesButton") is not Button ||
             page.FindName("CategoryActions") is not StackPanel actions ||
-            page.FindName("CategoryList") is not ListView categoryList)
+            page.FindName("CategoryList") is not ListView categoryList ||
+            page.FindName("CategoryMode") is not SelectorBar mode ||
+            page.FindName("AppsMode") is not SelectorBarItem appsMode)
             throw new InvalidOperationException("The category update action was not created.");
+        mode.SelectedItem = appsMode;
+        page.UpdateLayout();
 
         var expectedRow = page.ActualWidth < 820 ? 1 : 0;
         if (Grid.GetRow(actions) != expectedRow)
@@ -496,12 +517,25 @@ public sealed partial class MainWindow : Window
         if (!page.CategoryApps.Any(app => app.ProcessName == "TaiCategorySmokeTest"))
             throw new InvalidOperationException("Selecting a category did not display its applications.");
 
-        if (page.FindName("CategoryMode") is not SelectorBar mode ||
-            page.FindName("WebsitesMode") is not SelectorBarItem websitesMode ||
+        if (page.FindName("RuleSection") is not Border appDetail ||
+            page.FindName("SelectedCategoryNameText") is not TextBlock appDetailTitle)
+            throw new InvalidOperationException("The application category detail was not created.");
+        await ValidateCategoryScrollAsync(page, categoryList, appDetail, appDetailTitle,
+            page.Categories.Last(), page.Categories.Last().DisplayName);
+        categoryList.SelectedItem = target;
+        if (FindVisualChild<ScrollViewer>(categoryList) is { } appScroll)
+            appScroll.ChangeView(null, 0, null, disableAnimation: true);
+        await Task.Delay(80);
+        await CaptureSmokeScreenshotAsync(page.XamlRoot.Content as FrameworkElement ?? page,
+            (int)page.ActualWidth, "CategoriesPage-apps");
+
+        if (page.FindName("WebsitesMode") is not SelectorBarItem websitesMode ||
             page.FindName("WebsiteCategoryList") is not ListView websiteCategoryList ||
-            page.FindName("WebsiteDetailSection") is not StackPanel websiteDetail)
+            page.FindName("WebsiteDetailSection") is not Border websiteDetail ||
+            page.FindName("SelectedWebsiteCategoryNameText") is not TextBlock websiteDetailTitle)
             throw new InvalidOperationException("The website category view was not created.");
         mode.SelectedItem = websitesMode;
+        await page.LoadDataTask;
         var websiteCategory = page.WebsiteCategories.FirstOrDefault(item => item.Name == "开发技术");
         if (websiteCategory == null)
             throw new InvalidOperationException("Default website categories were not loaded.");
@@ -510,6 +544,42 @@ public sealed partial class MainWindow : Window
             throw new InvalidOperationException("Selecting a website category did not display its websites.");
         if (Grid.GetRow(websiteDetail) != expectedRow)
             throw new InvalidOperationException("Website categories did not reflow with the window.");
+        await ValidateCategoryScrollAsync(page, websiteCategoryList, websiteDetail, websiteDetailTitle,
+            page.WebsiteCategories.Last(), page.WebsiteCategories.Last().DisplayName);
+        websiteCategoryList.SelectedItem = websiteCategory;
+    }
+
+    private static async Task ValidateCategoryScrollAsync(FrameworkElement page, ListView list,
+        FrameworkElement detail, TextBlock detailTitle, object lastCategory, string expectedTitle)
+    {
+        page.UpdateLayout();
+        var scroll = FindVisualChild<ScrollViewer>(list);
+        if (scroll == null || scroll.ViewportHeight <= 0 || scroll.ViewportHeight > page.ActualHeight ||
+            (list.Name == "CategoryList" && scroll.ScrollableHeight <= 0))
+            throw new InvalidOperationException("Category lists must have their own constrained scrolling viewport.");
+        var canScroll = scroll.ScrollableHeight > 0;
+        var before = detailTitle.TransformToVisual(page).TransformPoint(new Windows.Foundation.Point());
+        scroll.ChangeView(null, scroll.ScrollableHeight, null, disableAnimation: true);
+        await Task.Delay(80);
+        list.SelectedItem = lastCategory;
+        page.UpdateLayout();
+        var after = detailTitle.TransformToVisual(page).TransformPoint(new Windows.Foundation.Point());
+        var detailBottom = detail.TransformToVisual(page).TransformPoint(new Windows.Foundation.Point(0, detail.ActualHeight));
+        if ((canScroll && scroll.VerticalOffset <= 0) || Math.Abs(after.Y - before.Y) > 0.1 ||
+            after.Y < 0 || detailBottom.Y > page.ActualHeight + 0.1 || detailTitle.Text != expectedTitle)
+            throw new InvalidOperationException($"{list.Name}: scrolling and selecting the last category must keep its detail visible and stationary. " +
+                $"Offset={scroll.VerticalOffset:F1}, title Y={before.Y:F1}/{after.Y:F1}, bottom={detailBottom.Y:F1}/{page.ActualHeight:F1}, title='{detailTitle.Text}', expected='{expectedTitle}'.");
+    }
+
+    private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            if (child is T result) return result;
+            if (FindVisualChild<T>(child) is { } descendant) return descendant;
+        }
+        return null;
     }
 
     private static async Task CaptureSmokeScreenshotAsync(FrameworkElement element, int effectiveWidth, string? name = null)
@@ -550,21 +620,54 @@ public sealed partial class MainWindow : Window
 
     private static void ValidateStatisticsPage(Views.StatisticsPage page)
     {
+        foreach (var period in Enum.GetValues<Services.UsagePeriod>().Reverse())
+            page.SelectPeriodForSmokeTest(period);
         foreach (var period in Enum.GetValues<Services.UsagePeriod>())
         {
             page.SelectPeriodForSmokeTest(period);
-            if (page.CheckedPeriodCount != 1)
+            page.SelectPeriodForSmokeTest(period);
+            if (page.CheckedPeriodCount != 1 || page.SelectedPeriod != period)
                 throw new InvalidOperationException("Statistics period selector must keep exactly one option selected.");
+            ValidatePeriodVisuals(page);
         }
     }
 
     private static void ValidateDetailsPage(Views.DetailsPage page)
     {
+        foreach (var period in Enum.GetValues<Services.UsagePeriod>().Reverse())
+            page.SelectPeriodForSmokeTest(period);
         foreach (var period in Enum.GetValues<Services.UsagePeriod>())
         {
             page.SelectPeriodForSmokeTest(period);
-            if (page.CheckedPeriodCount != 1)
+            page.SelectPeriodForSmokeTest(period);
+            if (page.CheckedPeriodCount != 1 || page.SelectedPeriod != period)
                 throw new InvalidOperationException("Details period selector must keep exactly one option selected.");
+            ValidatePeriodVisuals(page);
+        }
+    }
+
+    private static void ValidatePeriodVisuals(Page page)
+    {
+        foreach (var name in new[] { "DayButton", "WeekButton", "MonthButton", "YearButton" })
+        {
+            if (page.FindName(name) is not RadioButton button)
+                throw new InvalidOperationException("Period options must use native single selection controls.");
+            button.ApplyTemplate();
+            if (VisualTreeHelper.GetChild(button, 0) is not Grid root ||
+                root.FindName("CheckedSurface") is not Border selectedSurface)
+                throw new InvalidOperationException("The period button template did not load.");
+            var expected = button.IsChecked == true ? 1d : 0d;
+            if (selectedSurface.Opacity != expected)
+                throw new InvalidOperationException("Period button selection is not reflected by its visual state.");
+            foreach (var state in new[] { "PointerOver", "Pressed", "Disabled", "Normal" })
+            {
+                if (!VisualStateManager.GoToState(button, state, useTransitions: false) ||
+                    selectedSurface.Opacity != expected)
+                    throw new InvalidOperationException("Hover and press feedback must preserve the selected period.");
+                var expectedOpacity = state == "Disabled" ? 0.4d : 1d;
+                if (Math.Abs(root.Opacity - expectedOpacity) > 0.001)
+                    throw new InvalidOperationException("Period buttons must show disabled feedback and restore their appearance when enabled.");
+            }
         }
     }
 

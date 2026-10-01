@@ -73,6 +73,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     {
         if (_dataProvider == null) return;
         var cancellation = BeginLoad();
+        var token = cancellation.Token;
         try
         {
             var hasCachedToday = _dataProvider.TryGetCached(
@@ -88,10 +89,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 RangeText = cachedWeek.RangeText;
             }
 
-            var today = await _dataProvider.GetTodayAsync(_dashboardTake, cancellation.Token);
-            cancellation.Token.ThrowIfCancellationRequested();
-            var week = await _dataProvider.GetAsync(UsagePeriod.Week, DateTime.Today, 8, cancellation.Token);
-            cancellation.Token.ThrowIfCancellationRequested();
+            var today = await _dataProvider.GetTodayAsync(_dashboardTake, token);
+            token.ThrowIfCancellationRequested();
+            var week = await _dataProvider.GetAsync(UsagePeriod.Week, DateTime.Today, 8, token);
+            token.ThrowIfCancellationRequested();
             ApplySnapshot(today, includeTrend: false, appsTake: _dashboardTake);
             Replace(Trend, week.Trend);
             RangeText = week.RangeText;
@@ -117,13 +118,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _anchorDate = anchorDate.Date;
         if (_dataProvider == null) return;
         var cancellation = BeginLoad();
+        var token = cancellation.Token;
         try
         {
             if (_dataProvider.TryGetCached(period, _anchorDate, 8, out var cached))
                 ApplySnapshot(cached, includeTrend: true);
 
-            var snapshot = await _dataProvider.GetAsync(period, anchorDate, 8, cancellation.Token);
-            cancellation.Token.ThrowIfCancellationRequested();
+            var snapshot = await _dataProvider.GetAsync(period, anchorDate, 8, token);
+            token.ThrowIfCancellationRequested();
             ApplySnapshot(snapshot, includeTrend: true);
             LastUpdated = L.IsEnglish ? $"Updated {DateTime.Now:HH:mm}" : $"{DateTime.Now:HH:mm} 更新";
         }

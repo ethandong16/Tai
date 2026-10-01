@@ -85,7 +85,7 @@ public sealed partial class CategoriesPage : Page
         CategoryCountText.Text = L.CategoryCount(
             showWebsites ? Math.Max(0, WebsiteCategories.Count - 1) : Categories.Count, showWebsites);
         if (showWebsites && IsLoaded && WebsiteCategories.Count > 0)
-            _ = RefreshWebsiteAfterModeChangeAsync();
+            LoadDataTask = RefreshWebsiteAfterModeChangeAsync();
     }
 
     private async Task RefreshWebsiteAfterModeChangeAsync()
@@ -204,6 +204,7 @@ public sealed partial class CategoriesPage : Page
 
     private void RefreshSelectedCategoryApps()
     {
+        AppDetailsScrollViewer.ChangeView(null, 0, null, disableAnimation: true);
         CategoryApps = Array.Empty<CategoryAppRow>();
         if (CategoryList.SelectedItem is not CategoryRow selected)
         {

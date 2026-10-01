@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Tai.WinUI.Services;
@@ -75,6 +74,7 @@ public sealed partial class DetailsPage : Page
         _loadCancellation?.Cancel();
         _loadCancellation?.Dispose();
         var cancellation = _loadCancellation = new CancellationTokenSource();
+        var token = cancellation.Token;
         LoadStatusText.Text = L.Text("正在读取...");
 
         try
@@ -86,8 +86,8 @@ public sealed partial class DetailsPage : Page
                 LoadStatusText.Text = L.Text("已显示缓存，正在更新...");
             }
 
-            var snapshot = await _provider.GetAsync(_period, date, take: 0, cancellation.Token);
-            cancellation.Token.ThrowIfCancellationRequested();
+            var snapshot = await _provider.GetAsync(_period, date, take: 0, token);
+            token.ThrowIfCancellationRequested();
             ApplySnapshotRows(snapshot);
             LoadStatusText.Text = L.IsEnglish ? $"Updated {DateTime.Now:HH:mm}" : $"{DateTime.Now:HH:mm} 更新";
         }
@@ -101,18 +101,12 @@ public sealed partial class DetailsPage : Page
         }
     }
 
-    private void PeriodButton_Click(object sender, RoutedEventArgs e)
+    private void PeriodButton_Checked(object sender, RoutedEventArgs e)
     {
-        if (sender is not ToggleButton clicked || clicked.Tag is not string value) return;
-        SelectPeriod(clicked, value);
+        if (sender is not RadioButton { IsChecked: true, Tag: string value }
+            || !Enum.TryParse<UsagePeriod>(value, out var period) || period == _period) return;
+        _period = period;
         if (_ready) _ = LoadRowsAsync();
-    }
-
-    private void SelectPeriod(ToggleButton clicked, string value)
-    {
-        foreach (var button in new[] { DayButton, WeekButton, MonthButton, YearButton })
-            button.IsChecked = ReferenceEquals(button, clicked);
-        if (!Enum.TryParse(value, out _period)) _period = UsagePeriod.Day;
     }
 
     private void DatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
@@ -168,6 +162,8 @@ public sealed partial class DetailsPage : Page
     internal int CheckedPeriodCount =>
         new[] { DayButton, WeekButton, MonthButton, YearButton }.Count(button => button.IsChecked == true);
 
+    internal UsagePeriod SelectedPeriod => _period;
+
     internal void SelectPeriodForSmokeTest(UsagePeriod period)
     {
         var button = period switch
@@ -177,7 +173,8 @@ public sealed partial class DetailsPage : Page
             UsagePeriod.Year => YearButton,
             _ => DayButton
         };
-        SelectPeriod(button, period.ToString());
+        var peer = new Microsoft.UI.Xaml.Automation.Peers.RadioButtonAutomationPeer(button);
+        ((Microsoft.UI.Xaml.Automation.Provider.ISelectionItemProvider)peer).Select();
     }
 }
 

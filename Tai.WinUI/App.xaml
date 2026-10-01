@@ -79,8 +79,8 @@
                     </Border>
                 </Grid>
             </ControlTemplate>
-            <ControlTemplate x:Key="TaiPeriodButtonTemplate" TargetType="ToggleButton">
-                <Grid>
+            <ControlTemplate x:Key="TaiPeriodButtonTemplate" TargetType="RadioButton">
+                <Grid x:Name="PeriodRoot">
                     <VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState x:Name="Normal">
@@ -91,13 +91,19 @@
                             <VisualState x:Name="PointerOver">
                                 <VisualState.Setters>
                                     <Setter Target="InteractionSurface.Background" Value="{StaticResource TaiButtonHoverBrush}" />
-                                    <Setter Target="InteractionSurface.Opacity" Value="1" />
+                                    <Setter Target="InteractionSurface.Opacity" Value="0.35" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
                                 <VisualState.Setters>
                                     <Setter Target="InteractionSurface.Background" Value="{StaticResource TaiButtonPressedBrush}" />
-                                    <Setter Target="InteractionSurface.Opacity" Value="1" />
+                                    <Setter Target="InteractionSurface.Opacity" Value="0.55" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Target="PeriodRoot.Opacity" Value="0.4" />
+                                    <Setter Target="InteractionSurface.Opacity" Value="0" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -155,7 +161,7 @@
                 <Setter Property="Padding" Value="24" />
                 <Setter Property="Spacing" Value="14" />
             </Style>
-            <Style x:Key="TaiPeriodButtonStyle" TargetType="ToggleButton">
+            <Style x:Key="TaiPeriodButtonStyle" TargetType="RadioButton">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="CornerRadius" Value="7" />
                 <Setter Property="BorderThickness" Value="0" />
@@ -163,6 +169,9 @@
                 <Setter Property="MinWidth" Value="72" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="Foreground" Value="{StaticResource TaiPrimaryTextBrush}" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="UseSystemFocusVisuals" Value="True" />
                 <Setter Property="Template" Value="{StaticResource TaiPeriodButtonTemplate}" />
             </Style>
 

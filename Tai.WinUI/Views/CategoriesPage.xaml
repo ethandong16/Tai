@@ -11,15 +11,19 @@
                         <Setter Target="CategoryActions.Margin" Value="0" />
                         <Setter Target="CategoryColumn1.Width" Value="1.2*" />
                         <Setter Target="CategoryColumn2.Width" Value="0.8*" />
+                        <Setter Target="CategoryRow1.Height" Value="*" />
                         <Setter Target="CategoryRow2.Height" Value="0" />
                         <Setter Target="CategoryGrid.ColumnSpacing" Value="28" />
+                        <Setter Target="CategoryGrid.RowSpacing" Value="0" />
                         <Setter Target="RuleSection.(Grid.Row)" Value="0" />
                         <Setter Target="RuleSection.(Grid.Column)" Value="1" />
                         <Setter Target="RuleSection.Margin" Value="0" />
                         <Setter Target="WebsiteColumn1.Width" Value="1.2*" />
                         <Setter Target="WebsiteColumn2.Width" Value="0.8*" />
+                        <Setter Target="WebsiteRow1.Height" Value="*" />
                         <Setter Target="WebsiteRow2.Height" Value="0" />
                         <Setter Target="WebsiteGrid.ColumnSpacing" Value="28" />
+                        <Setter Target="WebsiteGrid.RowSpacing" Value="0" />
                         <Setter Target="WebsiteDetailSection.(Grid.Row)" Value="0" />
                         <Setter Target="WebsiteDetailSection.(Grid.Column)" Value="1" />
                         <Setter Target="WebsiteDetailSection.Margin" Value="0" />
@@ -34,63 +38,85 @@
                         <Setter Target="CategoryActions.Margin" Value="0,12,0,0" />
                         <Setter Target="CategoryColumn1.Width" Value="*" />
                         <Setter Target="CategoryColumn2.Width" Value="0" />
-                        <Setter Target="CategoryRow2.Height" Value="Auto" />
+                        <Setter Target="CategoryRow1.Height" Value="*" />
+                        <Setter Target="CategoryRow2.Height" Value="1.2*" />
                         <Setter Target="CategoryGrid.ColumnSpacing" Value="0" />
+                        <Setter Target="CategoryGrid.RowSpacing" Value="16" />
+                        <Setter Target="CategoryListPanel.Padding" Value="16" />
                         <Setter Target="RuleSection.(Grid.Row)" Value="1" />
                         <Setter Target="RuleSection.(Grid.Column)" Value="0" />
-                        <Setter Target="RuleSection.Margin" Value="0,24,0,0" />
+                        <Setter Target="RuleSection.Margin" Value="0" />
+                        <Setter Target="RuleSection.Padding" Value="16" />
                         <Setter Target="WebsiteColumn1.Width" Value="*" />
                         <Setter Target="WebsiteColumn2.Width" Value="0" />
-                        <Setter Target="WebsiteRow2.Height" Value="Auto" />
+                        <Setter Target="WebsiteRow1.Height" Value="*" />
+                        <Setter Target="WebsiteRow2.Height" Value="1.2*" />
                         <Setter Target="WebsiteGrid.ColumnSpacing" Value="0" />
+                        <Setter Target="WebsiteGrid.RowSpacing" Value="16" />
+                        <Setter Target="WebsiteCategoryPanel.Padding" Value="16" />
                         <Setter Target="WebsiteDetailSection.(Grid.Row)" Value="1" />
                         <Setter Target="WebsiteDetailSection.(Grid.Column)" Value="0" />
-                        <Setter Target="WebsiteDetailSection.Margin" Value="0,24,0,0" />
+                        <Setter Target="WebsiteDetailSection.Margin" Value="0" />
+                        <Setter Target="WebsiteDetailSection.Padding" Value="16" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel x:Name="PageStack" Margin="24,8,28,32" Spacing="24">
-                <Grid>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                    <StackPanel>
-                        <TextBlock x:Name="CategoryCountText" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
-                    </StackPanel>
-                    <StackPanel x:Name="CategoryActions" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                        <Button x:Name="FetchCategoriesButton" Click="FetchCategoriesButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="从 GitHub 获取最新默认分类">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="" FontSize="14" />
-                                <TextBlock Text="获取最新分类" x:Uid="CategoriesPage_001" />
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="CreateButton" Click="CreateButton_Click" Style="{StaticResource TaiPrimaryButtonStyle}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="" FontSize="14" />
-                                <TextBlock Text="新建分类" x:Uid="CategoriesPage_002" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
+        <Grid x:Name="PageStack" Margin="24,8,28,32" RowSpacing="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock x:Name="CategoryCountText" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" />
+                </StackPanel>
+                <StackPanel x:Name="CategoryActions" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button x:Name="FetchCategoriesButton" Click="FetchCategoriesButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="从 GitHub 获取最新默认分类">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="" FontSize="14" />
+                            <TextBlock Text="获取最新分类" x:Uid="CategoriesPage_001" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="CreateButton" Click="CreateButton_Click" Style="{StaticResource TaiPrimaryButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="" FontSize="14" />
+                            <TextBlock Text="新建分类" x:Uid="CategoriesPage_002" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
 
-                <SelectorBar x:Name="CategoryMode" SelectionChanged="CategoryMode_SelectionChanged">
-                    <SelectorBarItem x:Name="AppsMode" Text="应用" x:Uid="CategoriesPage_003" />
-                    <SelectorBarItem x:Name="WebsitesMode" Text="网站" x:Uid="CategoriesPage_004" />
-                </SelectorBar>
+            <SelectorBar x:Name="CategoryMode" Grid.Row="1" SelectionChanged="CategoryMode_SelectionChanged">
+                <SelectorBarItem x:Name="AppsMode" Text="应用" x:Uid="CategoriesPage_003" />
+                <SelectorBarItem x:Name="WebsitesMode" Text="网站" x:Uid="CategoriesPage_004" />
+            </SelectorBar>
 
-                <Grid x:Name="CategoryGrid">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="CategoryColumn1" Width="1.2*" />
-                        <ColumnDefinition x:Name="CategoryColumn2" Width="0.8*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="CategoryRow2" Height="0" /></Grid.RowDefinitions>
+            <Grid x:Name="CategoryGrid" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="CategoryColumn1" Width="1.2*" />
+                    <ColumnDefinition x:Name="CategoryColumn2" Width="0.8*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition x:Name="CategoryRow1" Height="*" /><RowDefinition x:Name="CategoryRow2" Height="0" /></Grid.RowDefinitions>
 
-                    <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
+                <Border x:Name="CategoryListPanel" Style="{StaticResource TaiCardStyle}">
+                    <Grid RowSpacing="14">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0">
                             <TextBlock Text="应用分类" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="CategoriesPage_005" />
                         </Grid>
-                        <ListView x:Name="CategoryList" ItemsSource="{x:Bind Categories}" SelectionMode="Single" SelectionChanged="CategoryList_SelectionChanged" BorderThickness="0">
+                        <ListView x:Name="CategoryList"
+                                  Grid.Row="1"
+                                  ItemsSource="{x:Bind Categories}"
+                                  SelectionMode="Single"
+                                  SelectionChanged="CategoryList_SelectionChanged"
+                                  BorderThickness="0"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollMode="Enabled">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid MinHeight="62" Padding="0,8" ColumnSpacing="10">
@@ -114,58 +140,76 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <Border x:Name="EmptyCategoryState" Margin="0,14,0,0" Padding="18" CornerRadius="16" Background="{StaticResource TaiCardMutedBrush}">
+                        <Border x:Name="EmptyCategoryState" Grid.Row="1" VerticalAlignment="Top" Padding="18" CornerRadius="16" Background="{StaticResource TaiCardMutedBrush}">
                             <StackPanel Spacing="7">
                                 <TextBlock Text="建立第一个分类" FontWeight="SemiBold" Foreground="{StaticResource TaiPrimaryTextBrush}" x:Uid="CategoriesPage_006" />
                                 <TextBlock Text="可以从工作、学习或娱乐开始，名称之后仍可修改。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_007" />
                                 <Button Content="新建分类" Margin="-8,2,0,0" HorizontalAlignment="Left" Click="CreateButton_Click" Style="{StaticResource TaiSubtleButtonStyle}" x:Uid="CategoriesPage_008" />
                             </StackPanel>
                         </Border>
-                    </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <StackPanel x:Name="RuleSection" Grid.Column="1" Style="{StaticResource TaiSurfacePanelStyle}">
+                <Border x:Name="RuleSection" Grid.Column="1" Style="{StaticResource TaiCardStyle}">
+                    <Grid RowSpacing="14">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <TextBlock x:Name="SelectedCategoryNameText" Style="{StaticResource TaiSectionTitleStyle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock x:Name="SelectedAppCountText" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
-                        <ListView x:Name="CategoryAppsList" SelectionMode="None" BorderThickness="0" MaxHeight="480">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                                        <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
-                                            <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{Binding ProcessName}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <TextBlock x:Name="EmptyAppsText" Text="此分类暂无应用" Visibility="Collapsed" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_009" />
-                        <Grid Margin="0,12,0,0" Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="CategoriesPage_010" />
-                        </Grid>
-                        <TextBlock Text="常见应用会自动归类；你也可以为未分类应用设置目录匹配规则。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_011" />
-                        <Button HorizontalAlignment="Left" Click="ManageRules_Click" Style="{StaticResource TaiSubtleButtonStyle}">
-                            <StackPanel Orientation="Horizontal" Spacing="7"><FontIcon Glyph="" FontSize="14" /><TextBlock Text="管理匹配规则" x:Uid="CategoriesPage_012" /></StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
+                        <ScrollViewer x:Name="AppDetailsScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="14">
+                                <ListView x:Name="CategoryAppsList" SelectionMode="None" BorderThickness="0" ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                                                    <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding ProcessName}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <TextBlock x:Name="EmptyAppsText" Text="此分类暂无应用" Visibility="Collapsed" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_009" />
+                                <Grid Margin="0,12,0,0" Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
+                                    <TextBlock Text="自动分类" Style="{StaticResource TaiSectionTitleStyle}" x:Uid="CategoriesPage_010" />
+                                </Grid>
+                                <TextBlock Text="常见应用会自动归类；你也可以为未分类应用设置目录匹配规则。" TextWrapping="Wrap" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_011" />
+                                <Button HorizontalAlignment="Left" Click="ManageRules_Click" Style="{StaticResource TaiSubtleButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="7"><FontIcon Glyph="" FontSize="14" /><TextBlock Text="管理匹配规则" x:Uid="CategoriesPage_012" /></StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
 
-                <Grid x:Name="WebsiteGrid" Visibility="Collapsed">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="WebsiteColumn1" Width="1.2*" />
-                        <ColumnDefinition x:Name="WebsiteColumn2" Width="0.8*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition x:Name="WebsiteRow2" Height="0" /></Grid.RowDefinitions>
+            <Grid x:Name="WebsiteGrid" Grid.Row="2" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="WebsiteColumn1" Width="1.2*" />
+                    <ColumnDefinition x:Name="WebsiteColumn2" Width="0.8*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition x:Name="WebsiteRow1" Height="*" /><RowDefinition x:Name="WebsiteRow2" Height="0" /></Grid.RowDefinitions>
 
-                    <StackPanel Style="{StaticResource TaiSurfacePanelStyle}">
+                <Border x:Name="WebsiteCategoryPanel" Style="{StaticResource TaiCardStyle}">
+                    <Grid RowSpacing="14">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                         <TextBlock Text="网站分类" Style="{StaticResource TaiSectionTitleStyle}" Margin="0,0,0,10" x:Uid="CategoriesPage_013" />
-                        <ListView x:Name="WebsiteCategoryList" ItemsSource="{x:Bind WebsiteCategories}" SelectionMode="Single" SelectionChanged="WebsiteCategoryList_SelectionChanged" BorderThickness="0">
+                        <ListView x:Name="WebsiteCategoryList"
+                                  Grid.Row="1"
+                                  ItemsSource="{x:Bind WebsiteCategories}"
+                                  SelectionMode="Single"
+                                  SelectionChanged="WebsiteCategoryList_SelectionChanged"
+                                  BorderThickness="0"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollMode="Enabled">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
@@ -181,37 +225,42 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <StackPanel x:Name="WebsiteDetailSection" Grid.Column="1" Style="{StaticResource TaiSurfacePanelStyle}">
+                <Border x:Name="WebsiteDetailSection" Grid.Column="1" Style="{StaticResource TaiCardStyle}">
+                    <Grid RowSpacing="14">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                         <Grid Padding="0,0,0,10" BorderBrush="{StaticResource TaiDividerBrush}" BorderThickness="0,0,0,1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <TextBlock x:Name="SelectedWebsiteCategoryNameText" Style="{StaticResource TaiSectionTitleStyle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock x:Name="SelectedWebsiteCountText" Grid.Column="1" Margin="10,0,0,0" Style="{StaticResource TaiCaptionStyle}" />
                         </Grid>
-                        <ListView x:Name="CategoryWebsitesList" SelectionMode="None" BorderThickness="0" MaxHeight="480">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
-                                            <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{Binding Domain}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                        <Button Grid.Column="2" Click="ChangeWebsiteCategory_Click" DataContext="{Binding}" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="更改网站分类">
-                                            <FontIcon Glyph="" FontSize="14" />
-                                        </Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <TextBlock x:Name="EmptyWebsitesText" Text="此分类暂无网站" Visibility="Collapsed" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_014" />
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
+                        <Grid Grid.Row="1">
+                            <ListView x:Name="CategoryWebsitesList" SelectionMode="None" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid MinHeight="54" Padding="0,7" ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                            <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource TaiCardMutedBrush}">
+                                                <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource TaiPrimaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Domain}" Style="{StaticResource TaiCaptionStyle}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Click="ChangeWebsiteCategory_Click" DataContext="{Binding}" Style="{StaticResource TaiSubtleButtonStyle}" ToolTipService.ToolTip="更改网站分类">
+                                                <FontIcon Glyph="" FontSize="14" />
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <TextBlock x:Name="EmptyWebsitesText" Text="此分类暂无网站" Visibility="Collapsed" VerticalAlignment="Top" Style="{StaticResource TaiCaptionStyle}" x:Uid="CategoriesPage_014" />
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

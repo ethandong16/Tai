@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Tai.WinUI.Services;
 using Tai.WinUI.ViewModels;
 
@@ -49,18 +48,12 @@ public sealed partial class StatisticsPage : Page
         }
     }
 
-    private void PeriodButton_Click(object sender, RoutedEventArgs e)
+    private void PeriodButton_Checked(object sender, RoutedEventArgs e)
     {
-        if (sender is not ToggleButton clicked || clicked.Tag is not string value) return;
-        SelectPeriod(clicked, value);
+        if (sender is not RadioButton { IsChecked: true, Tag: string value }
+            || !Enum.TryParse<UsagePeriod>(value, out var period) || period == _period) return;
+        _period = period;
         if (_ready) _ = ReloadAsync();
-    }
-
-    private void SelectPeriod(ToggleButton clicked, string value)
-    {
-        var buttons = new[] { DayButton, WeekButton, MonthButton, YearButton };
-        foreach (var button in buttons) button.IsChecked = ReferenceEquals(button, clicked);
-        if (!Enum.TryParse(value, out _period)) _period = UsagePeriod.Day;
     }
 
     private void DatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
@@ -83,6 +76,8 @@ public sealed partial class StatisticsPage : Page
 
     internal int TrendPointCount => _viewModel.Trend.Count;
 
+    internal UsagePeriod SelectedPeriod => _period;
+
     internal void SelectPeriodForSmokeTest(UsagePeriod period)
     {
         var button = period switch
@@ -92,6 +87,7 @@ public sealed partial class StatisticsPage : Page
             UsagePeriod.Year => YearButton,
             _ => DayButton
         };
-        SelectPeriod(button, period.ToString());
+        var peer = new Microsoft.UI.Xaml.Automation.Peers.RadioButtonAutomationPeer(button);
+        ((Microsoft.UI.Xaml.Automation.Provider.ISelectionItemProvider)peer).Select();
     }
 }
