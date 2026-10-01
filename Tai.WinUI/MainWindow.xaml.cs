@@ -80,6 +80,9 @@ public sealed partial class MainWindow : Window
 
         foreach (var windowSize in windowSizes)
         {
+            // Clear the previous page before resizing so it cannot impose a larger
+            // native minimum width while the next viewport is prepared.
+            RootFrame.Content = null;
             ResizeForEffectiveSize(windowSize.Width, windowSize.Height, constrainToWorkArea: false);
             await Task.Delay(250);
             await WaitForSmokeWindowSizeAsync(windowSize.Width);

@@ -52,9 +52,11 @@ if ($Language -ne 'auto') {
         [Text.UTF8Encoding]::new($false))
 }
 
+# This smoke test renders every page at four window sizes and captures several
+# screenshots; allow slower hosted Windows runners enough time to finish.
 $process = Start-Process -FilePath (Join-Path $testPath 'Tai.WinUI.exe') `
     -ArgumentList '--smoke-test' -WorkingDirectory $testPath -WindowStyle Hidden -PassThru
-if (-not $process.WaitForExit(45000)) {
+if (-not $process.WaitForExit(90000)) {
     $process.Kill()
     throw "Startup test timed out. Diagnostics retained in $testPath"
 }
