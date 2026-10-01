@@ -150,7 +150,7 @@ public sealed partial class MainWindow : Window
         if (shell.FindName("ContentFrame") is not Frame frame)
             throw new InvalidOperationException("Shell content frame was not created.");
         var item = new ViewModels.UsageItem(0, "Navigation smoke test", "1分钟", 60, 100,
-            Services.AppIconResolver.DefaultIconPath, "#628AF0", "未分类", "应用");
+            Services.AppIconResolver.DefaultIconPath, "#3AAFD0", "未分类", "应用");
         frame.Navigate(typeof(Views.AppDetailPage), new Views.DetailRow(item, "Smoke test"));
         await Task.Delay(80);
         if (frame.Content is not Views.AppDetailPage)
@@ -227,26 +227,26 @@ public sealed partial class MainWindow : Window
 
     private void ApplyResolvedAppearance(bool dark)
     {
-        var pageBackground = ParseColor(dark ? "#17191E" : "#F6F7FA", Colors.Transparent);
-        var cardBackground = ParseColor(dark ? "#22252C" : "#FFFFFF", Colors.Transparent);
-        var mutedBackground = ParseColor(dark ? "#303540" : "#F0F2F6", Colors.Transparent);
-        var primaryText = ParseColor(dark ? "#F1F2F7" : "#242730", Colors.Transparent);
-        var secondaryText = ParseColor(dark ? "#A1A7B5" : "#626A78", Colors.Transparent);
-        var divider = ParseColor(dark ? "#333740" : "#ECEEF3", Colors.Transparent);
-        var accent = ParseColor(dark ? "#8EB6FF" : "#2463CC", Colors.Transparent);
-        var accentFill = ParseColor(dark ? "#346FD1" : "#2463CC", Colors.Transparent);
-        var accentSoft = ParseColor(dark ? "#26364F" : "#EAF1FF", Colors.Transparent);
-        var accentHover = ParseColor(dark ? "#2B63BF" : "#215ABC", Colors.Transparent);
-        var accentPressed = ParseColor(dark ? "#2456AC" : "#1B4DAB", Colors.Transparent);
-        var accentDisabled = ParseColor(dark ? "#3A4165" : "#C9CDE7", Colors.Transparent);
-        var buttonHover = ParseColor(dark ? "#394456" : "#E2E8F5", Colors.Transparent);
-        var buttonPressed = ParseColor(dark ? "#46536A" : "#D3DDEF", Colors.Transparent);
+        var pageBackground = ParseColor(dark ? "#18252B" : "#F4F8FA", Colors.Transparent);
+        var cardBackground = ParseColor(dark ? "#1D2930" : "#FFFFFF", Colors.Transparent);
+        var mutedBackground = ParseColor(dark ? "#263C44" : "#EAF4F6", Colors.Transparent);
+        var primaryText = ParseColor(dark ? "#EFFCFF" : "#20343B", Colors.Transparent);
+        var secondaryText = ParseColor(dark ? "#A1BBC4" : "#63757C", Colors.Transparent);
+        var divider = ParseColor(dark ? "#38515C" : "#D8EDF2", Colors.Transparent);
+        var accent = ParseColor(dark ? "#7DD3FC" : "#155E75", Colors.Transparent);
+        var accentFill = ParseColor(dark ? "#207F9D" : "#155E75", Colors.Transparent);
+        var accentSoft = ParseColor(dark ? "#1F424C" : "#E7F6FA", Colors.Transparent);
+        var accentHover = ParseColor(dark ? "#2A8AA7" : "#0E7490", Colors.Transparent);
+        var accentPressed = ParseColor(dark ? "#176A82" : "#0B5C70", Colors.Transparent);
+        var accentDisabled = ParseColor(dark ? "#3A636D" : "#9BC6D1", Colors.Transparent);
+        var buttonHover = ParseColor(dark ? "#2E4A54" : "#E2F1F4", Colors.Transparent);
+        var buttonPressed = ParseColor(dark ? "#3A5B66" : "#CDE6EB", Colors.Transparent);
 
-        SetBrushColor("TaiSidebarBrush", ParseColor(dark ? "#1F232B" : "#EBEEF5", Colors.Transparent));
-        SetBrushColor("TaiChartBrush", ParseColor(dark ? "#8EB6FF" : "#628AF0", Colors.Transparent));
+        SetBrushColor("TaiSidebarBrush", ParseColor(dark ? "#20343B" : "#E8F3F6", Colors.Transparent));
+        SetBrushColor("TaiChartBrush", ParseColor(dark ? "#67E8F9" : "#3AAFD0", Colors.Transparent));
         if (Application.Current.Resources["TaiSidebarMaterial"] is AcrylicBrush material)
         {
-            material.TintColor = ParseColor(dark ? "#1F232B" : "#EBEEF5", Colors.Transparent);
+            material.TintColor = ParseColor(dark ? "#20343B" : "#E8F3F6", Colors.Transparent);
             material.FallbackColor = material.TintColor;
         }
         SetBrushColor("TaiPageBackgroundBrush", pageBackground);
@@ -269,8 +269,8 @@ public sealed partial class MainWindow : Window
         SetBrushColor("ToggleSwitchFillOnPressed", accentPressed);
         SetBrushColor("ToggleSwitchFillOnDisabled", accentDisabled);
         SetBrushColor("NavigationViewSelectionIndicatorForeground", accent);
-        SetBrushColor("TaiInfoBrush", ParseColor(dark ? "#8EA8FF" : "#3F5FCA", Colors.Transparent));
-        SetBrushColor("TaiInfoSoftBrush", ParseColor(dark ? "#252D4A" : "#E9EDFF", Colors.Transparent));
+        SetBrushColor("TaiInfoBrush", ParseColor(dark ? "#7DD3FC" : "#176B86", Colors.Transparent));
+        SetBrushColor("TaiInfoSoftBrush", ParseColor(dark ? "#21424D" : "#E6F6FA", Colors.Transparent));
         SetBrushColor("TaiWarningBrush", ParseColor(dark ? "#F4B860" : "#9A5B08", Colors.Transparent));
         SetBrushColor("TaiWarningSoftBrush", ParseColor(dark ? "#43351F" : "#FFF3DD", Colors.Transparent));
         SetBrushColor("TaiDangerBrush", ParseColor(dark ? "#F18A9C" : "#B8324B", Colors.Transparent));
@@ -350,12 +350,12 @@ public sealed partial class MainWindow : Window
 
     private static void ConfigureTitleBar(AppWindowTitleBar titleBar, bool dark)
     {
-        var background = dark ? ColorHelper.FromArgb(255, 34, 37, 42) : ColorHelper.FromArgb(255, 255, 255, 255);
-        var inactiveBackground = dark ? ColorHelper.FromArgb(255, 29, 32, 36) : ColorHelper.FromArgb(255, 246, 247, 251);
-        var foreground = dark ? ColorHelper.FromArgb(255, 244, 245, 247) : ColorHelper.FromArgb(255, 24, 33, 47);
-        var inactiveForeground = dark ? ColorHelper.FromArgb(255, 170, 177, 188) : ColorHelper.FromArgb(255, 102, 112, 133);
-        var hoverBackground = dark ? ColorHelper.FromArgb(255, 58, 63, 71) : ColorHelper.FromArgb(255, 229, 233, 240);
-        var pressedBackground = dark ? ColorHelper.FromArgb(255, 72, 78, 88) : ColorHelper.FromArgb(255, 211, 217, 227);
+        var background = dark ? ColorHelper.FromArgb(255, 29, 41, 48) : ColorHelper.FromArgb(255, 255, 255, 255);
+        var inactiveBackground = dark ? ColorHelper.FromArgb(255, 24, 37, 43) : ColorHelper.FromArgb(255, 244, 248, 250);
+        var foreground = dark ? ColorHelper.FromArgb(255, 239, 252, 255) : ColorHelper.FromArgb(255, 32, 52, 59);
+        var inactiveForeground = dark ? ColorHelper.FromArgb(255, 161, 187, 196) : ColorHelper.FromArgb(255, 99, 117, 124);
+        var hoverBackground = dark ? ColorHelper.FromArgb(255, 46, 74, 84) : ColorHelper.FromArgb(255, 226, 241, 244);
+        var pressedBackground = dark ? ColorHelper.FromArgb(255, 58, 91, 102) : ColorHelper.FromArgb(255, 205, 230, 235);
 
         titleBar.BackgroundColor = background;
         titleBar.InactiveBackgroundColor = inactiveBackground;
@@ -901,8 +901,8 @@ public sealed partial class MainWindow : Window
         var accent = GetBrushColor("TaiAccentBrush");
         var accentFill = GetBrushColor("TaiAccentFillBrush");
         var accentSoft = GetBrushColor("TaiAccentSoftBrush");
-        var expectedAccent = ParseColor(dark ? "#8EB6FF" : "#2463CC", Colors.Transparent);
-        var expectedFill = ParseColor(dark ? "#346FD1" : "#2463CC", Colors.Transparent);
+        var expectedAccent = ParseColor(dark ? "#7DD3FC" : "#155E75", Colors.Transparent);
+        var expectedFill = ParseColor(dark ? "#207F9D" : "#155E75", Colors.Transparent);
 
         if (accent != expectedAccent || accentFill != expectedFill)
             throw new InvalidOperationException($"The {(dark ? "dark" : "light")} fixed accent palette was not applied.");
