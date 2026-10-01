@@ -93,10 +93,12 @@ public sealed class UsageTrendChart : UserControl
                 var barHeight = Math.Max(3, point.Seconds / maximum * (plotHeight - 8));
                 var bar = new Button
                 {
+                    Style = (Style)Application.Current.Resources["TaiFilledButtonStyle"],
                     Width = barWidth, Height = barHeight, MinWidth = 0, MinHeight = 0,
                     Padding = new Thickness(0), BorderThickness = new Thickness(0),
                     CornerRadius = new CornerRadius(4, 4, 2, 2),
                     Background = Brush(point.Seconds > 0 ? "TaiChartBrush" : "TaiCardMutedBrush"),
+                    Foreground = Brush("TaiPrimaryTextBrush"),
                     VerticalContentAlignment = VerticalAlignment.Stretch
                 };
                 var description = $"{point.Label} · {point.Duration}";

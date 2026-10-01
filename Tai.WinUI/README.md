@@ -26,6 +26,8 @@ dotnet publish Tai.WinUI/Tai.WinUI.csproj `
   --no-restore
 ```
 
+Published dependency language resources are limited to Chinese, English, and Japanese.
+
 Run the published startup check from the repository root:
 
 ```powershell

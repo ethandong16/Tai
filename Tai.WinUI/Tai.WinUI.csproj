@@ -12,6 +12,8 @@
     <UseWinUI>true</UseWinUI>
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Keep only Chinese, English and Japanese dependency translations. -->
+    <SatelliteResourceLanguages>en;en-US;en-GB;zh;zh-CN;zh-TW;zh-Hans;zh-Hant;ja;ja-JP</SatelliteResourceLanguages>
     <WindowsSdkPackageVersion>10.0.19041.57</WindowsSdkPackageVersion>
     <Version>1.1.0</Version>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
@@ -44,4 +46,15 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
   </ItemGroup>
+
+  <!-- Windows App SDK native MUI files are separate from .NET satellite resources. -->
+  <Target Name="ExcludeUnusedWindowsAppSDKLanguages"
+          BeforeTargets="AddMicrosoftWindowsAppSDKPayloadFiles"
+          DependsOnTargets="ExtractMicrosoftWindowsAppSDKMsixFiles"
+          Condition="'$(WindowsAppSDKSelfContained)' == 'true'">
+    <ItemGroup>
+      <MicrosoftWindowsAppSDKFilesExcluded Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.mui"
+                                          Exclude="$(MicrosoftWindowsAppSDKMsixContent)\en*\**\*.mui;$(MicrosoftWindowsAppSDKMsixContent)\zh*\**\*.mui;$(MicrosoftWindowsAppSDKMsixContent)\ja*\**\*.mui" />
+    </ItemGroup>
+  </Target>
 </Project>

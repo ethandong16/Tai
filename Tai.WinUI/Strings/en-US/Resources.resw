@@ -459,9 +459,6 @@
   <data name="SettingsPage_091.Content" xml:space="preserve">
     <value>Open source project: github.com/ethandong16/Tai.WinUI</value>
   </data>
-  <data name="SettingsPage_092.Content" xml:space="preserve">
-    <value>Discussion area: github.com/ethandong16/Tai.WinUI/discussions</value>
-  </data>
   <data name="SettingsPage_093.Text" xml:space="preserve">
     <value>Icon from Microsoft Emoji</value>
   </data>

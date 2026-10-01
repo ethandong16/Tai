@@ -17,6 +17,53 @@
             <CornerRadius x:Key="OverlayCornerRadius">16</CornerRadius>
             <SolidColorBrush x:Key="TaiButtonHoverBrush" Color="#E2E8F5" />
             <SolidColorBrush x:Key="TaiButtonPressedBrush" Color="#D3DDEF" />
+            <!-- Keep each control's fill and text colors in every interaction state. -->
+            <ControlTemplate x:Key="TaiFilledButtonTemplate" TargetType="Button">
+                <Grid x:Name="FilledButtonRoot">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Target="InteractionSurface.Opacity" Value="0.35" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Target="InteractionSurface.Opacity" Value="0.6" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Target="FilledButtonRoot.Opacity" Value="0.4" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+                    <Border x:Name="InteractionSurface"
+                            Background="{TemplateBinding Foreground}"
+                            BorderBrush="{TemplateBinding Foreground}"
+                            BorderThickness="1"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False" />
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+            <Style x:Key="TaiFilledButtonStyle" TargetType="Button">
+                <Setter Property="UseSystemFocusVisuals" Value="True" />
+                <Setter Property="Template" Value="{StaticResource TaiFilledButtonTemplate}" />
+            </Style>
             <ControlTemplate x:Key="TaiTextButtonTemplate" TargetType="Button">
                 <Grid>
                     <VisualStateManager.VisualStateGroups>
@@ -220,14 +267,14 @@
                 <Setter Property="CornerRadius" Value="16" />
                 <Setter Property="Padding" Value="24" />
             </Style>
-            <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button">
+            <Style x:Key="TaiPrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource TaiFilledButtonStyle}">
                 <Setter Property="Background" Value="{StaticResource TaiAccentFillBrush}" />
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="CornerRadius" Value="9" />
                 <Setter Property="Padding" Value="14,8" />
             </Style>
-            <Style x:Key="TaiDangerButtonStyle" TargetType="Button">
+            <Style x:Key="TaiDangerButtonStyle" TargetType="Button" BasedOn="{StaticResource TaiFilledButtonStyle}">
                 <Setter Property="Background" Value="{StaticResource TaiDangerSoftBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource TaiDangerBrush}" />
                 <Setter Property="BorderThickness" Value="0" />

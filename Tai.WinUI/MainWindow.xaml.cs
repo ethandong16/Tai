@@ -758,6 +758,7 @@ public sealed partial class MainWindow : Window
                 await Task.Delay(350);
                 ValidateTitleBar();
                 ValidateResolvedPalette(theme == 1);
+                await ValidatePointerFeedbackAsync(theme == 1);
                 if (Content is FrameworkElement captureRoot)
                     await CaptureSmokeScreenshotAsync(captureRoot, 1240, theme == 1 ? "dark" : "light");
             }
@@ -774,6 +775,121 @@ public sealed partial class MainWindow : Window
             general.Theme = originalTheme;
             ApplyAppearance();
         }
+    }
+
+    private async Task ValidatePointerFeedbackAsync(bool dark)
+    {
+        var previousContent = RootFrame.Content;
+        var chart = new Controls.UsageTrendChart
+        {
+            Width = 280, Height = 220,
+            Items = new[]
+            {
+                new Services.TrendPoint("Mon", 3600),
+                new Services.TrendPoint("Tue", 1800),
+                new Services.TrendPoint("Wed", 0),
+                new Services.TrendPoint("Thu", 0, IsFuture: true)
+            }
+        };
+        var primary = new Button
+        {
+            Content = Services.L.Text("保存"), Width = 140,
+            Style = (Style)Application.Current.Resources["TaiPrimaryButtonStyle"]
+        };
+        var danger = new Button
+        {
+            Content = Services.L.Text("删除"), Width = 140,
+            Style = (Style)Application.Current.Resources["TaiDangerButtonStyle"]
+        };
+        var host = new StackPanel
+        {
+            Width = 340, Spacing = 16, Padding = new Thickness(24),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Background = (Brush)Application.Current.Resources["TaiCardBackgroundBrush"]
+        };
+        host.Children.Add(chart);
+        host.Children.Add(primary);
+        host.Children.Add(danger);
+        try
+        {
+            RootFrame.Content = host;
+            await Task.Delay(80);
+            host.UpdateLayout();
+            var bars = ((Canvas)chart.Content).Children.OfType<Button>().ToArray();
+            if (bars.Length != 3)
+                throw new InvalidOperationException("Trend charts must keep past and zero values, and omit future bars.");
+            foreach (var bar in bars.Take(2))
+                await ValidateButtonFillAsync(bar, host, "Trend bar", chartBar: true);
+            await ValidateButtonFillAsync(primary, host, "Primary button", chartBar: false);
+            await ValidateButtonFillAsync(danger, host, "Danger button", chartBar: false);
+
+            foreach (var button in bars.Take(2).Concat(new[] { primary, danger }))
+                VisualStateManager.GoToState(button, "PointerOver", useTransitions: false);
+            await CaptureSmokeScreenshotAsync(host, 1240, dark ? "hover-dark" : "hover-light");
+
+            var firstBar = bars[0];
+            var description = Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(firstBar);
+            if (ToolTipService.GetToolTip(firstBar) as string != description ||
+                firstBar.Flyout is not Flyout { Content: TextBlock text } || text.Text != description)
+                throw new InvalidOperationException("Trend bars must retain their duration tooltip and flyout.");
+            var peer = new Microsoft.UI.Xaml.Automation.Peers.ButtonAutomationPeer(firstBar);
+            ((Microsoft.UI.Xaml.Automation.Provider.IInvokeProvider)peer.GetPattern(
+                Microsoft.UI.Xaml.Automation.Peers.PatternInterface.Invoke)).Invoke();
+            await Task.Delay(60);
+            if (!firstBar.Flyout.IsOpen)
+                throw new InvalidOperationException("Trend bars must remain clickable after hovering.");
+            firstBar.Flyout.Hide();
+        }
+        finally
+        {
+            RootFrame.Content = previousContent;
+        }
+    }
+
+    private static async Task ValidateButtonFillAsync(Button button, FrameworkElement host,
+        string description, bool chartBar)
+    {
+        button.ApplyTemplate();
+        var expectedFill = ((SolidColorBrush)button.Background).Color;
+        var expectedForeground = ((SolidColorBrush)button.Foreground).Color;
+        var width = button.ActualWidth;
+        var height = button.ActualHeight;
+        Windows.UI.Color? normalFill = null;
+        Windows.UI.Color? hoverFill = null;
+        Windows.UI.Color? pressedFill = null;
+        foreach (var state in new[] { "Normal", "PointerOver", "Pressed", "Normal" })
+        {
+            if (!VisualStateManager.GoToState(button, state, useTransitions: false))
+                throw new InvalidOperationException($"{description} is missing its {state} state.");
+            await Task.Delay(100);
+            var bitmap = new RenderTargetBitmap();
+            await bitmap.RenderAsync(host);
+            var pixels = (await bitmap.GetPixelsAsync()).ToArray();
+            var point = button.TransformToVisual(host).TransformPoint(
+                new Windows.Foundation.Point(chartBar ? width / 2 : 6, height / 2));
+            var x = (int)(point.X * bitmap.PixelWidth / host.ActualWidth);
+            var y = (int)(point.Y * bitmap.PixelHeight / host.ActualHeight);
+            var offset = (y * bitmap.PixelWidth + x) * 4;
+            var actualFill = ColorHelper.FromArgb(pixels[offset + 3], pixels[offset + 2],
+                pixels[offset + 1], pixels[offset]);
+            if (actualFill.A != 255)
+                throw new InvalidOperationException($"{description} lost its fill in {state}: expected {expectedFill}, rendered {actualFill}.");
+            if (state == "Normal") normalFill = actualFill;
+            if (state == "PointerOver") hoverFill = actualFill;
+            if (state == "Pressed") pressedFill = actualFill;
+            if (state == "Normal" && (Math.Abs(actualFill.R - expectedFill.R) > 3 ||
+                Math.Abs(actualFill.G - expectedFill.G) > 3 ||
+                Math.Abs(actualFill.B - expectedFill.B) > 3))
+                throw new InvalidOperationException($"{description} has the wrong normal fill: expected {expectedFill}, rendered {actualFill}.");
+            if (!chartBar && (FindVisualChild<ContentPresenter>(button)?.Foreground is not SolidColorBrush foreground ||
+                foreground.Color != expectedForeground))
+                throw new InvalidOperationException($"{description} lost its text color in {state}.");
+            if (button.ActualWidth != width || button.ActualHeight != height || !button.UseSystemFocusVisuals)
+                throw new InvalidOperationException($"{description} must retain its size and keyboard focus visuals.");
+        }
+        if (normalFill == hoverFill || normalFill == pressedFill || hoverFill == pressedFill)
+            throw new InvalidOperationException($"{description} must visibly change between normal, hover and pressed states.");
     }
 
     private static void ValidateResolvedPalette(bool dark)

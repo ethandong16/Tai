@@ -345,7 +345,6 @@
                                 <Button Content="检查更新" HorizontalAlignment="Left" Click="CheckUpdate_Click" Style="{StaticResource TaiSubtleButtonStyle}" x:Uid="SettingsPage_089" />
                                 <HyperlinkButton Content="Chrome 网上应用店：Tai Sentry" NavigateUri="https://chromewebstore.google.com/detail/tai-sentry/fmjgafoilnpanbpgdkljkjfjgainboim" Style="{StaticResource TaiLinkButtonStyle}" x:Uid="SettingsPage_090" />
                                 <HyperlinkButton Content="开源项目：github.com/ethandong16/Tai.WinUI" NavigateUri="https://github.com/ethandong16/Tai.WinUI" Style="{StaticResource TaiLinkButtonStyle}" x:Uid="SettingsPage_091" />
-                                <HyperlinkButton Content="讨论区：github.com/ethandong16/Tai.WinUI/discussions" NavigateUri="https://github.com/ethandong16/Tai.WinUI/discussions" Style="{StaticResource TaiLinkButtonStyle}" x:Uid="SettingsPage_092" />
                                 <TextBlock Text="Icon 来自微软 Emoji" Style="{StaticResource TaiCaptionStyle}" x:Uid="SettingsPage_093" />
                             </StackPanel>
                     </Border>

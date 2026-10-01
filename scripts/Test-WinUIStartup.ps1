@@ -12,6 +12,17 @@ foreach ($file in @('Tai.WinUI.exe', 'resources.pri', 'default-categories.json')
     if ($item.Length -eq 0) { throw "Empty publish file: $file" }
 }
 
+$languageResources = Get-ChildItem -LiteralPath $publishPath -Recurse -File | Where-Object {
+    $_.DirectoryName -ne $publishPath -and
+    ($_.Name -like '*.resources.dll' -or $_.Name -like '*.dll.mui')
+}
+foreach ($resource in $languageResources) {
+    $cultureName = Split-Path -Path $resource.DirectoryName -Leaf
+    if ($cultureName -notmatch '^(en|zh|ja)(-|$)') {
+        throw "Published dependency has an unwanted language resource: $($resource.FullName)"
+    }
+}
+
 $builtInKeys = @(
     'browsing', 'office', 'development', 'communication', 'design',
     'learning', 'media', 'gaming', 'utilities'

@@ -459,9 +459,6 @@
   <data name="SettingsPage_091.Content" xml:space="preserve">
     <value>开源项目：github.com/ethandong16/Tai.WinUI</value>
   </data>
-  <data name="SettingsPage_092.Content" xml:space="preserve">
-    <value>讨论区：github.com/ethandong16/Tai.WinUI/discussions</value>
-  </data>
   <data name="SettingsPage_093.Text" xml:space="preserve">
     <value>Icon 来自微软 Emoji</value>
   </data>
